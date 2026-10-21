@@ -64,6 +64,7 @@ class MacH3App:
         os.environ.setdefault("COMFY_BASE_URL", "http://127.0.0.1:8191")
         self.client = Comfy()  # self-hosted proxy: no API key
         self.lock = threading.Lock()
+        self.job = None
         self.reset()
 
     def reset(self) -> None:
@@ -125,6 +126,8 @@ class MacH3App:
 
     def run_take(self, req: dict) -> None:
         continuing = bool(req.get("continue")) and bool(self.takes)
+        if continuing:  # motion context only continues a take of the same frame size
+            req.update(width=self.takes[-1]["width"], height=self.takes[-1]["height"])
         try:
             mode = req.get("mode", "text to video")
             if not continuing and mode not in MODES:
@@ -149,7 +152,7 @@ class MacH3App:
             self.current = {"n": len(self.takes) + 1, "line": spoken_line(req["prompt"]),
                             "seconds": req.get("seconds"), "seed": req.get("seed")}
             started = time.time()
-            job = self.client.submit(self.build(req, continuing, frames))
+            job = self.job = self.client.submit(self.build(req, continuing, frames))
             for event in job.events():
                 if isinstance(event, Progress):
                     # The long node is h3c Generate; its own bar (step/steps) is the
@@ -165,13 +168,16 @@ class MacH3App:
             context = [o for o in job.get_outputs(IDS["gen"]) if o.name.endswith(".h3ctx")][0]
             self.takes.append({"n": n, "line": spoken_line(req["prompt"]), "seed": req.get("seed"),
                                "seconds": req.get("seconds"), "video": video.name,
-                               "context_id": context.id, "wall": round(time.time() - started, 1)})
+                               "context_id": context.id, "wall": round(time.time() - started, 1),
+                               "width": req.get("width", 544), "height": req.get("height", 960)})
             self.join()
             self.current = None
             self.status, self.progress = "done", 1.0
         except Exception as exc:  # surfaced in the page
             traceback.print_exc()
             self.status, self.error = "failed", f"{type(exc).__name__}: {exc}"
+        finally:
+            self.job = None
 
     def join(self) -> None:
         """Each continuation already dropped the frames it shares with the take
@@ -199,6 +205,34 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _send_file(self, path: Path) -> None:
+        """Serve byte ranges: Safari's <video> only plays and seeks with 206 replies."""
+        ctype = "video/mp4" if path.suffix == ".mp4" else "image/png" if path.suffix == ".png" else "image/jpeg"
+        size = path.stat().st_size
+        start, end = 0, size - 1
+        m = re.match(r"bytes=(\d*)-(\d*)", self.headers.get("Range", ""))
+        if m and (m[1] or m[2]):
+            start, end = (int(m[1]), int(m[2] or end)) if m[1] else (max(size - int(m[2]), 0), end)
+            end = min(end, size - 1)
+            if start > end:
+                self.send_response(416)
+                self.send_header("Content-Range", f"bytes */{size}")
+                self.end_headers()
+                return
+        self.send_response(206 if m and (m[1] or m[2]) else 200)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Accept-Ranges", "bytes")
+        self.send_header("Content-Length", str(end - start + 1))
+        if m and (m[1] or m[2]):
+            self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+        self.end_headers()
+        with path.open("rb") as f:
+            f.seek(start)
+            left = end - start + 1
+            while left > 0 and (chunk := f.read(min(left, 1 << 20))):
+                self.wfile.write(chunk)
+                left -= len(chunk)
+
     def do_GET(self) -> None:
         if self.path == "/":
             self._send(200, (HERE / "index.html").read_bytes(), "text/html; charset=utf-8")
@@ -207,14 +241,19 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.startswith("/media/"):
             path = APP.dir / os.path.basename(self.path.split("?")[0])
             if path.is_file():
-                ctype = "video/mp4" if path.suffix == ".mp4" else "image/png" if path.suffix == ".png" else "image/jpeg"
-                self._send(200, path.read_bytes(), ctype)
+                self._send_file(path)
             else:
                 self._send(404, b"not found", "text/plain")
         else:
             self._send(404, b"not found", "text/plain")
 
     def do_POST(self) -> None:
+        if self.path == "/api/cancel":
+            job = APP.job
+            if job is not None:
+                job.cancel()  # ComfyUI interrupts h3c Generate between denoise steps
+            return self._send(202 if job else 409, b'{"ok":true}' if job else b'{"error":"nothing is running"}',
+                              "application/json")
         if self.path != "/api/take":
             return self._send(404, b"not found", "text/plain")
         req = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))))
