@@ -1,0 +1,20 @@
+subject_definitions:
+<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.
+<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.
+
+summary:
+[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.
+
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.
+<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.
+
+detailed_description:
+The target video is in a live-action style, with photoreal and vertical smartphone video.
+[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone out in front of her at arm's length for a close selfie with a relaxed smile, the dirt trail and pines behind her. <Subject 1> eases into an easy walk forward along the trail, holding the phone out in front of her at arm's length and facing the lens the whole time, the pines and peaks behind her slowly receding as she walks; she speaks the line while walking, smiling into the lens, then slows to a stop for the final quiet beat and holds a relaxed smile. Camera: a handheld vertical arm's-length selfie that walks with her at face height, gentle natural walking bounce. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] Okay, it's all open source, link's below, see you at the top.</d>
+
+overall_soundscape:
+Wind moving through the pines, a few distant birds and her soft footsteps on the gravel, which stop as she does, closing on a brief quiet pause.
+
+non_diegetic_music:
+N/A

@@ -126,6 +126,36 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Take 4 walks on",
+      "overall_ambience": "Wind moving through the pines, a few distant birds and her soft footsteps on the gravel, which stop as she does, closing on a brief quiet pause.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "environment": "pine_trail",
+          "presence": {
+            "host": "on_screen"
+          },
+          "opening_state": "<Subject 1> stands on the trail holding the phone out in front of her at arm's length for a close selfie with a relaxed smile, the dirt trail and pines behind her.",
+          "action": "<Subject 1> eases into an easy walk forward along the trail, holding the phone out in front of her at arm's length and facing the lens the whole time, the pines and peaks behind her slowly receding as she walks; she speaks the line while walking, smiling into the lens, then slows to a stop for the final quiet beat and holds a relaxed smile.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "A handheld vertical arm's-length selfie that walks with her at face height, gentle natural walking bounce.",
+            "timing": "throughout_shot"
+          },
+          "dialogue": [
+            {
+              "speaker": "host",
+              "delivery": "warm, relaxed tone",
+              "language": "English",
+              "text": "Okay, it's all open source, link's below, see you at the top."
+            }
+          ]
+        }
+      ]
     }
   ]
 }
