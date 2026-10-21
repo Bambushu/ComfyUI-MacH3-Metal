@@ -137,6 +137,7 @@ def _append(refs, item):
     return (list(refs or []) + [item],)
 
 
+# Optional, so API graphs saved before the switch existed still validate.
 ENABLED = ("BOOLEAN", {"default": True, "tooltip":
     "Off passes the chain through unchanged and never runs what feeds this input."})
 
@@ -149,8 +150,8 @@ def _lazy_if(enabled, name, value):
 class H3cReferenceImage:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"image": ("IMAGE", {"lazy": True}), "enabled": ENABLED},
-                "optional": {"references": (REFS,)}}
+        return {"required": {"image": ("IMAGE", {"lazy": True})},
+                "optional": {"enabled": ENABLED, "references": (REFS,)}}
 
     RETURN_TYPES = (REFS,)
     RETURN_NAMES = ("references",)
@@ -172,9 +173,9 @@ class H3cReferenceVideo:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {"video": ("VIDEO", {"lazy": True}),
-                             "include_audio": ("BOOLEAN", {"default": True}),
-                             "enabled": ENABLED},
-                "optional": {"replacement_audio": ("AUDIO", {"lazy": True}),
+                             "include_audio": ("BOOLEAN", {"default": True})},
+                "optional": {"enabled": ENABLED,
+                             "replacement_audio": ("AUDIO", {"lazy": True}),
                              "references": (REFS,)}}
 
     RETURN_TYPES = (REFS,)
@@ -205,8 +206,8 @@ class H3cReferenceVideo:
 class H3cReferenceAudio:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"audio": ("AUDIO", {"lazy": True}), "enabled": ENABLED},
-                "optional": {"references": (REFS,)}}
+        return {"required": {"audio": ("AUDIO", {"lazy": True})},
+                "optional": {"enabled": ENABLED, "references": (REFS,)}}
 
     RETURN_TYPES = (REFS,)
     RETURN_NAMES = ("references",)
@@ -226,7 +227,8 @@ class H3cReferenceAudio:
 class H3cContextFromVideo:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"video": ("VIDEO", {"lazy": True}), "enabled": ENABLED}}
+        return {"required": {"video": ("VIDEO", {"lazy": True})},
+                "optional": {"enabled": ENABLED}}
 
     RETURN_TYPES = (CONTEXT,)
     RETURN_NAMES = ("motion_context",)
