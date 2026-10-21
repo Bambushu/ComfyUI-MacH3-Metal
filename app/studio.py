@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import base64
 import copy
+import re
 import json
 import os
 import shutil
@@ -33,6 +34,12 @@ IDS, TEMPLATE = GRAPH["ids"], GRAPH["api"]
 FFMPEG = os.environ.get("H3_FFMPEG") or shutil.which("ffmpeg") or "/opt/homebrew/bin/ffmpeg"
 
 
+def spoken_line(prompt: str) -> str:
+    """The dialogue of a composed H3 prompt (inside <d>...</d>), else its start."""
+    lines = re.findall(r"<d>(?:\[[^\]]*\]\s*)?(.*?)</d>", prompt, re.S)
+    return " ".join(lines) if lines else prompt.strip()[:140]
+
+
 class Studio:
     def __init__(self) -> None:
         os.environ.setdefault("COMFY_BASE_URL", "http://127.0.0.1:8191")
@@ -47,15 +54,17 @@ class Studio:
         self.progress = 0.0
         self.error = ""
         self.joined = None
+        self.current = None
+        self.refs: list[str] = []
         # One folder per shot, so a new first take never overwrites the last shot.
         self.dir = WORK / time.strftime("%Y%m%d-%H%M%S")
         self.dir.mkdir(parents=True, exist_ok=True)
 
     def state(self) -> dict:
         return {"status": self.status, "progress": round(self.progress, 3), "error": self.error,
-                "takes": [{k: t[k] for k in ("n", "prompt", "seed", "seconds", "video", "wall")}
+                "takes": [{k: t[k] for k in ("n", "line", "seed", "seconds", "video", "wall")}
                           for t in self.takes],
-                "joined": self.joined}
+                "current": self.current, "refs": self.refs, "joined": self.joined}
 
     # -- one take -------------------------------------------------------------
     def build(self, req: dict, continuing: bool):
@@ -94,7 +103,10 @@ class Studio:
                     path = self.dir / f"ref{i + 1}{ext}"
                     path.write_bytes(base64.b64decode(b64))
                     self.ref_assets.append(self.client.assets.from_file(path))
+                    self.refs.append(path.name)
             self.status, self.progress, self.error = "running", 0.0, ""
+            self.current = {"n": len(self.takes) + 1, "line": spoken_line(req["prompt"]),
+                            "seconds": req.get("seconds"), "seed": req.get("seed")}
             started = time.time()
             job = self.client.submit(self.build(req, continuing))
             for event in job.events():
@@ -110,10 +122,11 @@ class Studio:
             video = self.dir / f"take{n:02d}.mp4"
             job.get_outputs(IDS["sv"])[0].to_file(video)
             context = [o for o in job.get_outputs(IDS["gen"]) if o.name.endswith(".h3ctx")][0]
-            self.takes.append({"n": n, "prompt": req["prompt"], "seed": req.get("seed"),
+            self.takes.append({"n": n, "line": spoken_line(req["prompt"]), "seed": req.get("seed"),
                                "seconds": req.get("seconds"), "video": video.name,
                                "context_id": context.id, "wall": round(time.time() - started, 1)})
             self.join()
+            self.current = None
             self.status, self.progress = "done", 1.0
         except Exception as exc:  # surfaced in the page
             traceback.print_exc()
@@ -153,7 +166,8 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.startswith("/media/"):
             path = STUDIO.dir / os.path.basename(self.path.split("?")[0])
             if path.is_file():
-                self._send(200, path.read_bytes(), "video/mp4")
+                ctype = "video/mp4" if path.suffix == ".mp4" else "image/png" if path.suffix == ".png" else "image/jpeg"
+                self._send(200, path.read_bytes(), ctype)
             else:
                 self._send(404, b"not found", "text/plain")
         else:
