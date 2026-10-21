@@ -26,6 +26,7 @@ from . import h3c_engine as h3c
 ENGINE = "H3C_ENGINE"
 REFS = "H3C_REFS"
 CONTEXT = "H3C_CONTEXT"
+SETTINGS = "H3C_SETTINGS"
 CATEGORY = "h3c"
 
 # Share of the progress bar per engine phase (denoise dominates the wall).
@@ -136,10 +137,19 @@ def _append(refs, item):
     return (list(refs or []) + [item],)
 
 
+ENABLED = ("BOOLEAN", {"default": True, "tooltip":
+    "Off passes the chain through unchanged and never runs what feeds this input."})
+
+
+def _lazy_if(enabled, name, value):
+    """check_lazy_status helper: ask Comfy for an input only when switched on."""
+    return [name] if enabled and value is None else []
+
+
 class H3cReferenceImage:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"image": ("IMAGE",)},
+        return {"required": {"image": ("IMAGE", {"lazy": True}), "enabled": ENABLED},
                 "optional": {"references": (REFS,)}}
 
     RETURN_TYPES = (REFS,)
@@ -149,16 +159,23 @@ class H3cReferenceImage:
     DESCRIPTION = ("Append an identity/look reference. References are numbered in chain "
                    "order per kind: the first image is <Picture 1> in the prompt.")
 
-    def add(self, image, references=None):
+    def check_lazy_status(self, enabled=True, image=None, references=None):
+        return _lazy_if(enabled, "image", image)
+
+    def add(self, image=None, enabled=True, references=None):
+        if not enabled:
+            return (list(references or []),)
         return _append(references, h3c.Reference(h3c.REFERENCE_IMAGE, _save_image(image, "ref")))
 
 
 class H3cReferenceVideo:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"video": ("VIDEO",),
-                             "include_audio": ("BOOLEAN", {"default": True})},
-                "optional": {"replacement_audio": ("AUDIO",), "references": (REFS,)}}
+        return {"required": {"video": ("VIDEO", {"lazy": True}),
+                             "include_audio": ("BOOLEAN", {"default": True}),
+                             "enabled": ENABLED},
+                "optional": {"replacement_audio": ("AUDIO", {"lazy": True}),
+                             "references": (REFS,)}}
 
     RETURN_TYPES = (REFS,)
     RETURN_NAMES = ("references",)
@@ -167,7 +184,15 @@ class H3cReferenceVideo:
     DESCRIPTION = ("Append a reference video (<Video N>), with its own soundtrack, a "
                    "replacement soundtrack, or silent.")
 
-    def add(self, video, include_audio, replacement_audio=None, references=None):
+    def check_lazy_status(self, enabled=True, video=None, include_audio=True,
+                          replacement_audio=None, references=None):
+        return _lazy_if(enabled, "video", video) + _lazy_if(enabled, "replacement_audio",
+                                                            replacement_audio)
+
+    def add(self, video=None, include_audio=True, enabled=True, replacement_audio=None,
+            references=None):
+        if not enabled:
+            return (list(references or []),)
         path = _save_video(video, "refvid")
         if replacement_audio is not None:
             ref = h3c.Reference(h3c.REFERENCE_VIDEO_AUDIO, path,
@@ -180,7 +205,7 @@ class H3cReferenceVideo:
 class H3cReferenceAudio:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"audio": ("AUDIO",)},
+        return {"required": {"audio": ("AUDIO", {"lazy": True}), "enabled": ENABLED},
                 "optional": {"references": (REFS,)}}
 
     RETURN_TYPES = (REFS,)
@@ -189,14 +214,19 @@ class H3cReferenceAudio:
     CATEGORY = CATEGORY
     DESCRIPTION = "Append a standalone reference audio clip (<Audio N>, up to 45 s)."
 
-    def add(self, audio, references=None):
+    def check_lazy_status(self, enabled=True, audio=None, references=None):
+        return _lazy_if(enabled, "audio", audio)
+
+    def add(self, audio=None, enabled=True, references=None):
+        if not enabled:
+            return (list(references or []),)
         return _append(references, h3c.Reference(h3c.REFERENCE_AUDIO, _save_audio(audio, "refaud")))
 
 
 class H3cContextFromVideo:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"video": ("VIDEO",)}}
+        return {"required": {"video": ("VIDEO", {"lazy": True}), "enabled": ENABLED}}
 
     RETURN_TYPES = (CONTEXT,)
     RETURN_NAMES = ("motion_context",)
@@ -205,7 +235,12 @@ class H3cContextFromVideo:
     DESCRIPTION = ("Continue any finished clip (45 s max): the engine re-encodes its last 22 "
                    "frames and their sound. A .h3ctx from a take is bit-exact and skips that.")
 
-    def make(self, video):
+    def check_lazy_status(self, enabled=True, video=None):
+        return _lazy_if(enabled, "video", video)
+
+    def make(self, video=None, enabled=True):
+        if not enabled:
+            return (None,)
         return ({"path": _save_video(video, "context"), "kind": "video"},)
 
 
@@ -264,6 +299,10 @@ class H3cGenerate:
                 "motion_context": (CONTEXT, {"tooltip":
                     "Continue a previous take. Replaces first_frame; references and last_frame ride along."}),
                 "reference_image_size": (["match", "max"], {"default": "match"}),
+                "settings": (SETTINGS, {"tooltip":
+                    "From h3c Settings: overrides this node's size, steps, sampler, scheduler, "
+                    "shift, speed, preview, save_context and reference size, so every take of "
+                    "a chain shares one set."}),
             },
         }
 
@@ -277,7 +316,13 @@ class H3cGenerate:
     def generate(self, engine, prompt, width, height, seconds, frames, steps, seed,
                  sampler, scheduler, shift, speed, save_context, preview, filename_prefix,
                  first_frame=None, last_frame=None, references=None, motion_context=None,
-                 reference_image_size="match"):
+                 reference_image_size="match", settings=None):
+        if settings:
+            width, height, steps = settings["width"], settings["height"], settings["steps"]
+            sampler, scheduler, shift = settings["sampler"], settings["scheduler"], settings["shift"]
+            speed, preview = settings["speed"], settings["preview"]
+            save_context = settings["save_context"]
+            reference_image_size = settings["reference_image_size"]
         if not prompt.strip():
             raise ValueError("h3c: the prompt is empty")
         if motion_context is not None and first_frame is not None:
@@ -384,6 +429,115 @@ class H3cJoinTakes:
                 {"waveform": torch.cat([wave_a, wave_b], dim=2), "sample_rate": rate})
 
 
+class H3cOptionalImage:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {"image": ("IMAGE", {"lazy": True}), "enabled": ENABLED}}
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "pick"
+    CATEGORY = CATEGORY
+    DESCRIPTION = ("On/off switch for a first or last frame. Off sends nothing, and the image "
+                   "loader feeding it never runs.")
+
+    def check_lazy_status(self, enabled=True, image=None):
+        return _lazy_if(enabled, "image", image)
+
+    def pick(self, image=None, enabled=True):
+        return (image if enabled else None,)
+
+
+class H3cSettings:
+    @classmethod
+    def INPUT_TYPES(cls):
+        g = H3cGenerate.INPUT_TYPES()
+        req, opt = g["required"], g["optional"]
+        keys = ("width", "height", "steps", "sampler", "scheduler", "shift", "speed",
+                "save_context", "preview")
+        spec = {k: req[k] for k in keys}
+        spec["reference_image_size"] = opt["reference_image_size"]
+        return {"required": spec}
+
+    RETURN_TYPES = (SETTINGS,)
+    RETURN_NAMES = ("settings",)
+    FUNCTION = "make"
+    CATEGORY = CATEGORY
+    DESCRIPTION = "One set of render settings for every take of a chain."
+
+    def make(self, **kwargs):
+        return (dict(kwargs),)
+
+
+MODES = {
+    # mode: (first frame, last frame, references)
+    "text to video": (False, False, False),
+    "first frame": (True, False, False),
+    "first + last frame": (True, True, False),
+    "references": (False, False, True),
+    "references + first frame": (True, False, True),
+    "references + first + last frame": (True, True, True),
+}
+
+
+class H3cMode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "mode": (list(MODES), {"default": "text to video"}),
+            "continue_clip": ("BOOLEAN", {"default": False, "tooltip":
+                "Take 1 continues an existing clip (h3c Motion Context From Video). Replaces "
+                "the first frame."}),
+            "takes": ("INT", {"default": 1, "min": 1, "max": 3, "tooltip":
+                "How many chained takes to render; later takes continue the one before."}),
+        }}
+
+    RETURN_TYPES = ("BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN", "INT")
+    RETURN_NAMES = ("first_frame", "last_frame", "references", "continue_clip", "takes")
+    FUNCTION = "pick"
+    CATEGORY = CATEGORY
+    DESCRIPTION = ("The control panel: one choice switches the first/last frame and reference "
+                   "inputs on or off. Wire each output to the matching node's enabled input.")
+
+    def pick(self, mode, continue_clip, takes):
+        first, last, refs = MODES[mode]
+        if continue_clip:
+            first = False  # motion context replaces the first frame
+        return (first, last, refs, continue_clip, takes)
+
+
+class H3cJoinAll:
+    @classmethod
+    def INPUT_TYPES(cls):
+        lazy = {"lazy": True}
+        return {"required": {"takes": ("INT", {"default": 1, "min": 1, "max": 3}),
+                             "images_1": ("IMAGE", lazy), "audio_1": ("AUDIO", lazy)},
+                "optional": {"images_2": ("IMAGE", lazy), "audio_2": ("AUDIO", lazy),
+                             "images_3": ("IMAGE", lazy), "audio_3": ("AUDIO", lazy)}}
+
+    RETURN_TYPES = ("IMAGE", "AUDIO")
+    RETURN_NAMES = ("images", "audio")
+    FUNCTION = "join"
+    CATEGORY = CATEGORY
+    DESCRIPTION = ("Takes 1 to N of a chain as one shot. Takes past N are never rendered: "
+                   "this node only asks for the ones it needs.")
+
+    def check_lazy_status(self, takes=1, **inputs):
+        need = []
+        for n in range(1, takes + 1):
+            for kind in ("images", "audio"):
+                if inputs.get(f"{kind}_{n}") is None:
+                    need.append(f"{kind}_{n}")
+        return need
+
+    def join(self, takes, **inputs):
+        images, audio = inputs["images_1"], inputs["audio_1"]
+        for n in range(2, takes + 1):
+            images, audio = H3cJoinTakes().join(images, audio, inputs[f"images_{n}"],
+                                                inputs[f"audio_{n}"])
+        return (images, audio)
+
+
 NODE_CLASS_MAPPINGS = {
     "H3cLoader": H3cLoader,
     "H3cGenerate": H3cGenerate,
@@ -393,6 +547,10 @@ NODE_CLASS_MAPPINGS = {
     "H3cContextFromVideo": H3cContextFromVideo,
     "H3cLoadContext": H3cLoadContext,
     "H3cJoinTakes": H3cJoinTakes,
+    "H3cOptionalImage": H3cOptionalImage,
+    "H3cSettings": H3cSettings,
+    "H3cMode": H3cMode,
+    "H3cJoinAll": H3cJoinAll,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "H3cLoader": "h3c Load Engine",
@@ -403,4 +561,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "H3cContextFromVideo": "h3c Motion Context From Video",
     "H3cLoadContext": "h3c Load Motion Context",
     "H3cJoinTakes": "h3c Join Takes",
+    "H3cOptionalImage": "h3c Optional Image",
+    "H3cSettings": "h3c Settings",
+    "H3cMode": "h3c Mode",
+    "H3cJoinAll": "h3c Join All Takes",
 }
