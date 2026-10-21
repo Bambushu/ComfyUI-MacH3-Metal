@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Continuous Take Studio</title>
+<title>MacH3 Metal</title>
 <style>
   :root { --bg:#f6f5f2; --fg:#1c1b19; --muted:#6b6862; --line:#d9d6cf; --accent:#2f5d50; --card:#fff; }
   @media (prefers-color-scheme: dark) { :root { --bg:#151514; --fg:#ecebe7; --muted:#9a978f; --line:#34332f; --accent:#7fb8a4; --card:#1e1e1c; } }
@@ -13,7 +13,7 @@
   @media (max-width: 820px) { main { grid-template-columns: 1fr; } }
   h1 { font-size:20px; margin:0 0 2px; } .sub { color:var(--muted); margin:0 0 16px; font-size:13px; }
   label { display:block; font-size:12px; color:var(--muted); margin:12px 0 4px; text-transform:uppercase; letter-spacing:.04em; }
-  textarea, input { width:100%; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--fg); font:inherit; }
+  textarea, input, select { width:100%; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--fg); font:inherit; }
   textarea { min-height:200px; resize:vertical; font-size:13px; }
   .row { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
   .refs { display:flex; gap:8px; margin-top:6px; } .refs img { width:64px; height:64px; object-fit:cover; border-radius:6px; border:1px solid var(--line); }
@@ -34,20 +34,27 @@
 <body>
 <main>
   <section>
-    <h1>Continuous Take Studio</h1>
-    <p class="sub">MiniMax-H3 picture and sound on this Mac, through ComfyUI-h3c and the Comfy API. Each continuation picks up the last take's final frames and sound.</p>
-    <label for="prompt">Prompt for the next stretch of the take</label>
+    <h1>MacH3 Metal</h1>
+    <p class="sub">MiniMax-H3 picture and sound on this Mac, on the h3c Metal engine through ComfyUI and the Comfy API. Continue any take from where it ended.</p>
+    <label for="mode">Mode (first take)</label>
+    <select id="mode">
+      <option>text to video</option><option>first frame</option><option>first + last frame</option>
+      <option selected>references</option><option>references + first frame</option><option>references + first + last frame</option>
+    </select>
+    <label for="prompt">Prompt</label>
     <textarea id="prompt"></textarea>
-    <label>Identity pictures (up to 2, first take only; cited as Picture 1, Picture 2)</label>
+    <div id="refbox"><label>Identity pictures (up to 2, cited as Picture 1, Picture 2)</label>
     <input type="file" id="refs" accept="image/png,image/jpeg" multiple>
-    <div class="refs" id="refprev"></div>
+    <div class="refs" id="refprev"></div></div>
+    <div id="firstbox"><label>First frame</label><input type="file" id="first" accept="image/png,image/jpeg"></div>
+    <div id="lastbox"><label>Last frame</label><input type="file" id="last" accept="image/png,image/jpeg"></div>
     <div class="row">
       <div><label for="seconds">Length (s)</label><input id="seconds" type="number" value="5" min="1" max="15" step="0.5"></div>
       <div><label for="seed">Seed</label><input id="seed" type="number" value="77001"></div>
       <div><label for="steps">Steps</label><input id="steps" type="number" value="8" min="2" max="50"></div>
     </div>
     <div class="buttons">
-      <button id="new">Generate first take</button>
+      <button id="new">Generate</button>
       <button id="cont" class="secondary" disabled>Continue the take</button>
     </div>
     <div class="bar"><div id="bar"></div></div>
@@ -62,13 +69,21 @@
 </main>
 <script>
 const $ = id => document.getElementById(id);
-let refs = [], shown = null;
+let refs = [], frames = {}, shown = null;
+const readFile = f => new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(f); });
+const showFields = () => { const m = $('mode').value;
+  $('refbox').style.display = m.includes('references') ? '' : 'none';
+  $('firstbox').style.display = m.includes('first') ? '' : 'none';
+  $('lastbox').style.display = m.includes('last') ? '' : 'none'; };
+$('mode').onchange = showFields; showFields();
+for (const k of ['first', 'last']) $(k).onchange = async e => { frames[k] = e.target.files[0] ? await readFile(e.target.files[0]) : undefined; };
 $('refs').onchange = async e => {
-  refs = await Promise.all([...e.target.files].slice(0, 2).map(f => new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(f); })));
+  refs = await Promise.all([...e.target.files].slice(0, 2).map(readFile));
   $('refprev').innerHTML = refs.map(u => `<img src="${u}" alt="">`).join('');
 };
 async function go(cont) {
-  const body = { prompt: $('prompt').value, seconds: +$('seconds').value, seed: +$('seed').value, steps: +$('steps').value, continue: cont, refs: cont ? [] : refs };
+  const body = { mode: $('mode').value, prompt: $('prompt').value, seconds: +$('seconds').value, seed: +$('seed').value, steps: +$('steps').value, continue: cont,
+    refs: cont ? [] : refs, first: cont ? undefined : frames.first, last: cont ? undefined : frames.last };
   const r = await fetch('/api/take', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   if (!r.ok) { $('status').textContent = (await r.json()).error; return; }
   $('seed').value = +$('seed').value + 1;

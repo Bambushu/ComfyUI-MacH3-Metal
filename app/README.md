@@ -1,19 +1,20 @@
-# Continuous Take Studio
+# MacH3 Metal app
 
-One continuous shot, written a few seconds at a time.
+MiniMax-H3 with sound on a Mac, from a browser tab.
 
-Write what happens, add up to two identity pictures, pick a length and
-generate. Then write what happens next and press "Continue the take": the next
-generation starts from the last take's final frames and sound, and the joined
-shot plays on the right.
+Pick a mode (text to video, first frame, first + last frame, references, or
+references with frames), write the prompt, add the pictures the mode asks for,
+pick a length and generate. To keep going, write what happens next and press
+"Continue the take": the next generation starts from the last take's final
+frames and sound, and the joined shot plays on the right.
 
 Every generation is a ComfyUI job submitted with the Comfy SDK
 ([comfy-sdk](https://pypi.org/project/comfy-sdk/)) to a Comfy API v2 surface.
 Locally that is [comfy-api-proxy](https://pypi.org/project/comfy-api-proxy/)
-in front of a ComfyUI with ComfyUI-h3c installed. The graph is
+in front of a ComfyUI with the MacH3 Metal nodes installed. The graph is
 `workflows/take_api.json`, exported from `workflows/take_ui.json`; the app only
-sets inputs, prunes unused reference slots and passes the previous take's
-context file (an output asset) to the next job.
+sets inputs and the mode, prunes the loaders the mode does not use, and passes
+the previous take's context file (an output asset) to the next job.
 
 ## Run it
 
@@ -26,7 +27,7 @@ cd app && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ```
 
 ```bash
-COMFY_BASE_URL=http://127.0.0.1:8191 .venv/bin/python studio.py
+COMFY_BASE_URL=http://127.0.0.1:8191 .venv/bin/python app.py
 ```
 
 Open http://127.0.0.1:8766. The proxy's usual port is 8189; any free port

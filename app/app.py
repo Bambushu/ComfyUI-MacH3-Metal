@@ -1,12 +1,13 @@
-"""Continuous Take Studio: a small web app on the Comfy SDK (Comfy API v2).
+"""MacH3 Metal app: MiniMax-H3 on a Mac through the Comfy SDK (Comfy API v2).
 
-Write a prompt, add identity pictures, generate a take; then "continue the
-take" chains the next prompt onto the last one with h3c motion context and
-shows the joined result. Every generation is a ComfyUI job submitted through
-comfy-sdk to a Comfy API v2 surface (locally: comfy-api-proxy in front of a
-ComfyUI that has ComfyUI-h3c installed).
+Pick a mode (text to video, first frame, first + last frame, references, or
+references with frames), write a prompt, generate; "continue the take" then
+chains the next prompt onto the last take with motion context and shows the
+joined result. Every generation is a ComfyUI job submitted through comfy-sdk
+to a Comfy API v2 surface (locally: comfy-api-proxy in front of a ComfyUI
+with the MacH3 Metal nodes installed).
 
-    COMFY_BASE_URL=http://127.0.0.1:8191 python studio.py   # then open :8766
+    COMFY_BASE_URL=http://127.0.0.1:8191 python app.py   # then open :8766
 """
 
 from __future__ import annotations
@@ -28,7 +29,7 @@ from comfy_sdk import Comfy
 from comfy_sdk.events import Progress, StatusChange
 
 HERE = Path(__file__).resolve().parent
-WORK = Path(os.environ.get("STUDIO_DIR", HERE / "session"))
+WORK = Path(os.environ.get("MACH3_APP_DIR", HERE / "session"))
 GRAPH = json.loads((HERE / "workflows" / "take_api.json").read_text())
 IDS, TEMPLATE = GRAPH["ids"], GRAPH["api"]
 FFMPEG = os.environ.get("H3_FFMPEG") or shutil.which("ffmpeg") or "/opt/homebrew/bin/ffmpeg"
@@ -40,7 +41,25 @@ def spoken_line(prompt: str) -> str:
     return " ".join(lines) if lines else prompt.strip()[:140]
 
 
-class Studio:
+# mode -> (first frame, last frame, identity pictures)
+MODES = {
+    "text to video": (False, False, False),
+    "first frame": (True, False, False),
+    "first + last frame": (True, True, False),
+    "references": (False, False, True),
+    "references + first frame": (True, False, True),
+    "references + first + last frame": (True, True, True),
+}
+
+
+def save_data_url(data_url: str, path_stem: Path) -> Path:
+    header, b64 = data_url.split(",", 1)
+    path = path_stem.with_suffix(".png" if "png" in header else ".jpg")
+    path.write_bytes(base64.b64decode(b64))
+    return path
+
+
+class MacH3App:
     def __init__(self) -> None:
         os.environ.setdefault("COMFY_BASE_URL", "http://127.0.0.1:8191")
         self.client = Comfy()  # self-hosted proxy: no API key
@@ -67,48 +86,70 @@ class Studio:
                 "current": self.current, "refs": self.refs, "joined": self.joined}
 
     # -- one take -------------------------------------------------------------
-    def build(self, req: dict, continuing: bool):
+    def build(self, req: dict, continuing: bool, frames: dict):
+        """Set the inputs of the shipped take graph and prune what the mode does
+        not use, so nothing unneeded is validated, uploaded or loaded."""
         wf = self.client.workflows.from_json(copy.deepcopy(TEMPLATE))
         gen = IDS["gen"]
         for field in ("prompt", "seconds", "steps", "seed", "width", "height"):
             if field in req:
                 wf.set_input(gen, field, req[field])
+        n = len(self.takes) + 1
         wf.set_input(gen, "save_context", True)
-        wf.set_input(gen, "filename_prefix", f"h3c/studio/take{len(self.takes) + 1:02d}")
-        wf.set_input(IDS["sv"], "filename_prefix", f"h3c/studio/take{len(self.takes) + 1:02d}")
-        # Identity pictures: fill the two reference slots in order, drop unused
-        # ones (removing a LoadImage, then its reference node, re-links the chain).
-        for slot, (img, ref) in enumerate((("img1", "ref1"), ("img2", "ref2"))):
-            if slot < len(self.ref_assets):
-                wf.set_input(IDS[img], "image", self.ref_assets[slot])
-            else:
-                wf.remove_node(IDS[img])
-                wf.remove_node(IDS[ref])
+        wf.set_input(gen, "filename_prefix", f"MacH3/app/take{n:02d}")
+        wf.set_input(IDS["sv"], "filename_prefix", f"MacH3/app/take{n:02d}")
         if continuing:
+            mode = "continue + references" if self.ref_assets else "continue"
             # The previous take's .h3ctx, an output asset of its Generate node.
             wf.set_input(IDS["ctx"], "path",
                          {"__type": "core/ASSET", "info": {"id": self.takes[-1]["context_id"]}})
         else:
+            mode = req.get("mode", "text to video")
             wf.remove_node(IDS["ctx"])
+        wf.set_input(gen, "mode", mode)
+        for key in ("first", "last"):
+            if key in frames and not continuing:
+                wf.set_input(IDS[key], "image", frames[key])
+            else:
+                wf.remove_node(IDS[key])
+        # Identity pictures: fill the two reference slots in order, drop unused
+        # ones (removing a LoadImage, then its reference node, re-links the chain).
+        uses_refs = continuing or MODES[mode][2]
+        for slot, (img, ref) in enumerate((("img1", "ref1"), ("img2", "ref2"))):
+            if uses_refs and slot < len(self.ref_assets):
+                wf.set_input(IDS[img], "image", self.ref_assets[slot])
+            else:
+                wf.remove_node(IDS[img])
+                wf.remove_node(IDS[ref])
         return wf
 
     def run_take(self, req: dict) -> None:
         continuing = bool(req.get("continue")) and bool(self.takes)
         try:
+            mode = req.get("mode", "text to video")
+            if not continuing and mode not in MODES:
+                raise ValueError(f"unknown mode {mode!r}")
+            frames = {}
             if not continuing:
+                needs = dict(zip(("first", "last", "refs"), MODES[mode]))
+                for key, what in (("first", "a first frame"), ("last", "a last frame"),
+                                  ("refs", "at least one identity picture")):
+                    if needs[key] and not req.get(key):
+                        raise ValueError(f"{mode} needs {what}")
                 self.reset()
-                for i, data_url in enumerate(req.get("refs", [])[:2]):
-                    header, b64 = data_url.split(",", 1)
-                    ext = ".png" if "png" in header else ".jpg"
-                    path = self.dir / f"ref{i + 1}{ext}"
-                    path.write_bytes(base64.b64decode(b64))
+                for i, data_url in enumerate(req.get("refs", [])[:2] if needs["refs"] else []):
+                    path = save_data_url(data_url, self.dir / f"ref{i + 1}")
                     self.ref_assets.append(self.client.assets.from_file(path))
                     self.refs.append(path.name)
+                for key in ("first", "last"):
+                    if needs[key]:
+                        frames[key] = self.client.assets.from_file(
+                            save_data_url(req[key], self.dir / f"{key}_frame"))
             self.status, self.progress, self.error = "running", 0.0, ""
             self.current = {"n": len(self.takes) + 1, "line": spoken_line(req["prompt"]),
                             "seconds": req.get("seconds"), "seed": req.get("seed")}
             started = time.time()
-            job = self.client.submit(self.build(req, continuing))
+            job = self.client.submit(self.build(req, continuing, frames))
             for event in job.events():
                 if isinstance(event, Progress):
                     # The long node is h3c Generate; its own bar (step/steps) is the
@@ -146,7 +187,7 @@ class Studio:
         self.joined = out.name
 
 
-STUDIO = Studio()
+APP = MacH3App()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -162,9 +203,9 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/":
             self._send(200, (HERE / "index.html").read_bytes(), "text/html; charset=utf-8")
         elif self.path == "/api/state":
-            self._send(200, json.dumps(STUDIO.state()).encode(), "application/json")
+            self._send(200, json.dumps(APP.state()).encode(), "application/json")
         elif self.path.startswith("/media/"):
-            path = STUDIO.dir / os.path.basename(self.path.split("?")[0])
+            path = APP.dir / os.path.basename(self.path.split("?")[0])
             if path.is_file():
                 ctype = "video/mp4" if path.suffix == ".mp4" else "image/png" if path.suffix == ".png" else "image/jpeg"
                 self._send(200, path.read_bytes(), ctype)
@@ -177,12 +218,12 @@ class Handler(BaseHTTPRequestHandler):
         if self.path != "/api/take":
             return self._send(404, b"not found", "text/plain")
         req = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))))
-        if STUDIO.status in ("running", "pending", "in_progress"):
+        if APP.status in ("running", "pending", "in_progress"):
             return self._send(409, b'{"error":"a take is already running"}', "application/json")
         if not str(req.get("prompt", "")).strip():
             return self._send(400, b'{"error":"prompt is empty"}', "application/json")
-        STUDIO.status = "running"
-        threading.Thread(target=STUDIO.run_take, args=(req,), daemon=True).start()
+        APP.status = "running"
+        threading.Thread(target=APP.run_take, args=(req,), daemon=True).start()
         self._send(202, b'{"ok":true}', "application/json")
 
     def log_message(self, *args) -> None:
@@ -190,6 +231,6 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("STUDIO_PORT", "8766"))
-    print(f"Continuous Take Studio on http://127.0.0.1:{port}  (Comfy API v2 at {os.environ['COMFY_BASE_URL']})")
+    port = int(os.environ.get("MACH3_APP_PORT", "8766"))
+    print(f"MacH3 Metal app on http://127.0.0.1:{port}  (Comfy API v2 at {os.environ['COMFY_BASE_URL']})")
     ThreadingHTTPServer(("127.0.0.1", port), Handler).serve_forever()
