@@ -22,8 +22,7 @@ folder before the repo goes public, or keep it private.
 **Project name/title:** h3c Continuous Take Studio
 
 **One-line description (100 characters or less):**
-MiniMax H3 picture and sound generated natively on a Mac in ComfyUI, chained into one continuous take
-(99 characters)
+MiniMax H3 picture and sound made natively on a Mac in ComfyUI, chained into one continuous take
 
 ## Submission links
 
