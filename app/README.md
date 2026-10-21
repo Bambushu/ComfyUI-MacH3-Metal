@@ -32,6 +32,6 @@ COMFY_BASE_URL=http://127.0.0.1:8191 .venv/bin/python studio.py
 Open http://127.0.0.1:8766. The proxy's usual port is 8189; any free port
 works as long as `COMFY_BASE_URL` matches.
 
-Takes land in `app/session/`. The joined take is a stream copy of the takes
+Each shot lands in its own `app/session/<time>/` folder. The joined take is a stream copy of the takes
 in order: each continuation already left out the frames it shares with the
 take before it.

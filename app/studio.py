@@ -47,7 +47,9 @@ class Studio:
         self.progress = 0.0
         self.error = ""
         self.joined = None
-        WORK.mkdir(parents=True, exist_ok=True)
+        # One folder per shot, so a new first take never overwrites the last shot.
+        self.dir = WORK / time.strftime("%Y%m%d-%H%M%S")
+        self.dir.mkdir(parents=True, exist_ok=True)
 
     def state(self) -> dict:
         return {"status": self.status, "progress": round(self.progress, 3), "error": self.error,
@@ -89,7 +91,7 @@ class Studio:
                 for i, data_url in enumerate(req.get("refs", [])[:2]):
                     header, b64 = data_url.split(",", 1)
                     ext = ".png" if "png" in header else ".jpg"
-                    path = WORK / f"ref{i + 1}{ext}"
+                    path = self.dir / f"ref{i + 1}{ext}"
                     path.write_bytes(base64.b64decode(b64))
                     self.ref_assets.append(self.client.assets.from_file(path))
             self.status, self.progress, self.error = "running", 0.0, ""
@@ -102,7 +104,7 @@ class Studio:
                     self.status = event.status
             job.result()
             n = len(self.takes) + 1
-            video = WORK / f"take{n:02d}.mp4"
+            video = self.dir / f"take{n:02d}.mp4"
             job.get_outputs(IDS["sv"])[0].to_file(video)
             context = [o for o in job.get_outputs(IDS["gen"]) if o.name.endswith(".h3ctx")][0]
             self.takes.append({"n": n, "prompt": req["prompt"], "seed": req.get("seed"),
@@ -120,9 +122,9 @@ class Studio:
         if len(self.takes) < 2:
             self.joined = self.takes[0]["video"]
             return
-        listing = WORK / "concat.txt"
-        listing.write_text("".join(f"file '{WORK / t['video']}'\n" for t in self.takes))
-        out = WORK / f"joined_{len(self.takes):02d}.mp4"
+        listing = self.dir / "concat.txt"
+        listing.write_text("".join(f"file '{self.dir / t['video']}'\n" for t in self.takes))
+        out = self.dir / f"joined_{len(self.takes):02d}.mp4"
         subprocess.run([FFMPEG, "-nostdin", "-v", "error", "-y", "-f", "concat", "-safe", "0",
                         "-i", str(listing), "-c", "copy", str(out)], check=True)
         self.joined = out.name
@@ -146,7 +148,7 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/state":
             self._send(200, json.dumps(STUDIO.state()).encode(), "application/json")
         elif self.path.startswith("/media/"):
-            path = WORK / os.path.basename(self.path.split("?")[0])
+            path = STUDIO.dir / os.path.basename(self.path.split("?")[0])
             if path.is_file():
                 self._send(200, path.read_bytes(), "video/mp4")
             else:
