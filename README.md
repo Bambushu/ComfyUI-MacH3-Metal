@@ -21,12 +21,38 @@ Apple silicon only. Measured on an M5 Pro with 48 GB.
 | h3c Load Motion Context | A `.h3ctx` from an earlier take (bit-exact) or any finished `.mp4` (45 s max). |
 | h3c Motion Context From Video | Continue a clip that is already in the graph as a VIDEO. |
 | h3c Join Takes | A take and its continuation as one IMAGE batch and one AUDIO track. |
+| h3c Join All Takes | Takes 1 to N as one shot; only asks for (and so only renders) the first N. |
+| h3c Mode | The control panel: one mode choice drives the on/off switches below. |
+| h3c Settings | One set of size, steps, sampler, scheduler, shift and speed for every take. |
+| h3c Optional Image | On/off switch for a first or last frame. |
+
+Reference and context nodes carry an `enabled` switch too. A switch that is
+off skips its input entirely: the loader feeding it never runs.
 
 Frames and audio leave as ordinary IMAGE and AUDIO, so the stock CreateVideo
 and SaveVideo nodes write the file.
 
-Example workflows (load from the workflow templates browser, or drag in from
-`example_workflows/`):
+### h3c Studio: everything in one graph
+
+`example_workflows/h3c_studio_all_in_one.json` carries every feature in
+colored groups: Control, Continue a clip, First / last frame, References,
+Take 1 to 3, Join and save. The h3c Mode node is the control panel: pick text
+to video, first frame, first + last frame or references, switch "continue an
+existing clip" on or off, and set how many chained takes to render. Inputs
+that are switched off never run, and takes past the chosen number never
+render, in the GUI and headless alike.
+
+`h3c_studio.app.json` is the same graph for ComfyUI's App Mode: a form with
+the mode, takes, identity picture, the three prompts, lengths, seeds and size,
+and the finished shot as its output.
+
+Both run as shipped: the pack copies its `h3c_sample_*` pictures, clip and
+voice line into ComfyUI's input folder on first load (it never overwrites a
+file).
+
+### Single-purpose examples
+
+Load from the workflow templates browser, or drag in from `example_workflows/`:
 
 | File | Mode |
 | --- | --- |
