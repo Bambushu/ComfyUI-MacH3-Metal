@@ -1,0 +1,65 @@
+{
+  "format": "h3_prompt_composer_ai_import",
+  "schema_version": 5,
+  "operation": "replace_project",
+  "project": {
+    "mode": "REF",
+    "duration_seconds": 5,
+    "style": "Live-action, photoreal, vertical smartphone video",
+    "task_types": ["reference generation"]
+  },
+  "assets": {
+    "subjects": [
+      {
+        "id": "host",
+        "name": "HOST",
+        "type": "character",
+        "description": "the person shown in the reference picture, same face, hair and clothing",
+        "picture_slots": [1],
+        "video_slots": [],
+        "reference_contribution": "character_sheet"
+      }
+    ],
+    "environments": [
+      {
+        "id": "studio_desk",
+        "name": "STUDIO DESK",
+        "description": "a small home studio with a wooden desk, a laptop and a warm desk lamp, soft late-afternoon window light from the left continuing unchanged",
+        "pictures": []
+      }
+    ],
+    "pictures": [],
+    "audio": [],
+    "videos": []
+  },
+  "generations": [
+    {
+      "name": "Desk line",
+      "overall_ambience": "Quiet room tone, a faint distant street hum, opening and closing on a brief quiet pause.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "environment": "studio_desk",
+          "presence": { "host": "on_screen" },
+          "opening_state": "<Subject 1> sits at the desk facing the camera, hands resting beside the laptop.",
+          "action": "<Subject 1> looks into the lens, speaks the line with one small nod, then holds a relaxed smile for the rest of the video.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "A static vertical medium close-up at chest height with very slight handheld drift.",
+            "timing": "throughout_shot"
+          },
+          "dialogue": [
+            {
+              "speaker": "host",
+              "delivery": "warm, relaxed tone",
+              "language": "English",
+              "text": "Same face, new scene. One reference picture is all it took."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Continuous Take Studio</title>
+<style>
+  :root { --bg:#f6f5f2; --fg:#1c1b19; --muted:#6b6862; --line:#d9d6cf; --accent:#2f5d50; --card:#fff; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#151514; --fg:#ecebe7; --muted:#9a978f; --line:#34332f; --accent:#7fb8a4; --card:#1e1e1c; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.45 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; }
+  main { max-width:1080px; margin:0 auto; padding:24px 16px 48px; display:grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap:24px; }
+  @media (max-width: 820px) { main { grid-template-columns: 1fr; } }
+  h1 { font-size:20px; margin:0 0 2px; } .sub { color:var(--muted); margin:0 0 16px; font-size:13px; }
+  label { display:block; font-size:12px; color:var(--muted); margin:12px 0 4px; text-transform:uppercase; letter-spacing:.04em; }
+  textarea, input { width:100%; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--fg); font:inherit; }
+  textarea { min-height:200px; resize:vertical; font-size:13px; }
+  .row { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
+  .refs { display:flex; gap:8px; margin-top:6px; } .refs img { width:64px; height:64px; object-fit:cover; border-radius:6px; border:1px solid var(--line); }
+  .buttons { display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
+  button { padding:10px 14px; border-radius:6px; border:1px solid var(--accent); background:var(--accent); color:var(--bg); font:inherit; cursor:pointer; }
+  button.secondary { background:transparent; color:var(--accent); }
+  button:disabled { opacity:.4; cursor:default; }
+  .bar { height:6px; background:var(--line); border-radius:3px; overflow:hidden; margin-top:16px; } .bar > div { height:100%; width:0; background:var(--accent); transition:width .4s; }
+  .status { font-size:13px; color:var(--muted); margin-top:6px; min-height:1.4em; } .err { color:#b3412f; }
+  video { width:100%; max-height:70vh; background:#000; border-radius:8px; }
+  ol { padding-left:20px; font-size:13px; color:var(--muted); } ol li { margin:4px 0; } ol a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <section>
+    <h1>Continuous Take Studio</h1>
+    <p class="sub">MiniMax-H3 picture and sound on this Mac, through ComfyUI-h3c and the Comfy API. Each continuation picks up the last take's final frames and sound.</p>
+    <label for="prompt">Prompt for the next stretch of the take</label>
+    <textarea id="prompt"></textarea>
+    <label>Identity pictures (up to 2, first take only; cited as Picture 1, Picture 2)</label>
+    <input type="file" id="refs" accept="image/png,image/jpeg" multiple>
+    <div class="refs" id="refprev"></div>
+    <div class="row">
+      <div><label for="seconds">Length (s)</label><input id="seconds" type="number" value="5" min="1" max="15" step="0.5"></div>
+      <div><label for="seed">Seed</label><input id="seed" type="number" value="77001"></div>
+      <div><label for="steps">Steps</label><input id="steps" type="number" value="8" min="2" max="50"></div>
+    </div>
+    <div class="buttons">
+      <button id="new">Generate first take</button>
+      <button id="cont" class="secondary" disabled>Continue the take</button>
+    </div>
+    <div class="bar"><div id="bar"></div></div>
+    <div class="status" id="status">idle</div>
+  </section>
+  <section>
+    <video id="video" controls playsinline></video>
+    <ol id="takes"></ol>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let refs = [], shown = null;
+$('refs').onchange = async e => {
+  refs = await Promise.all([...e.target.files].slice(0, 2).map(f => new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(f); })));
+  $('refprev').innerHTML = refs.map(u => `<img src="${u}" alt="">`).join('');
+};
+async function go(cont) {
+  const body = { prompt: $('prompt').value, seconds: +$('seconds').value, seed: +$('seed').value, steps: +$('steps').value, continue: cont, refs: cont ? [] : refs };
+  const r = await fetch('/api/take', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!r.ok) { $('status').textContent = (await r.json()).error; return; }
+  $('seed').value = +$('seed').value + 1;
+}
+$('new').onclick = () => go(false);
+$('cont').onclick = () => go(true);
+async function poll() {
+  try {
+    const s = await (await fetch('/api/state')).json();
+    const busy = !['idle', 'done', 'failed', 'succeeded'].includes(s.status);
+    $('bar').style.width = (s.progress * 100).toFixed(1) + '%';
+    $('status').innerHTML = s.error ? `<span class="err">${s.error}</span>` : (busy ? `${s.status}, ${(s.progress * 100).toFixed(0)}%` : s.status);
+    $('new').disabled = busy; $('cont').disabled = busy || !s.takes.length;
+    $('takes').innerHTML = s.takes.map(t => `<li><a href="/media/${t.video}" target="_blank">take ${t.n}</a>, ${t.seconds} s, seed ${t.seed}, ${t.wall} s wall</li>`).join('') +
+      (s.takes.length > 1 ? `<li><a href="/media/${s.joined}" target="_blank">joined take</a></li>` : '');
+    if (s.joined && s.joined !== shown) { shown = s.joined; $('video').src = '/media/' + s.joined; }
+  } catch (e) {}
+  setTimeout(poll, 1000);
+}
+poll();
+</script>
+</body>
+</html>

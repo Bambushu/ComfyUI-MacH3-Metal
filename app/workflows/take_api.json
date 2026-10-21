@@ -1,0 +1,154 @@
+{
+  "ids": {
+    "load": "1",
+    "img1": "2",
+    "ref1": "3",
+    "img2": "4",
+    "ref2": "5",
+    "ctx": "6",
+    "gen": "7",
+    "cv": "8",
+    "sv": "9"
+  },
+  "api": {
+    "1": {
+      "inputs": {
+        "engine_dir": "",
+        "model_dir": "",
+        "keep_resident": false
+      },
+      "class_type": "H3cLoader",
+      "_meta": {
+        "title": "Engine"
+      }
+    },
+    "2": {
+      "inputs": {
+        "image": "your_identity_picture.png"
+      },
+      "class_type": "LoadImage",
+      "_meta": {
+        "title": "Picture 1"
+      }
+    },
+    "3": {
+      "inputs": {
+        "image": [
+          "2",
+          0
+        ]
+      },
+      "class_type": "H3cReferenceImage",
+      "_meta": {
+        "title": "Ref 1"
+      }
+    },
+    "4": {
+      "inputs": {
+        "image": "your_identity_picture.png"
+      },
+      "class_type": "LoadImage",
+      "_meta": {
+        "title": "Picture 2"
+      }
+    },
+    "5": {
+      "inputs": {
+        "image": [
+          "4",
+          0
+        ],
+        "references": [
+          "3",
+          0
+        ]
+      },
+      "class_type": "H3cReferenceImage",
+      "_meta": {
+        "title": "Ref 2"
+      }
+    },
+    "6": {
+      "inputs": {
+        "path": ""
+      },
+      "class_type": "H3cLoadContext",
+      "_meta": {
+        "title": "Previous take context"
+      }
+    },
+    "7": {
+      "inputs": {
+        "prompt": "Vertical smartphone-style portrait video, 28mm front camera look, soft late-afternoon window light from the left, natural skin texture, slight handheld drift, fine grain, no lettering anywhere in frame.\n\nScene overview: A woman in her late twenties stands in a bright home kitchen talking straight to camera, casual and warm, like a phone recording.\n\nStoryboard:\n[0s-5s] One continuous take: Vertical medium close-up, head and shoulders filling the upper two thirds of the frame, kitchen counter and a window softly out of focus behind her. She looks into the lens and speaks, one small nod, natural blink.\n\nCamera: Static Shot held at chest height, very slight handheld drift.\n\nAudio: her voice, close and clear with a natural American accent, faint room tone and a distant street hum underneath. She says: \"This whole clip came out of a laptop. Picture and sound, one pass, no studio.\"\n\nMusic: none\n\nNo text, subtitles, lettering, signage, logos or watermarks of any kind.",
+        "width": 544,
+        "height": 960,
+        "seconds": 5,
+        "frames": 0,
+        "steps": 8,
+        "seed": 77001,
+        "sampler": "euler",
+        "scheduler": "linear",
+        "shift": 0,
+        "speed": "exact",
+        "save_context": true,
+        "preview": false,
+        "filename_prefix": "h3c/studio",
+        "reference_image_size": "match",
+        "engine": [
+          "1",
+          0
+        ],
+        "references": [
+          "5",
+          0
+        ],
+        "motion_context": [
+          "6",
+          0
+        ]
+      },
+      "class_type": "H3cGenerate",
+      "_meta": {
+        "title": "Take"
+      }
+    },
+    "8": {
+      "inputs": {
+        "fps": [
+          "7",
+          2
+        ],
+        "bit_depth": "auto",
+        "color_space": "sRGB",
+        "images": [
+          "7",
+          0
+        ],
+        "audio": [
+          "7",
+          1
+        ]
+      },
+      "class_type": "CreateVideo",
+      "_meta": {
+        "title": "Create Video"
+      }
+    },
+    "9": {
+      "inputs": {
+        "filename_prefix": "h3c/studio",
+        "format": "auto",
+        "format.codec": "auto",
+        "codec": "auto",
+        "video": [
+          "8",
+          0
+        ]
+      },
+      "class_type": "SaveVideo",
+      "_meta": {
+        "title": "Save take"
+      }
+    }
+  }
+}
