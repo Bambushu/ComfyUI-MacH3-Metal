@@ -1,4 +1,4 @@
-"""ComfyUI-h3c: MiniMax-H3 video with native sound on Apple silicon, via h3.c."""
+"""MacH3 Metal: MiniMax-H3 video with native sound on Apple silicon, via h3.c."""
 import os
 import shutil
 

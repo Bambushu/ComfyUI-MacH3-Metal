@@ -1,13 +1,15 @@
-# ComfyUI-h3c
+# MacH3 Metal
 
-MiniMax-H3 video with its own sound, generated on a Mac, inside ComfyUI.
+Every MiniMax-H3 mode, with its own sound, generated on a Mac inside ComfyUI.
 
-The nodes drive [h3.c](https://github.com/Bambushu/h3.c), a native C and Metal
-engine for the open-weight MiniMax-H3 model. One generation is picture and
-stereo sound together: dialogue, foley and room tone come out of the same
-pass. Takes chain: a continuation picks up the previous take's last 22
-frames and 0.917 s of sound, so one shot keeps going across as many prompts
-as you like, with the voice, the motion and the room carrying over.
+MacH3 Metal is a node pack that runs MiniMax-H3 on
+[h3.c](https://github.com/Bambushu/h3.c), a native C and Metal engine,
+instead of ComfyUI's PyTorch path. One generation is picture and stereo sound
+together: dialogue, foley and room tone come out of the same pass. It covers
+text to video, first frame and first + last frame, ordered image, video and
+audio references, and continuation: a take can pick up the last 22 frames and
+0.917 s of sound of a previous take or any clip, so a shot can keep going
+across prompts.
 
 Apple silicon only. Measured on an M5 Pro with 48 GB.
 
@@ -16,35 +18,32 @@ Apple silicon only. Measured on an M5 Pro with 48 GB.
 | Node | Does |
 | --- | --- |
 | h3c Load Engine | Opens the engine. Reads model metadata only; weights are mapped per generation and freed after it. |
-| h3c Generate | Prompt, size, seconds or frames, steps, seed, sampler, scheduler, shift, speed preset. Optional first frame, last frame, ordered references and a motion context. Returns IMAGE frames, AUDIO, fps and a context for the next take. |
+| h3c Generate | Prompt, size, seconds or frames, steps, seed, sampler, scheduler, shift, speed preset, and a **mode**. Optional first frame, last frame, ordered references and a motion context. Returns IMAGE frames, AUDIO, fps and a context for a next take. |
 | h3c Reference Image / Video / Audio | Build the ordered reference list. The first image is `<Picture 1>` in the prompt, the first video `<Video 1>`, and so on. |
 | h3c Load Motion Context | A `.h3ctx` from an earlier take (bit-exact) or any finished `.mp4` (45 s max). |
 | h3c Motion Context From Video | Continue a clip that is already in the graph as a VIDEO. |
-| h3c Join Takes | A take and its continuation as one IMAGE batch and one AUDIO track. |
-| h3c Join All Takes | Takes 1 to N as one shot; only asks for (and so only renders) the first N. |
-| h3c Mode | The control panel: one mode choice drives the on/off switches below. |
-| h3c Settings | One set of size, steps, sampler, scheduler, shift and speed for every take. |
-| h3c Optional Image | On/off switch for a first or last frame. |
+| h3c Settings | One set of size, steps, sampler, scheduler, shift and speed for several Generate nodes. |
+| h3c Join Takes / Join All Takes | Takes in order as one IMAGE batch and one AUDIO track. Join All Takes renders only the first N takes. |
 
-Reference and context nodes carry an `enabled` switch too. A switch that is
-off skips its input entirely: the loader feeding it never runs.
+The **mode** on h3c Generate picks which connected inputs a take uses: auto
+(all of them), text to video, first frame, first + last frame, references
+(optionally with first or first + last frame), or continue (optionally with
+references and a last frame). Inputs the mode leaves out are skipped, and the
+loaders feeding them never run.
 
 Frames and audio leave as ordinary IMAGE and AUDIO, so the stock CreateVideo
 and SaveVideo nodes write the file.
 
-### h3c Studio: everything in one graph
+### One workflow for everything
 
-`example_workflows/h3c_studio_all_in_one.json` carries every feature in
-colored groups: Control, Continue a clip, First / last frame, References,
-Take 1 to 3, Join and save. The h3c Mode node is the control panel: pick text
-to video, first frame, first + last frame or references, switch "continue an
-existing clip" on or off, and set how many chained takes to render. Inputs
-that are switched off never run, and takes past the chosen number never
-render, in the GUI and headless alike.
+`example_workflows/macH3_metal_all_in_one.json` holds every input in one graph:
+first frame, last frame, an identity picture, a clip to continue, three takes
+and the join. Pick the mode on Take 1 and the number of takes on Join; takes
+2 and 3 continue the take before them and only render when asked for.
 
-`h3c_studio.app.json` is the same graph for ComfyUI's App Mode: a form with
-the mode, takes, identity picture, the three prompts, lengths, seeds and size,
-and the finished shot as its output.
+`macH3_metal.app.json` is the same graph for ComfyUI's App Mode: a form with
+the mode, takes, pictures, prompts, lengths and seeds, and the finished video
+as its output.
 
 Both run as shipped: the pack copies its `h3c_sample_*` pictures, clip and
 voice line into ComfyUI's input folder on first load (it never overwrites a
@@ -92,7 +91,7 @@ huggingface-cli download MiniMaxAI/MiniMax-H3 --local-dir ~/h3c/MiniMax-H3
 ```
 
 ```bash
-git clone https://github.com/Bambushu/ComfyUI-h3c ~/ComfyUI/custom_nodes/ComfyUI-h3c
+git clone https://github.com/Bambushu/ComfyUI-MacH3-Metal ~/ComfyUI/custom_nodes/ComfyUI-MacH3-Metal
 ```
 
 Start ComfyUI as usual. The loader finds the engine at `~/h3c` and the
@@ -143,13 +142,13 @@ an identity reference on both takes.
 
 Inside ComfyUI through this pack: see `docs/results.md`.
 
-## Continuous Take Studio
+## MacH3 Metal app
 
-`app/` is a small web app on the Comfy SDK (Comfy API v2): prompt, identity
-pictures, length, generate, then "continue the take" to chain the next prompt
-onto the last one, with the joined take playing on the right. It talks to
-ComfyUI through comfy-api-proxy, so the same code would run against any Comfy
-API v2 surface that has this pack installed. See `app/README.md`.
+`app/` is a small web app on the Comfy SDK (Comfy API v2): pick a mode, write a
+prompt, add pictures or frames, generate, and continue the take from where it
+ended. It talks to ComfyUI through comfy-api-proxy, so the same code runs
+against any Comfy API v2 surface that has this pack installed. See
+`app/README.md`.
 
 ## License
 

@@ -1,5 +1,5 @@
 [project]
-name = "comfyui-h3c"
+name = "comfyui-mach3-metal"
 description = "MiniMax-H3 video with native sound on Apple silicon, through the h3.c C/Metal engine: text to video, first/last frame, ordered references and motion-context take chaining."
 version = "0.1.0"
 license = { file = "LICENSE" }
@@ -7,9 +7,9 @@ authors = [{ name = "Maikel Slomp" }]
 dependencies = []
 
 [project.urls]
-Repository = "https://github.com/Bambushu/ComfyUI-h3c"
+Repository = "https://github.com/Bambushu/ComfyUI-MacH3-Metal"
 
 [tool.comfy]
 PublisherId = "bambushu"
-DisplayName = "ComfyUI-h3c"
+DisplayName = "MacH3 Metal"
 Icon = ""

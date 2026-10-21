@@ -19,16 +19,16 @@ folder before the repo goes public, or keep it private.
 
 ## Tell us about your project
 
-**Project name/title:** h3c Continuous Take Studio
+**Project name/title:** MacH3 Metal
 
 **One-line description (100 characters or less):**
-MiniMax H3 picture and sound made natively on a Mac in ComfyUI, chained into one continuous take
+Every MiniMax H3 mode, picture and sound, natively on a Mac in ComfyUI via a Metal engine
 
 ## Submission links
 
 | Field | Value |
 | --- | --- |
-| GitHub repo URL | [https://github.com/Bambushu/ComfyUI-h3c once public] |
+| GitHub repo URL | [https://github.com/Bambushu/ComfyUI-MacH3-Metal once public] |
 | Demo video URL | [YouTube or X link] |
 | Live link to try it | Leave empty: it runs on the user's own Apple silicon Mac, there is no hosted endpoint |
 | Social post link | [link to the post below] |
@@ -69,20 +69,23 @@ pictures); permission to feature; only submission.
 
 ## Anything else you want ComfyUI or our judges to know?
 
-ComfyUI-h3c is a custom node pack that runs MiniMax H3 on Apple silicon
-through a native C and Metal engine instead of ComfyUI's PyTorch path. It runs
-the whole model outside the latent graph and hands back ordinary IMAGE and
-AUDIO, so the stock video nodes save the result. One generation is picture and
+MacH3 Metal is a ComfyUI custom node pack that runs MiniMax H3 on Apple silicon
+through h3.c, a native C and Metal engine, instead of ComfyUI's PyTorch path.
+The engine runs the whole model outside the latent graph and hands back
+ordinary IMAGE and AUDIO, so the stock video nodes save the result. Every H3
+mode is there: text to video, first frame, first + last frame, ordered image,
+video and audio references, and continuation. One generation is picture and
 stereo sound together, on a 48 GB laptop.
 
-The new part is chaining. Each take saves its final latents; the next take
-pins the last 22 frames and 0.917 s of sound at its head and keeps going, so
-a shot can be written a few seconds at a time and still play as one take,
-voice and room included. The Continuous Take Studio app does exactly that
-through the Comfy SDK, passing each take's context file to the next job as an
-output asset.
+Continuation is what makes long shots possible on a laptop: a take saves its
+final latents, and the next take pins the last 22 frames and 0.917 s of sound
+at its head and keeps going, so a shot can be written a few seconds at a time
+and still play as one take, voice and room included.
 
-Measured on an M5 Pro, 48 GB, 544x960, 8 steps: a 5.2 s take renders in
-about 7.5 minutes inside ComfyUI, and the frames are bit-identical to the
-engine's command line. The cut between two chained takes measures r 0.993 on
-the frames either side.
+The pack ships one all-in-one workflow (a mode dropdown decides which inputs
+run) plus an App Mode version, and a small app on the Comfy SDK that drives
+the same nodes through the Comfy API v2.
+
+Measured on an M5 Pro, 48 GB, 544x960, 8 steps: a 5.2 s take renders in about
+7.5 minutes inside ComfyUI, frame-identical to the engine's command line. The
+cut between two chained takes measures r 0.993 on the frames either side.
