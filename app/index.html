@@ -15,9 +15,23 @@
   label { display:block; font-size:12px; color:var(--muted); margin:12px 0 4px; text-transform:uppercase; letter-spacing:.04em; }
   textarea, input, select { width:100%; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--fg); font:inherit; }
   textarea { min-height:200px; resize:vertical; font-size:13px; }
-  .row { display:grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap:8px; }
-  @media (max-width: 480px) { .row { grid-template-columns: 1fr 1fr; } }
-  .refs { display:flex; gap:8px; margin-top:6px; } .refs img { width:64px; height:64px; object-fit:cover; border-radius:6px; border:1px solid var(--line); }
+  .row { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
+  .tiles { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
+  .tile { position:relative; aspect-ratio: 4/5; border:1.5px dashed var(--line); border-radius:8px; background:var(--card); display:flex; align-items:center; justify-content:center; text-align:center; font-size:13px; color:var(--muted); cursor:pointer; overflow:hidden; }
+  .tile:hover, .tile.over { border-color:var(--accent); color:var(--accent); }
+  .tile input { display:none; }
+  .tile.full { border-style:solid; } .tile span { position:relative; z-index:1; }
+  .tile.full span { position:absolute; left:4px; bottom:4px; padding:2px 6px; border-radius:4px; background:rgba(0,0,0,.55); color:#fff; font-size:11px; } .tile.full small { display:none; } .tile.full span br { display:none; }
+  .tile .pics { position:absolute; inset:0; display:flex; } .tile .pics img { flex:1; min-width:0; object-fit:cover; }
+  .tile .x { display:none; position:absolute; top:4px; right:4px; width:24px; height:24px; padding:0; border-radius:12px; border:0; background:rgba(0,0,0,.55); color:#fff; font-size:16px; line-height:24px; }
+  .tile.full .x { display:block; }
+  .tile.off { opacity:.35; pointer-events:none; }
+  .mode { font-size:13px; color:var(--muted); margin-top:8px; } .mode b { color:var(--fg); font-weight:600; } .mode .warn { color:#b3412f; }
+  .seg { display:grid; grid-template-columns: repeat(3, 1fr); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .seg label { margin:0; text-transform:none; letter-spacing:0; font-size:14px; } .seg input { display:none; }
+  .seg span { display:block; padding:8px; text-align:center; cursor:pointer; color:var(--fg); background:var(--card); }
+  .seg label + label span { border-left:1px solid var(--line); }
+  .seg input:checked + span { background:var(--accent); color:var(--bg); }
   .buttons { display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
   button { padding:10px 14px; border-radius:6px; border:1px solid var(--accent); background:var(--accent); color:var(--bg); font:inherit; cursor:pointer; }
   button.secondary { background:transparent; color:var(--accent); }
@@ -36,23 +50,23 @@
 <main>
   <section>
     <h1>MacH3 Metal</h1>
-    <p class="sub">MiniMax-H3 picture and sound on this Mac, on the h3c Metal engine through ComfyUI and the Comfy API. Continue any take from where it ended.</p>
-    <label for="mode">Mode (first take)</label>
-    <select id="mode">
-      <option>text to video</option><option>first frame</option><option>first + last frame</option>
-      <option selected>references</option><option>references + first frame</option><option>references + first + last frame</option>
-    </select>
+    <p class="sub">MiniMax-H3 picture and sound on this Mac, on the h3c Metal engine through ComfyUI and the Comfy API. Add pictures to steer it; continue any take from where it ended.</p>
     <label for="prompt">Prompt</label>
-    <textarea id="prompt"></textarea>
-    <div id="refbox"><label>Identity pictures (up to 2, cited as Picture 1, Picture 2)</label>
-    <input type="file" id="refs" accept="image/png,image/jpeg" multiple>
-    <div class="refs" id="refprev"></div></div>
-    <div id="firstbox"><label>First frame</label><input type="file" id="first" accept="image/png,image/jpeg"></div>
-    <div id="lastbox"><label>Last frame</label><input type="file" id="last" accept="image/png,image/jpeg"></div>
+    <textarea id="prompt" placeholder="Describe the shot. Cite identity pictures as Picture 1, Picture 2."></textarea>
+    <label>Pictures (optional, drop or click)</label>
+    <div class="tiles">
+      <div class="tile" data-k="first"><input type="file" accept="image/png,image/jpeg"><span>Start frame</span><button class="x" title="clear">&times;</button></div>
+      <div class="tile" data-k="last"><input type="file" accept="image/png,image/jpeg"><span>End frame</span><button class="x" title="clear">&times;</button></div>
+      <div class="tile" data-k="refs"><input type="file" accept="image/png,image/jpeg" multiple><span>Who is in it<br><small>up to 2</small></span><button class="x" title="clear">&times;</button></div>
+    </div>
+    <div class="mode" id="mode"></div>
+    <label>Frame</label>
+    <div class="seg" id="size">
+      <label><input type="radio" name="size" value="544x960" checked><span>Portrait</span></label>
+      <label><input type="radio" name="size" value="960x544"><span>Landscape</span></label>
+      <label><input type="radio" name="size" value="736x736"><span>Square</span></label>
+    </div>
     <div class="row">
-      <div><label for="size">Frame</label><select id="size">
-        <option value="544x960" selected>portrait 544x960</option><option value="960x544">landscape 960x544</option><option value="736x736">square 736x736</option>
-      </select></div>
       <div><label for="seconds">Length (s)</label><input id="seconds" type="number" value="5" min="1" max="15" step="0.5"></div>
       <div><label for="seed">Seed</label><input id="seed" type="number" value="77001"></div>
       <div><label for="steps">Steps</label><input id="steps" type="number" value="8" min="2" max="50"></div>
@@ -74,21 +88,42 @@
 </main>
 <script>
 const $ = id => document.getElementById(id);
-let refs = [], frames = {}, shown = null;
+let refs = [], frames = {}, shown = null, hasTakes = false;
 const readFile = f => new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(f); });
-const showFields = () => { const m = $('mode').value;
-  $('refbox').style.display = m.includes('references') ? '' : 'none';
-  $('firstbox').style.display = m.includes('first') ? '' : 'none';
-  $('lastbox').style.display = m.includes('last') ? '' : 'none'; };
-$('mode').onchange = showFields; showFields();
-for (const k of ['first', 'last']) $(k).onchange = async e => { frames[k] = e.target.files[0] ? await readFile(e.target.files[0]) : undefined; };
-$('refs').onchange = async e => {
-  refs = await Promise.all([...e.target.files].slice(0, 2).map(readFile));
-  $('refprev').innerHTML = refs.map(u => `<img src="${u}" alt="">`).join('');
+// The mode follows from which picture slots are filled.
+const pickMode = () => {
+  const r = refs.length > 0, f = !!frames.first, l = !!frames.last;
+  if (l && !f) return null;
+  return r ? (f ? (l ? 'references + first + last frame' : 'references + first frame') : 'references')
+           : (f ? (l ? 'first + last frame' : 'first frame') : 'text to video');
 };
+const showMode = () => {
+  const m = pickMode();
+  $('mode').innerHTML = m ? `Mode: <b>${m}</b>` : '<span class="warn">An end frame needs a start frame.</span>';
+  $('new').disabled = !m || $('new').dataset.busy === '1';
+};
+async function setTile(tile, files) {
+  const k = tile.dataset.k, imgs = [...files].filter(f => /^image\/(png|jpeg)$/.test(f.type));
+  if (k === 'refs') refs = await Promise.all(imgs.slice(0, 2).map(readFile));
+  else frames[k] = imgs[0] ? await readFile(imgs[0]) : undefined;
+  const urls = k === 'refs' ? refs : (frames[k] ? [frames[k]] : []);
+  tile.querySelector('.pics')?.remove();
+  if (urls.length) tile.insertAdjacentHTML('afterbegin', `<div class="pics">${urls.map(u => `<img src="${u}" alt="">`).join('')}</div>`);
+  tile.classList.toggle('full', urls.length > 0);
+  showMode();
+}
+for (const tile of document.querySelectorAll('.tile')) {
+  const input = tile.querySelector('input');
+  tile.onclick = e => { if (!e.target.classList.contains('x')) input.click(); };
+  input.onchange = () => setTile(tile, input.files);
+  tile.querySelector('.x').onclick = e => { e.stopPropagation(); input.value = ''; setTile(tile, []); };
+  tile.ondragover = e => { e.preventDefault(); tile.classList.add('over'); };
+  tile.ondragleave = () => tile.classList.remove('over');
+  tile.ondrop = e => { e.preventDefault(); tile.classList.remove('over'); setTile(tile, e.dataTransfer.files); };
+}
 async function go(cont) {
-  const [width, height] = $('size').value.split('x').map(Number);
-  const body = { width, height, mode: $('mode').value, prompt: $('prompt').value, seconds: +$('seconds').value, seed: +$('seed').value, steps: +$('steps').value, continue: cont,
+  const [width, height] = document.querySelector('input[name=size]:checked').value.split('x').map(Number);
+  const body = { width, height, mode: pickMode(), prompt: $('prompt').value, seconds: +$('seconds').value, seed: +$('seed').value, steps: +$('steps').value, continue: cont,
     refs: cont ? [] : refs, first: cont ? undefined : frames.first, last: cont ? undefined : frames.last };
   const r = await fetch('/api/take', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   if (!r.ok) { $('status').textContent = (await r.json()).error; return; }
@@ -103,7 +138,7 @@ async function poll() {
     const busy = !['idle', 'done', 'failed', 'succeeded'].includes(s.status);
     $('bar').style.width = (s.progress * 100).toFixed(1) + '%';
     $('status').innerHTML = s.error ? `<span class="err">${s.error}</span>` : (busy ? `${s.status}, ${(s.progress * 100).toFixed(0)}%` : s.status);
-    $('new').disabled = busy; $('cont').disabled = busy || !s.takes.length; $('stop').disabled = !busy;
+    $('new').dataset.busy = busy ? '1' : ''; showMode(); $('cont').disabled = busy || !s.takes.length; $('stop').disabled = !busy;
     const esc = x => String(x ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     $('now').style.display = s.current ? 'block' : 'none';
     if (s.current) $('now').innerHTML = `Rendering take ${s.current.n}, ${s.current.seconds} s, seed ${s.current.seed}${s.current.n > 1 ? ', continuing take ' + (s.current.n - 1) : ''}<q>${esc(s.current.line)}</q>`;

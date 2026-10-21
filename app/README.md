@@ -2,9 +2,9 @@
 
 MiniMax-H3 with sound on a Mac, from a browser tab.
 
-Pick a mode (text to video, first frame, first + last frame, references, or
-references with frames), write the prompt, add the pictures the mode asks for,
-pick a length and generate. To keep going, write what happens next and press
+Write the prompt, drop in any pictures (a start frame, an end frame, up to two
+pictures of who is in it; none at all is text to video, and the mode follows
+from what you add), pick a frame and length, and generate. To keep going, write what happens next and press
 "Continue the take": the next generation starts from the last take's final
 frames and sound, and the joined shot plays on the right.
 

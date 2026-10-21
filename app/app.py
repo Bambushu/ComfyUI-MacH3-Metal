@@ -1,7 +1,7 @@
 """MacH3 Metal app: MiniMax-H3 on a Mac through the Comfy SDK (Comfy API v2).
 
-Pick a mode (text to video, first frame, first + last frame, references, or
-references with frames), write a prompt, generate; "continue the take" then
+Write a prompt and drop in any pictures (start frame, end frame, identity
+pictures; the page derives the mode from what is filled), generate; "continue the take" then
 chains the next prompt onto the last take with motion context and shows the
 joined result. Every generation is a ComfyUI job submitted through comfy-sdk
 to a Comfy API v2 surface (locally: comfy-api-proxy in front of a ComfyUI
