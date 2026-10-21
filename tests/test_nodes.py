@@ -26,29 +26,30 @@ class NodeLogicTest(unittest.TestCase):
         return (t.full((frames, 8, 8, 3), value),
                 {"waveform": t.full((1, 2, samples), value), "sample_rate": 32000})
 
-    def test_switches_ask_only_when_on(self):
-        n = self.n
-        self.assertEqual(n.H3cOptionalImage().check_lazy_status(True, None), ["image"])
-        self.assertEqual(n.H3cOptionalImage().check_lazy_status(False, None), [])
-        self.assertIsNone(n.H3cOptionalImage().pick(None, False)[0])
-        self.assertEqual(n.H3cReferenceImage().check_lazy_status(False, None), [])
-        self.assertEqual(n.H3cReferenceAudio().check_lazy_status(True, None), ["audio"])
-        self.assertEqual(n.H3cReferenceImage().add(None, False, ["x"]), (["x"],))
-        self.assertEqual(n.H3cReferenceVideo().add(None, True, False, None, None), ([],))
-        self.assertEqual(n.H3cContextFromVideo().make(None, False), (None,))
-
-    def test_mode_table(self):
-        pick = self.n.H3cMode().pick
-        self.assertEqual(pick("text to video", False, 1), (False, False, False, False, 1))
-        self.assertEqual(pick("references + first + last frame", False, 3), (True, True, True, False, 3))
-        # continuing a clip replaces the first frame
-        self.assertEqual(pick("first + last frame", True, 2), (False, True, False, True, 2))
+    def test_generate_mode_requests_only_connected_inputs_it_uses(self):
+        g = self.n.H3cGenerate()
+        # connected-but-pending inputs arrive as None; unconnected ones are absent
+        pending = dict(first_frame=None, last_frame=None, references=None, motion_context=None)
+        self.assertEqual(g.check_lazy_status("text to video", **pending), [])
+        self.assertEqual(sorted(g.check_lazy_status("first + last frame", **pending)),
+                         ["first_frame", "last_frame"])
+        self.assertEqual(sorted(g.check_lazy_status("continue + references", **pending)),
+                         ["motion_context", "references"])
+        self.assertEqual(len(g.check_lazy_status("auto", **pending)), 4)
+        # nothing connected: never request an absent input
+        self.assertEqual(g.check_lazy_status("auto"), [])
+        self.assertEqual(g.check_lazy_status("references", first_frame=None), [])
+        # already evaluated: not requested again
+        self.assertEqual(g.check_lazy_status("first frame", first_frame="img"), [])
 
     def test_join_all_asks_for_exactly_n_takes(self):
         j = self.n.H3cJoinAll()
         a, aa = self.clip(4, 0.1, 100)
         self.assertEqual(j.check_lazy_status(1, images_1=a, audio_1=aa), [])
-        self.assertEqual(j.check_lazy_status(2, images_1=a, audio_1=aa), ["images_2", "audio_2"])
+        self.assertEqual(j.check_lazy_status(2, images_1=a, audio_1=aa, images_2=None, audio_2=None),
+                         ["images_2", "audio_2"])
+        # take 2 asked for but not connected: never requested
+        self.assertEqual(j.check_lazy_status(2, images_1=a, audio_1=aa), [])
         b, ba = self.clip(3, 0.2, 75)
         c, ca = self.clip(2, 0.3, 50)
         images, audio = j.join(3, images_1=a, audio_1=aa, images_2=b, audio_2=ba,
