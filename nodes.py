@@ -290,7 +290,9 @@ class H3cGenerate:
         out_dir = folder_paths.get_output_directory()
         context_path = None
         if save_context:
-            context_path = os.path.join(out_dir, f"{filename_prefix}_{seed}_{stamp}.h3ctx")
+            # "_ctx_" keeps SaveVideo's counter scan (which parses the digits after
+            # "<prefix>_") from reading the seed as a file counter.
+            context_path = os.path.join(out_dir, f"{filename_prefix}_ctx_{seed}_{stamp}.h3ctx")
             os.makedirs(os.path.dirname(context_path), exist_ok=True)
         mp4 = os.path.join(_work_dir(), f"take-{seed}-{stamp}.mp4")
 
