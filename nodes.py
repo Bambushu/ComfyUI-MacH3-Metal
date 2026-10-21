@@ -51,6 +51,9 @@ def _stamp() -> str:
 
 def _save_image(image: torch.Tensor, name: str) -> str:
     """First frame of an IMAGE batch to a PNG the engine can read."""
+    if image.shape[0] > 1:
+        print(f"h3c: {name}: got {image.shape[0]} frames, using only the first one "
+              f"(use h3c Reference Video for a clip)")
     array = (image[0].clamp(0, 1).cpu().numpy() * 255.0 + 0.5).astype(np.uint8)
     path = os.path.join(_work_dir(), f"{name}-{_stamp()}.png")
     Image.fromarray(array).save(path)

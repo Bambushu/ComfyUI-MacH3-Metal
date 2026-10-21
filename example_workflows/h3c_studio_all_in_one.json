@@ -20,7 +20,7 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "Mode",
+          "label": "Mode (references = Picture 1; extra refs have their own switches)",
           "localized_name": "mode",
           "name": "mode",
           "type": "COMBO",
@@ -344,7 +344,7 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "First frame",
+          "label": "First frame (used when Mode has a first frame)",
           "localized_name": "image",
           "name": "image",
           "type": "COMBO",
@@ -460,7 +460,7 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "Last frame",
+          "label": "Last frame (used when Mode has a last frame)",
           "localized_name": "image",
           "name": "image",
           "type": "COMBO",
@@ -576,7 +576,7 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "Identity picture (Picture 1)",
+          "label": "Identity picture (used when Mode has references)",
           "localized_name": "image",
           "name": "image",
           "type": "COMBO",
@@ -1087,7 +1087,7 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "Clip to continue",
+          "label": "Clip to continue (used when 'Continue an existing clip' is on, 45 s max)",
           "localized_name": "file",
           "name": "file",
           "type": "COMBO",
