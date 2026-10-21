@@ -61,7 +61,7 @@
               "speaker": "host",
               "delivery": "warm, relaxed tone",
               "language": "English",
-              "text": "This is one take, and it is coming out of this laptop."
+              "text": "So this whole clip came out of Comfy U I, running on my Mac."
             }
           ]
         }
@@ -69,7 +69,7 @@
     },
     {
       "name": "Take 2 continues",
-      "overall_ambience": "Quiet room tone and a faint distant street hum, opening and closing on a brief quiet pause.",
+      "overall_ambience": "Quiet room tone and a faint distant street hum, closing on a brief quiet pause.",
       "music": "N/A",
       "shots": [
         {
@@ -91,7 +91,7 @@
               "speaker": "host",
               "delivery": "warm, relaxed tone",
               "language": "English",
-              "text": "I write the next few seconds, and it keeps going."
+              "text": "No cloud, no G P U server, it's just Metal on Apple silicon, sound and all."
             }
           ]
         }
@@ -99,7 +99,7 @@
     },
     {
       "name": "Take 3 closes",
-      "overall_ambience": "Quiet room tone and a faint distant street hum, opening and closing on a brief quiet pause.",
+      "overall_ambience": "Quiet room tone and a faint distant street hum, closing on a brief quiet pause.",
       "music": "N/A",
       "shots": [
         {
@@ -121,7 +121,7 @@
               "speaker": "host",
               "delivery": "warm, relaxed tone",
               "language": "English",
-              "text": "Same voice, same room, all on a Mac."
+              "text": "And I can keep the take going like this, same voice, same room, no cut."
             }
           ]
         }

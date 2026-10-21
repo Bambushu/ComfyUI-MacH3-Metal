@@ -11,10 +11,10 @@ retention_analysis:
 
 detailed_description:
 The target video is in a live-action style, with photoreal and vertical smartphone video.
-[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> sits at the desk facing the camera with a relaxed smile, both hands resting flat beside the open silver laptop. <Subject 1> gestures lightly toward the laptop with one hand while speaking the line, then rests that hand flat beside the laptop again and holds a relaxed smile for the rest of the video. Camera: a static vertical medium close-up at chest height with very slight handheld drift. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] I write the next few seconds, and it keeps going.</d>
+[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> sits at the desk facing the camera with a relaxed smile, both hands resting flat beside the open silver laptop. <Subject 1> gestures lightly toward the laptop with one hand while speaking the line, then rests that hand flat beside the laptop again and holds a relaxed smile for the rest of the video. Camera: a static vertical medium close-up at chest height with very slight handheld drift. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] No cloud, no G P U server, it's just Metal on Apple silicon, sound and all.</d>
 
 overall_soundscape:
-Quiet room tone and a faint distant street hum, opening and closing on a brief quiet pause.
+Quiet room tone and a faint distant street hum, closing on a brief quiet pause.
 
 non_diegetic_music:
 N/A
