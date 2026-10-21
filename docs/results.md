@@ -25,8 +25,9 @@ pinned head of the previous take.
 ## Same frames as the h3 command line
 
 Take A and take B from ComfyUI are bit-identical to the same takes rendered
-with the `h3` binary (same prompt, seeds and settings): every decoded frame's
-MD5 matches and PSNR is infinite for both.
+with the `h3` binary (same prompt, seeds and settings): comparing the engine's
+own MP4 from each path, every decoded frame's MD5 matches and PSNR is infinite
+for both takes. (SaveVideo re-encodes, so its files differ by encoder only.)
 
 ## The join
 
