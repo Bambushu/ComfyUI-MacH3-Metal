@@ -144,8 +144,8 @@ Inside ComfyUI through this pack: see `docs/results.md`.
 
 ## MacH3 Metal app
 
-`app/` is a small web app on the Comfy SDK (Comfy API v2): write a prompt, drop
-in pictures or frames (the mode follows from what you add), generate, and continue the take from where it
+`app/` is a small web app on the Comfy SDK (Comfy API v2): pick a mode, write a
+prompt, drop in pictures or frames, pick the size in megapixels, generate, and continue the take from where it
 ended. It talks to ComfyUI through comfy-api-proxy, so the same code runs
 against any Comfy API v2 surface that has this pack installed. See
 `app/README.md`.

@@ -27,6 +27,14 @@
   .tile.full .x { display:block; }
   .tile.off { opacity:.35; pointer-events:none; }
   .mode { font-size:13px; color:var(--muted); margin-top:8px; } .mode b { color:var(--fg); font-weight:600; } .mode .warn { color:#b3412f; }
+  .tabs { display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin:4px 0 6px; }
+  .tabs input { display:none; }
+  .tabs span { display:block; padding:8px 4px; text-align:center; white-space:nowrap; border:1px solid var(--line); border-radius:999px; background:var(--card); font-size:13px; cursor:pointer; color:var(--fg); }
+  .tabs input:checked + span { background:var(--accent); border-color:var(--accent); color:var(--bg); }
+  .tabs label { margin:0; text-transform:none; letter-spacing:0; }
+  .tile .opt { display:none; } .tiles.refsmode .opt { display:inline; } .tiles.refsmode .tile[data-k=refs] { order:-1; }
+  .dims { text-transform:none; letter-spacing:0; color:var(--fg); margin-left:6px; }
+  .seg.mp { grid-template-columns: repeat(9, 1fr); } .seg.mp span { padding:8px 0; font-size:13px; }
   .seg { display:grid; grid-template-columns: repeat(3, 1fr); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
   .seg label { margin:0; text-transform:none; letter-spacing:0; font-size:14px; } .seg input { display:none; }
   .seg span { display:block; padding:8px; text-align:center; cursor:pointer; color:var(--fg); background:var(--card); }
@@ -51,21 +59,30 @@
   <section>
     <h1>MacH3 Metal</h1>
     <p class="sub">MiniMax-H3 picture and sound on this Mac, on the h3c Metal engine through ComfyUI and the Comfy API. Add pictures to steer it; continue any take from where it ended.</p>
+    <div class="tabs" id="tabs">
+      <label><input type="radio" name="tab" value="text"><span>Text to video</span></label>
+      <label><input type="radio" name="tab" value="first"><span>First frame</span></label>
+      <label><input type="radio" name="tab" value="firstlast"><span>First + last</span></label>
+      <label><input type="radio" name="tab" value="refs" checked><span>References</span></label>
+    </div>
     <label for="prompt">Prompt</label>
     <textarea id="prompt" placeholder="Describe the shot. Cite identity pictures as Picture 1, Picture 2."></textarea>
-    <label>Pictures (optional, drop or click)</label>
+    <div id="pictures"><label id="pichead">Pictures (drop or click)</label>
     <div class="tiles">
-      <div class="tile" data-k="first"><input type="file" accept="image/png,image/jpeg"><span>Start frame</span><button class="x" title="clear">&times;</button></div>
-      <div class="tile" data-k="last"><input type="file" accept="image/png,image/jpeg"><span>End frame</span><button class="x" title="clear">&times;</button></div>
+      <div class="tile" data-k="first"><input type="file" accept="image/png,image/jpeg"><span>Start frame<small class="opt"><br>optional</small></span><button class="x" title="clear">&times;</button></div>
+      <div class="tile" data-k="last"><input type="file" accept="image/png,image/jpeg"><span>End frame<small class="opt"><br>optional</small></span><button class="x" title="clear">&times;</button></div>
       <div class="tile" data-k="refs"><input type="file" accept="image/png,image/jpeg" multiple><span>Who is in it<br><small>up to 2</small></span><button class="x" title="clear">&times;</button></div>
     </div>
-    <div class="mode" id="mode"></div>
-    <label>Frame</label>
-    <div class="seg" id="size">
-      <label><input type="radio" name="size" value="544x960" checked><span>Portrait</span></label>
-      <label><input type="radio" name="size" value="960x544"><span>Landscape</span></label>
-      <label><input type="radio" name="size" value="736x736"><span>Square</span></label>
     </div>
+    <div class="mode" id="mode"></div>
+    <label>Frame <span class="dims" id="dims"></span></label>
+    <div class="seg">
+      <label><input type="radio" name="aspect" value="0.5625" checked><span>Portrait</span></label>
+      <label><input type="radio" name="aspect" value="1.7778"><span>Landscape</span></label>
+      <label><input type="radio" name="aspect" value="1"><span>Square</span></label>
+    </div>
+    <label>Megapixels</label>
+    <div class="seg mp" id="mp"></div>
     <div class="row">
       <div><label for="seconds">Length (s)</label><input id="seconds" type="number" value="5" min="1" max="15" step="0.5"></div>
       <div><label for="seed">Seed</label><input id="seed" type="number" value="77001"></div>
@@ -90,18 +107,41 @@
 const $ = id => document.getElementById(id);
 let refs = [], frames = {}, shown = null, hasTakes = false;
 const readFile = f => new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(f); });
-// The mode follows from which picture slots are filled.
+const tab = () => document.querySelector('input[name=tab]:checked').value;
+const SLOTS = { text: [], first: ['first'], firstlast: ['first', 'last'], refs: ['refs', 'first', 'last'] };
+// The tab picks the mode; in References, start and end frames are optional extras.
 const pickMode = () => {
-  const r = refs.length > 0, f = !!frames.first, l = !!frames.last;
-  if (l && !f) return null;
-  return r ? (f ? (l ? 'references + first + last frame' : 'references + first frame') : 'references')
-           : (f ? (l ? 'first + last frame' : 'first frame') : 'text to video');
+  const f = !!frames.first, l = !!frames.last;
+  switch (tab()) {
+    case 'text': return ['text to video'];
+    case 'first': return f ? ['first frame'] : [null, 'Add a start frame.'];
+    case 'firstlast': return f && l ? ['first + last frame'] : [null, 'Add a start and an end frame.'];
+    default:
+      if (!refs.length) return [null, 'Add at least one picture of who is in it.'];
+      if (l && !f) return [null, 'An end frame needs a start frame.'];
+      return [f ? (l ? 'references + first + last frame' : 'references + first frame') : 'references'];
+  }
 };
 const showMode = () => {
-  const m = pickMode();
-  $('mode').innerHTML = m ? `Mode: <b>${m}</b>` : '<span class="warn">An end frame needs a start frame.</span>';
+  const [m, why] = pickMode(), slots = SLOTS[tab()];
+  for (const tile of document.querySelectorAll('.tile')) tile.style.display = slots.includes(tile.dataset.k) ? '' : 'none';
+  $('pictures').style.display = slots.length ? '' : 'none';
+  document.querySelector('.tiles').classList.toggle('refsmode', tab() === 'refs');
+  $('mode').innerHTML = m ? (tab() === 'refs' ? `Mode: <b>${m}</b>` : '') : `<span class="warn">${why}</span>`;
   $('new').disabled = !m || $('new').dataset.busy === '1';
 };
+document.querySelectorAll('input[name=tab]').forEach(r => r.onchange = showMode);
+// Megapixels as in ComfyUI (1 MP = 1024 x 1024), sides rounded to the engine's 32-pixel grid.
+const MPS = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+$('mp').innerHTML = MPS.map(v => `<label><input type="radio" name="mp" value="${v}"${v === 0.5 ? ' checked' : ''}><span>${v.toFixed(1)}</span></label>`).join('');
+const dims = () => {
+  const a = +document.querySelector('input[name=aspect]:checked').value, px = +document.querySelector('input[name=mp]:checked').value * 1024 * 1024;
+  const r32 = x => Math.max(64, Math.round(x / 32) * 32);
+  return [r32(Math.sqrt(px * a)), r32(Math.sqrt(px / a))];
+};
+const showDims = () => { const [w, h] = dims(); $('dims').textContent = `${w} x ${h}`; };
+document.querySelectorAll('input[name=aspect], input[name=mp]').forEach(r => r.onchange = showDims);
+showDims();
 async function setTile(tile, files) {
   const k = tile.dataset.k, imgs = [...files].filter(f => /^image\/(png|jpeg)$/.test(f.type));
   if (k === 'refs') refs = await Promise.all(imgs.slice(0, 2).map(readFile));
@@ -122,9 +162,10 @@ for (const tile of document.querySelectorAll('.tile')) {
   tile.ondrop = e => { e.preventDefault(); tile.classList.remove('over'); setTile(tile, e.dataTransfer.files); };
 }
 async function go(cont) {
-  const [width, height] = document.querySelector('input[name=size]:checked').value.split('x').map(Number);
-  const body = { width, height, mode: pickMode(), prompt: $('prompt').value, seconds: +$('seconds').value, seed: +$('seed').value, steps: +$('steps').value, continue: cont,
-    refs: cont ? [] : refs, first: cont ? undefined : frames.first, last: cont ? undefined : frames.last };
+  const [width, height] = dims(), slots = SLOTS[tab()];
+  const body = { width, height, mode: pickMode()[0], prompt: $('prompt').value, seconds: +$('seconds').value, seed: +$('seed').value, steps: +$('steps').value, continue: cont,
+    refs: cont || !slots.includes('refs') ? [] : refs,
+    first: cont || !slots.includes('first') ? undefined : frames.first, last: cont || !slots.includes('last') ? undefined : frames.last };
   const r = await fetch('/api/take', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   if (!r.ok) { $('status').textContent = (await r.json()).error; return; }
   $('seed').value = +$('seed').value + 1;

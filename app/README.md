@@ -2,9 +2,10 @@
 
 MiniMax-H3 with sound on a Mac, from a browser tab.
 
-Write the prompt, drop in any pictures (a start frame, an end frame, up to two
-pictures of who is in it; none at all is text to video, and the mode follows
-from what you add), pick a frame and length, and generate. To keep going, write what happens next and press
+Pick a mode at the top (text to video, first frame, first + last, references;
+references also takes an optional start and end frame), write the prompt, drop
+in the pictures it asks for, pick portrait, landscape or square and 0.2 to 1.0
+megapixels, and generate. To keep going, write what happens next and press
 "Continue the take": the next generation starts from the last take's final
 frames and sound, and the joined shot plays on the right.
 
