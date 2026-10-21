@@ -1,0 +1,131 @@
+{
+  "format": "h3_prompt_composer_ai_import",
+  "schema_version": 5,
+  "operation": "replace_project",
+  "project": {
+    "mode": "REF",
+    "duration_seconds": 5,
+    "style": "Live-action, photoreal, vertical smartphone video",
+    "task_types": [
+      "reference generation"
+    ]
+  },
+  "assets": {
+    "subjects": [
+      {
+        "id": "host",
+        "name": "HOST",
+        "type": "character",
+        "description": "the person shown in the reference picture, same face, hair and clothing",
+        "picture_slots": [
+          1
+        ],
+        "video_slots": [],
+        "reference_contribution": "character_sheet"
+      }
+    ],
+    "environments": [
+      {
+        "id": "pine_trail",
+        "name": "PINE TRAIL",
+        "description": "a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged",
+        "pictures": []
+      }
+    ],
+    "pictures": [],
+    "audio": [],
+    "videos": []
+  },
+  "generations": [
+    {
+      "name": "Take 1 opens",
+      "overall_ambience": "Wind moving through the pines and a few distant birds, opening and closing on a brief quiet pause.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "environment": "pine_trail",
+          "presence": {
+            "host": "on_screen"
+          },
+          "opening_state": "<Subject 1> stands on the trail holding the phone at arm's length for a selfie, facing the camera, pine trees and the mountain peaks behind her.",
+          "action": "<Subject 1> catches her breath, looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "A handheld vertical arm's-length selfie at face height with gentle natural sway.",
+            "timing": "throughout_shot"
+          },
+          "dialogue": [
+            {
+              "speaker": "host",
+              "delivery": "warm, relaxed tone",
+              "language": "English",
+              "text": "So this whole clip came out of Comfy U I, running on my Mac."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Take 2 continues",
+      "overall_ambience": "Wind moving through the pines and a few distant birds, closing on a brief quiet pause.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "environment": "pine_trail",
+          "presence": {
+            "host": "on_screen"
+          },
+          "opening_state": "<Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her.",
+          "action": "<Subject 1> glances up briefly toward the peaks while speaking the line, then looks back into the lens and holds a relaxed smile for the rest of the video.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "A handheld vertical arm's-length selfie at face height with gentle natural sway.",
+            "timing": "throughout_shot"
+          },
+          "dialogue": [
+            {
+              "speaker": "host",
+              "delivery": "warm, relaxed tone",
+              "language": "English",
+              "text": "No cloud, no G P U server, it's just Metal on Apple silicon, sound and all."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Take 3 closes",
+      "overall_ambience": "Wind moving through the pines and a few distant birds, closing on a brief quiet pause.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "environment": "pine_trail",
+          "presence": {
+            "host": "on_screen"
+          },
+          "opening_state": "<Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her.",
+          "action": "<Subject 1> looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "A handheld vertical arm's-length selfie at face height with gentle natural sway.",
+            "timing": "throughout_shot"
+          },
+          "dialogue": [
+            {
+              "speaker": "host",
+              "delivery": "warm, relaxed tone",
+              "language": "English",
+              "text": "And I can keep the take going like this, same voice, same trail, no cut."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

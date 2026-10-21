@@ -1,0 +1,20 @@
+subject_definitions:
+<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.
+<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.
+
+summary:
+[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.
+
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.
+<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.
+
+detailed_description:
+The target video is in a live-action style, with photoreal and vertical smartphone video.
+[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her. <Subject 1> glances up briefly toward the peaks while speaking the line, then looks back into the lens and holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] No cloud, no G P U server, it's just Metal on Apple silicon, sound and all.</d>
+
+overall_soundscape:
+Wind moving through the pines and a few distant birds, closing on a brief quiet pause.
+
+non_diegetic_music:
+N/A
