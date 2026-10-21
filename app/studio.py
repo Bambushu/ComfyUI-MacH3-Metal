@@ -99,7 +99,10 @@ class Studio:
             job = self.client.submit(self.build(req, continuing))
             for event in job.events():
                 if isinstance(event, Progress):
-                    self.progress = event.value
+                    # The long node is h3c Generate; its own bar (step/steps) is the
+                    # engine's phase-weighted progress. event.value counts nodes.
+                    if event.steps and event.steps > 1 and event.step is not None:
+                        self.progress = event.step / event.steps
                 elif isinstance(event, StatusChange):
                     self.status = event.status
             job.result()
