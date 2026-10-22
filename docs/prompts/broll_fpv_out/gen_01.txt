@@ -1,0 +1,5 @@
+integrated_multimodal_description: [Shot 1] Live-action, photoreal, cinematic vertical FPV drone footage, crisp morning light, First-person view from an FPV drone already flying fast and low between tall pine trunks in a sunlit forest, shafts of morning light slanting through the canopy, ferns and fallen needles covering the ground; the drone itself is never visible. The view weaves left and right between the trunks, skims over the ferns and races toward a bright opening at the forest edge ahead, where open sky and the line of a clifftop show between the last trees. Camera: one continuous fast, smooth FPV flight forward about two meters above the ground, banking gently through the turns, never stopping. Pine branches whip past with soft swishes as the view threads the gaps, and the wind roar rises as the bright opening gets closer.
+
+overall_soundscape: Rushing wind and the steady high whine of drone propellers, birds calling deeper in the forest.
+
+non_diegetic_music: N/A

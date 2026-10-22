@@ -1,0 +1,57 @@
+{
+  "format": "h3_prompt_composer_ai_import",
+  "schema_version": 5,
+  "operation": "replace_project",
+  "project": {
+    "mode": "T2VA",
+    "duration_seconds": 5,
+    "style": "Live-action, photoreal, cinematic vertical FPV drone footage, crisp morning light"
+  },
+  "assets": {
+    "subjects": [],
+    "environments": [],
+    "pictures": [],
+    "audio": [],
+    "videos": []
+  },
+  "generations": [
+    {
+      "name": "Take 1: through the pines",
+      "overall_ambience": "Rushing wind and the steady high whine of drone propellers, birds calling deeper in the forest.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "opening_state": "First-person view from an FPV drone already flying fast and low between tall pine trunks in a sunlit forest, shafts of morning light slanting through the canopy, ferns and fallen needles covering the ground; the drone itself is never visible.",
+          "action": "The view weaves left and right between the trunks, skims over the ferns and races toward a bright opening at the forest edge ahead, where open sky and the line of a clifftop show between the last trees.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "One continuous fast, smooth FPV flight forward about two meters above the ground, banking gently through the turns, never stopping.",
+            "timing": "throughout_shot"
+          },
+          "sound_effects": "Pine branches whip past with soft swishes as the view threads the gaps, and the wind roar rises as the bright opening gets closer."
+        }
+      ]
+    },
+    {
+      "name": "Take 2: over the cliff to the surf",
+      "overall_ambience": "Rushing wind and the high whine of drone propellers giving way to the deep boom of surf and hissing sea spray.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "opening_state": "First-person view from an FPV drone already racing toward the bright gap at the forest edge between the last pine trunks, about to burst out into open sky; the drone itself is never visible.",
+          "action": "The view bursts out of the trees onto a grassy clifftop, crosses the last of the grass, tips over the cliff edge and dives along the dark rock face toward white surf crashing over black rocks, pulling out low over the waves.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "One continuous fast, smooth FPV flight forward that tips into a steep dive past the cliff edge and pulls out level just above the waves, never stopping.",
+            "timing": "throughout_shot"
+          },
+          "sound_effects": "The wind roar swells as the view clears the edge, then booming waves break on the rocks below and sea spray hisses past."
+        }
+      ]
+    }
+  ]
+}

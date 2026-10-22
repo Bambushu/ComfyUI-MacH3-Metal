@@ -181,15 +181,30 @@ class MacH3App:
 
     def join(self) -> None:
         """Each continuation already dropped the frames it shares with the take
-        before, so the joined take is a stream-copy concat of the files."""
+        before, so the takes join end to end. Each file is decoded on its own and
+        its sound cut to its own video length: a stream-copy concat would keep
+        every take's AAC priming and slide the sound later at each join."""
         if len(self.takes) < 2:
             self.joined = self.takes[0]["video"]
             return
-        listing = self.dir / "concat.txt"
-        listing.write_text("".join(f"file '{self.dir / t['video']}'\n" for t in self.takes))
+        args, chains, pads = [], "", ""
+        for i, t in enumerate(self.takes):
+            path = self.dir / t["video"]
+            frames = int(subprocess.run(
+                [FFMPEG.replace("ffmpeg", "ffprobe"), "-v", "error", "-select_streams", "v:0",
+                 "-count_packets", "-show_entries", "stream=nb_read_packets", "-of", "csv=p=0",
+                 str(path)], check=True, capture_output=True, text=True).stdout.strip())
+            secs = frames / 24
+            args += ["-i", str(path)]
+            chains += (f"[{i}:v]setpts=PTS-STARTPTS[v{i}];[{i}:a]atrim=0:{secs},"
+                       f"asetpts=PTS-STARTPTS,apad=whole_dur={secs}[a{i}];")
+            pads += f"[v{i}][a{i}]"
         out = self.dir / f"joined_{len(self.takes):02d}.mp4"
-        subprocess.run([FFMPEG, "-nostdin", "-v", "error", "-y", "-f", "concat", "-safe", "0",
-                        "-i", str(listing), "-c", "copy", str(out)], check=True)
+        subprocess.run([FFMPEG, "-nostdin", "-v", "error", "-y", *args, "-filter_complex",
+                        f"{chains}{pads}concat=n={len(self.takes)}:v=1:a=1[v][a]",
+                        "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-crf", "14",
+                        "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "256k",
+                        str(out)], check=True)
         self.joined = out.name
 
 

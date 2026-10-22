@@ -1,0 +1,51 @@
+{
+  "format": "h3_prompt_composer_ai_import",
+  "schema_version": 5,
+  "operation": "replace_project",
+  "project": {
+    "mode": "FL2VA",
+    "duration_seconds": 6,
+    "style": "Live-action, photoreal, cinematic time-lapse"
+  },
+  "assets": {
+    "subjects": [],
+    "environments": [],
+    "audio": [],
+    "videos": [],
+    "pictures": [
+      {
+        "id": "cabin_winter",
+        "slot": 1,
+        "name": "winter cabin first frame",
+        "role": "first_frame"
+      },
+      {
+        "id": "cabin_spring",
+        "slot": 2,
+        "name": "spring cabin last frame",
+        "role": "last_frame"
+      }
+    ]
+  },
+  "generations": [
+    {
+      "name": "Cabin winter to spring",
+      "overall_ambience": "Cold mountain wind at the start giving way to running meltwater and then a spring morning full of birdsong, opening and closing on a brief quiet pause.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "opening_state": "The snowed-in log cabin at winter dusk exactly as in the first frame, deep snow on the roof and across the meadow, one window glowing warm.",
+          "action": "In a smooth time-lapse the snow slides and melts off the roof and shrinks back across the meadow, meltwater streams trickle through it, green grass and small wildflowers spread out, the pines lose their snow and the sky brightens from blue twilight to a soft spring morning, ending exactly on the last frame.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "A locked-off static wide shot from one fixed position; only the scene changes in time-lapse and the frame itself never moves.",
+            "timing": "throughout_shot"
+          },
+          "sound_effects": "Cold gusting wind in the first two seconds, dripping and trickling meltwater through the middle, birdsong in the pines and a light breeze through the grass in the final two seconds."
+        }
+      ]
+    }
+  ]
+}

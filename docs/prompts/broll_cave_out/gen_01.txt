@@ -1,0 +1,7 @@
+For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
+
+integrated_multimodal_description: [Shot 1] Live-action, photoreal, cinematic, cool slate-blue light, the shot begins from <Picture 1>, preserving its initial appearance, composition, spatial relationships, and scene state as the action develops forward. The basalt sea cave exactly as in the first frame, a drop of water hanging at the tip of each short stalactite above the still pool. Drops fall one after another from the stalactites into the pool, each landing with a clear echoing plink and a small spreading ripple, falling faster until they settle into a steady rhythm, ripples overlapping on the dark pool. Camera: a very slow, smooth dolly forward at eye level toward the cave opening, about one meter of travel over the whole shot. Each falling drop lands with a crisp plink that echoes off the stone, the drips build into an even rhythm, and in the last two seconds a long low roll of distant thunder carries in from outside the cave.
+
+overall_soundscape: The hollow, echoing hush of a sea cave with the faint wash of the sea outside.
+
+non_diegetic_music: N/A

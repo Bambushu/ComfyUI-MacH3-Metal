@@ -1,0 +1,7 @@
+How the reference pictures align with the target video — Picture 1 (from Shot 1) aligns with the 0.00-second mark of the target video; Picture 2 (from Shot 1) aligns with the 6.58-second mark of the target video.
+
+integrated_multimodal_description: [Shot 1] Live-action, photoreal, cinematic time-lapse, the shot begins from Picture 1 and develops continuously toward Picture 2, which defines the final frame. The snowed-in log cabin at winter dusk exactly as in the first frame, deep snow on the roof and across the meadow, one window glowing warm. In a smooth time-lapse the snow slides and melts off the roof and shrinks back across the meadow, meltwater streams trickle through it, green grass and small wildflowers spread out, the pines lose their snow and the sky brightens from blue twilight to a soft spring morning, ending exactly on the last frame. Camera: a locked-off static wide shot from one fixed position; only the scene changes in time-lapse and the frame itself never moves. Cold gusting wind in the first two seconds, dripping and trickling meltwater through the middle, birdsong in the pines and a light breeze through the grass in the final two seconds can be heard.
+
+overall_soundscape: Cold mountain wind at the start giving way to running meltwater and then a spring morning full of birdsong, opening and closing on a brief quiet pause.
+
+non_diegetic_music: N/A

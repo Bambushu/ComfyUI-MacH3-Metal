@@ -1,0 +1,45 @@
+{
+  "format": "h3_prompt_composer_ai_import",
+  "schema_version": 5,
+  "operation": "replace_project",
+  "project": {
+    "mode": "I2VA",
+    "duration_seconds": 6.58,
+    "style": "Live-action, photoreal, cinematic, cool slate-blue light"
+  },
+  "assets": {
+    "subjects": [],
+    "environments": [],
+    "audio": [],
+    "videos": [],
+    "pictures": [
+      {
+        "id": "cave_first",
+        "slot": 1,
+        "name": "basalt cave first frame",
+        "role": "first_frame"
+      }
+    ]
+  },
+  "generations": [
+    {
+      "name": "Cave drips",
+      "overall_ambience": "The hollow, echoing hush of a sea cave with the faint wash of the sea outside.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "opening_state": "The basalt sea cave exactly as in the first frame, a drop of water hanging at the tip of each short stalactite above the still pool.",
+          "action": "Drops fall one after another from the stalactites into the pool, each landing with a clear echoing plink and a small spreading ripple, falling faster until they settle into a steady rhythm, ripples overlapping on the dark pool.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "A very slow, smooth dolly forward at eye level toward the cave opening, about one meter of travel over the whole shot.",
+            "timing": "throughout_shot"
+          },
+          "sound_effects": "Each falling drop lands with a crisp plink that echoes off the stone, the drips build into an even rhythm, and in the last two seconds a long low roll of distant thunder carries in from outside the cave."
+        }
+      ]
+    }
+  ]
+}

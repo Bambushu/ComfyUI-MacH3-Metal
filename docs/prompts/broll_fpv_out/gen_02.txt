@@ -1,0 +1,5 @@
+integrated_multimodal_description: [Shot 1] Live-action, photoreal, cinematic vertical FPV drone footage, crisp morning light, First-person view from an FPV drone already racing toward the bright gap at the forest edge between the last pine trunks, about to burst out into open sky; the drone itself is never visible. The view bursts out of the trees onto a grassy clifftop, crosses the last of the grass, tips over the cliff edge and dives along the dark rock face toward white surf crashing over black rocks, pulling out low over the waves. Camera: one continuous fast, smooth FPV flight forward that tips into a steep dive past the cliff edge and pulls out level just above the waves, never stopping. The wind roar swells as the view clears the edge, then booming waves break on the rocks below and sea spray hisses past.
+
+overall_soundscape: Rushing wind and the high whine of drone propellers giving way to the deep boom of surf and hissing sea spray.
+
+non_diegetic_music: N/A
