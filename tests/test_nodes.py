@@ -64,7 +64,7 @@ class NodeLogicTest(unittest.TestCase):
         defaults = {k: (v[1].get("default") if len(v) > 1 and isinstance(v[1], dict) else None)
                     for k, v in spec.items()}
         defaults["sampler"], defaults["scheduler"], defaults["speed"] = "euler", "linear", "exact"
-        defaults["reference_image_size"] = "match"
+        defaults["reference_image_size"] = "max"
         settings = self.n.H3cSettings().make(**defaults)[0]
         for key in ("width", "height", "steps", "sampler", "scheduler", "shift", "speed",
                     "preview", "save_context", "reference_image_size"):

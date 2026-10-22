@@ -222,7 +222,7 @@
         "speed": "exact",
         "save_context": true,
         "preview": false,
-        "reference_image_size": "match"
+        "reference_image_size": "max"
       }
     },
     {
@@ -832,7 +832,7 @@
         true,
         false,
         "MacH3/t1",
-        "match"
+        "max"
       ],
       "widgets_values_named": {
         "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie, facing the camera, pine trees and the mountain peaks behind her. <Subject 1> catches her breath, looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] So this whole clip came out of Comfy U I, running on my Mac.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, opening and closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
@@ -850,7 +850,7 @@
         "save_context": true,
         "preview": false,
         "filename_prefix": "MacH3/t1",
-        "reference_image_size": "match",
+        "reference_image_size": "max",
         "mode": "references"
       }
     },
@@ -1124,7 +1124,7 @@
         true,
         false,
         "MacH3/t2",
-        "match"
+        "max"
       ],
       "widgets_values_named": {
         "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her. <Subject 1> glances up briefly toward the peaks while speaking the line, then looks back into the lens and holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] No cloud, no G P U server, it's just Metal on Apple silikon, sound and all.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
@@ -1142,7 +1142,7 @@
         "save_context": true,
         "preview": false,
         "filename_prefix": "MacH3/t2",
-        "reference_image_size": "match",
+        "reference_image_size": "max",
         "mode": "continue + references"
       }
     },
@@ -1414,7 +1414,7 @@
         true,
         false,
         "MacH3/t3",
-        "match"
+        "max"
       ],
       "widgets_values_named": {
         "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her. <Subject 1> looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] And I can keep the take going like this, same voice, same trail, no cut.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
@@ -1432,7 +1432,7 @@
         "save_context": true,
         "preview": false,
         "filename_prefix": "MacH3/t3",
-        "reference_image_size": "match",
+        "reference_image_size": "max",
         "mode": "continue + references"
       }
     },

@@ -325,7 +325,7 @@
         true,
         false,
         "h3c/chain_A",
-        "match"
+        "max"
       ],
       "widgets_values_named": {
         "prompt": "Vertical smartphone-style portrait video, 28mm front camera look, soft late-afternoon window light from the left, natural skin texture, slight handheld drift, fine grain, no lettering anywhere in frame.\n\nScene overview: A woman in her late twenties stands in a bright home kitchen talking straight to camera, casual and warm, like a phone recording.\n\nStoryboard:\n[0s-5s] One continuous take: Vertical medium close-up, head and shoulders filling the upper two thirds of the frame, kitchen counter and a window softly out of focus behind her. She looks into the lens and speaks, one small nod, natural blink.\n\nCamera: Static Shot held at chest height, very slight handheld drift.\n\nAudio: her voice, close and clear with a natural American accent, faint room tone and a distant street hum underneath. She says: \"This whole clip came out of a laptop. Picture and sound, one pass, no studio.\"\n\nMusic: none\n\nNo text, subtitles, lettering, signage, logos or watermarks of any kind.",
@@ -343,7 +343,7 @@
         "save_context": true,
         "preview": false,
         "filename_prefix": "h3c/chain_A",
-        "reference_image_size": "match",
+        "reference_image_size": "max",
         "mode": "auto"
       }
     },
@@ -597,7 +597,7 @@
         true,
         false,
         "h3c/chain_B",
-        "match"
+        "max"
       ],
       "widgets_values_named": {
         "prompt": "Vertical smartphone-style portrait video, 28mm front camera look, soft late-afternoon window light from the left, natural skin texture, slight handheld drift, fine grain, no lettering anywhere in frame.\n\nScene overview: A woman in her late twenties stands in a bright home kitchen talking straight to camera, casual and warm, like a phone recording.\n\nStoryboard:\n[0s-5s] One continuous take: Vertical medium close-up, head and shoulders filling the upper two thirds of the frame, kitchen counter and a window softly out of focus behind her. She looks into the lens and speaks, one small nod, natural blink.\n\nCamera: Static Shot held at chest height, very slight handheld drift.\n\nAudio: her voice, close and clear with a natural American accent, faint room tone and a distant street hum underneath. She says: \"This whole clip came out of a laptop. Picture and sound, one pass, no studio.\"\n\nMusic: none\n\nNo text, subtitles, lettering, signage, logos or watermarks of any kind.",
@@ -615,7 +615,7 @@
         "save_context": true,
         "preview": false,
         "filename_prefix": "h3c/chain_B",
-        "reference_image_size": "match",
+        "reference_image_size": "max",
         "mode": "auto"
       }
     },

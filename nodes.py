@@ -291,10 +291,10 @@ class H3cGenerate:
                 "references": (REFS, {"lazy": True}),
                 "motion_context": (CONTEXT, {"lazy": True, "tooltip":
                     "Continue a previous take. Replaces first_frame; references and last_frame ride along."}),
-                "reference_image_size": (["match", "max"], {"default": "match", "tooltip":
-                    "Size reference pictures are encoded at. match = the video's size (the usual "
-                    "choice); max = up to 2048 px on the long side, more detail for more memory "
-                    "and time."}),
+                "reference_image_size": (["match", "max"], {"default": "max", "tooltip":
+                    "Size reference pictures are encoded at. max = their own size up to 2048 px "
+                    "on the short side, never upscaled (the most detail, more memory and time "
+                    "for big pictures); match = scaled down to the video's size."}),
                 "settings": (SETTINGS, {"tooltip":
                     "From h3c Settings: overrides this node's size, steps, sampler, scheduler, "
                     "shift, speed, preview, save_context and reference size, so every take of "
@@ -318,7 +318,7 @@ class H3cGenerate:
     def generate(self, engine, prompt, width, height, seconds, frames, steps, seed,
                  sampler, scheduler, shift, speed, save_context, preview, filename_prefix,
                  first_frame=None, last_frame=None, references=None, motion_context=None,
-                 reference_image_size="match", mode="auto", settings=None):
+                 reference_image_size="max", mode="auto", settings=None):
         wanted = GENERATE_MODES.get(mode, GENERATE_MODES["auto"])
         first_frame = first_frame if "first_frame" in wanted else None
         last_frame = last_frame if "last_frame" in wanted else None
