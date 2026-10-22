@@ -137,7 +137,14 @@ $('mp').innerHTML = MPS.map(v => `<label><input type="radio" name="mp" value="${
 const dims = () => {
   const a = +document.querySelector('input[name=aspect]:checked').value, px = +document.querySelector('input[name=mp]:checked').value * 1024 * 1024;
   const r32 = x => Math.max(64, Math.round(x / 32) * 32);
-  return [r32(Math.sqrt(px * a)), r32(Math.sqrt(px / a))];
+  let w = r32(Math.sqrt(px * a)), h = r32(Math.sqrt(px / a));
+  // The engine refuses a canvas over 768 x 1344 pixels: trim the long side to fit.
+  while (w * h > 768 * 1344) {
+    if (w > h) w -= 32;
+    else if (h > w) h -= 32;
+    else { w -= 32; h -= 32; }
+  }
+  return [w, h];
 };
 const showDims = () => { const [w, h] = dims(); $('dims').textContent = `${w} x ${h}`; };
 document.querySelectorAll('input[name=aspect], input[name=mp]').forEach(r => r.onchange = showDims);
