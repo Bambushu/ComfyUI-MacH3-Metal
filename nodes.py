@@ -83,10 +83,16 @@ def _read_audio(mp4: str, sample_rate: int, frames: int, fps: int) -> dict:
     """The engine's soundtrack, trimmed or padded to exactly the delivered
     frames so consecutive takes concatenate on the frame grid."""
     ffmpeg = os.environ.get("H3_FFMPEG", "ffmpeg")
-    raw = subprocess.run(
-        [ffmpeg, "-nostdin", "-v", "error", "-i", mp4, "-vn", "-ac", "2",
-         "-ar", str(sample_rate), "-f", "f32le", "-"],
-        check=True, capture_output=True).stdout
+    try:
+        raw = subprocess.run(
+            [ffmpeg, "-nostdin", "-v", "error", "-i", mp4, "-vn", "-ac", "2",
+             "-ar", str(sample_rate), "-f", "f32le", "-"],
+            check=True, capture_output=True).stdout
+    except FileNotFoundError:
+        raise RuntimeError(f"ffmpeg not found ({ffmpeg}): brew install ffmpeg, or set H3_FFMPEG") from None
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError(f"ffmpeg could not read the engine's audio from {mp4}: "
+                           f"{exc.stderr.decode(errors='replace').strip()[-300:]}") from None
     pcm = np.frombuffer(raw, dtype="<f4").reshape(-1, 2).T.copy()  # [2, T]
     want = int(round(frames * sample_rate / fps))
     if pcm.shape[1] >= want:
@@ -252,6 +258,9 @@ class H3cGenerate:
         return {
             "required": {
                 "engine": (ENGINE,),
+                "mode": (list(GENERATE_MODES), {"default": "auto", "tooltip":
+                    "Which connected inputs this take uses. auto = all of them. Inputs the mode "
+                    "leaves out are skipped, and the loaders feeding them never run."}),
                 "prompt": ("STRING", {"multiline": True, "default": ""}),
                 "width": ("INT", {"default": 544, "min": 64, "max": 2048, "step": 32}),
                 "height": ("INT", {"default": 960, "min": 64, "max": 2048, "step": 32}),
@@ -282,10 +291,10 @@ class H3cGenerate:
                 "references": (REFS, {"lazy": True}),
                 "motion_context": (CONTEXT, {"lazy": True, "tooltip":
                     "Continue a previous take. Replaces first_frame; references and last_frame ride along."}),
-                "reference_image_size": (["match", "max"], {"default": "match"}),
-                "mode": (list(GENERATE_MODES), {"default": "auto", "tooltip":
-                    "Which connected inputs this take uses. auto = all of them. Inputs the mode "
-                    "leaves out are skipped, and the loaders feeding them never run."}),
+                "reference_image_size": (["match", "max"], {"default": "match", "tooltip":
+                    "Size reference pictures are encoded at. match = the video's size (the usual "
+                    "choice); max = up to 2048 px on the long side, more detail for more memory "
+                    "and time."}),
                 "settings": (SETTINGS, {"tooltip":
                     "From h3c Settings: overrides this node's size, steps, sampler, scheduler, "
                     "shift, speed, preview, save_context and reference size, so every take of "

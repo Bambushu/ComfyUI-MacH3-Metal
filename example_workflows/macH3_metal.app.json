@@ -619,6 +619,17 @@
           "link": 4
         },
         {
+          "label": "Mode",
+          "localized_name": "mode",
+          "name": "mode",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
           "label": "Take 1 prompt",
           "localized_name": "prompt",
           "name": "prompt",
@@ -635,7 +646,8 @@
           "widget": {
             "name": "width"
           },
-          "link": null
+          "link": null,
+          "label": "width (from Settings)"
         },
         {
           "localized_name": "height",
@@ -644,7 +656,8 @@
           "widget": {
             "name": "height"
           },
-          "link": null
+          "link": null,
+          "label": "height (from Settings)"
         },
         {
           "label": "Take 1 length (s)",
@@ -672,7 +685,8 @@
           "widget": {
             "name": "steps"
           },
-          "link": null
+          "link": null,
+          "label": "steps (from Settings)"
         },
         {
           "label": "Take 1 seed",
@@ -691,7 +705,8 @@
           "widget": {
             "name": "sampler"
           },
-          "link": null
+          "link": null,
+          "label": "sampler (from Settings)"
         },
         {
           "localized_name": "scheduler",
@@ -700,7 +715,8 @@
           "widget": {
             "name": "scheduler"
           },
-          "link": null
+          "link": null,
+          "label": "scheduler (from Settings)"
         },
         {
           "localized_name": "shift",
@@ -709,7 +725,8 @@
           "widget": {
             "name": "shift"
           },
-          "link": null
+          "link": null,
+          "label": "shift (from Settings)"
         },
         {
           "localized_name": "speed",
@@ -718,7 +735,8 @@
           "widget": {
             "name": "speed"
           },
-          "link": null
+          "link": null,
+          "label": "speed (from Settings)"
         },
         {
           "localized_name": "save_context",
@@ -727,7 +745,8 @@
           "widget": {
             "name": "save_context"
           },
-          "link": null
+          "link": null,
+          "label": "save_context (from Settings)"
         },
         {
           "localized_name": "preview",
@@ -736,7 +755,8 @@
           "widget": {
             "name": "preview"
           },
-          "link": null
+          "link": null,
+          "label": "preview (from Settings)"
         },
         {
           "localized_name": "filename_prefix",
@@ -755,18 +775,8 @@
           "widget": {
             "name": "reference_image_size"
           },
-          "link": null
-        },
-        {
-          "label": "Mode",
-          "localized_name": "mode",
-          "name": "mode",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "mode"
-          },
-          "link": null
+          "link": null,
+          "label": "reference_image_size (from Settings)"
         }
       ],
       "outputs": [
@@ -806,6 +816,7 @@
         "Node name for S&R": "H3cGenerate"
       },
       "widgets_values": [
+        "references",
         "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie, facing the camera, pine trees and the mountain peaks behind her. <Subject 1> catches her breath, looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] So this whole clip came out of Comfy U I, running on my Mac.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, opening and closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
         544,
         960,
@@ -821,8 +832,7 @@
         true,
         false,
         "MacH3/t1",
-        "match",
-        "references"
+        "match"
       ],
       "widgets_values_named": {
         "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie, facing the camera, pine trees and the mountain peaks behind her. <Subject 1> catches her breath, looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] So this whole clip came out of Comfy U I, running on my Mac.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, opening and closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
@@ -901,6 +911,17 @@
           "link": 7
         },
         {
+          "localized_name": "mode",
+          "name": "mode",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null,
+          "label": "Mode"
+        },
+        {
           "label": "Take 2 prompt",
           "localized_name": "prompt",
           "name": "prompt",
@@ -917,7 +938,8 @@
           "widget": {
             "name": "width"
           },
-          "link": null
+          "link": null,
+          "label": "width (from Settings)"
         },
         {
           "localized_name": "height",
@@ -926,10 +948,11 @@
           "widget": {
             "name": "height"
           },
-          "link": null
+          "link": null,
+          "label": "height (from Settings)"
         },
         {
-          "label": "Take 2 length (s)",
+          "label": "Take 2 length (s), incl. 0.9 s overlap",
           "localized_name": "seconds",
           "name": "seconds",
           "type": "FLOAT",
@@ -954,7 +977,8 @@
           "widget": {
             "name": "steps"
           },
-          "link": null
+          "link": null,
+          "label": "steps (from Settings)"
         },
         {
           "label": "Take 2 seed",
@@ -973,7 +997,8 @@
           "widget": {
             "name": "sampler"
           },
-          "link": null
+          "link": null,
+          "label": "sampler (from Settings)"
         },
         {
           "localized_name": "scheduler",
@@ -982,7 +1007,8 @@
           "widget": {
             "name": "scheduler"
           },
-          "link": null
+          "link": null,
+          "label": "scheduler (from Settings)"
         },
         {
           "localized_name": "shift",
@@ -991,7 +1017,8 @@
           "widget": {
             "name": "shift"
           },
-          "link": null
+          "link": null,
+          "label": "shift (from Settings)"
         },
         {
           "localized_name": "speed",
@@ -1000,7 +1027,8 @@
           "widget": {
             "name": "speed"
           },
-          "link": null
+          "link": null,
+          "label": "speed (from Settings)"
         },
         {
           "localized_name": "save_context",
@@ -1009,7 +1037,8 @@
           "widget": {
             "name": "save_context"
           },
-          "link": null
+          "link": null,
+          "label": "save_context (from Settings)"
         },
         {
           "localized_name": "preview",
@@ -1018,7 +1047,8 @@
           "widget": {
             "name": "preview"
           },
-          "link": null
+          "link": null,
+          "label": "preview (from Settings)"
         },
         {
           "localized_name": "filename_prefix",
@@ -1037,17 +1067,8 @@
           "widget": {
             "name": "reference_image_size"
           },
-          "link": null
-        },
-        {
-          "localized_name": "mode",
-          "name": "mode",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "mode"
-          },
-          "link": null
+          "link": null,
+          "label": "reference_image_size (from Settings)"
         }
       ],
       "outputs": [
@@ -1087,6 +1108,7 @@
         "Node name for S&R": "H3cGenerate"
       },
       "widgets_values": [
+        "continue + references",
         "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her. <Subject 1> glances up briefly toward the peaks while speaking the line, then looks back into the lens and holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] No cloud, no G P U server, it's just Metal on Apple silikon, sound and all.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
         544,
         960,
@@ -1102,8 +1124,7 @@
         true,
         false,
         "MacH3/t2",
-        "match",
-        "continue + references"
+        "match"
       ],
       "widgets_values_named": {
         "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her. <Subject 1> glances up briefly toward the peaks while speaking the line, then looks back into the lens and holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] No cloud, no G P U server, it's just Metal on Apple silikon, sound and all.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
@@ -1182,6 +1203,17 @@
           "link": 10
         },
         {
+          "localized_name": "mode",
+          "name": "mode",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null,
+          "label": "Mode"
+        },
+        {
           "label": "Take 3 prompt",
           "localized_name": "prompt",
           "name": "prompt",
@@ -1198,7 +1230,8 @@
           "widget": {
             "name": "width"
           },
-          "link": null
+          "link": null,
+          "label": "width (from Settings)"
         },
         {
           "localized_name": "height",
@@ -1207,10 +1240,11 @@
           "widget": {
             "name": "height"
           },
-          "link": null
+          "link": null,
+          "label": "height (from Settings)"
         },
         {
-          "label": "Take 3 length (s)",
+          "label": "Take 3 length (s), incl. 0.9 s overlap",
           "localized_name": "seconds",
           "name": "seconds",
           "type": "FLOAT",
@@ -1235,7 +1269,8 @@
           "widget": {
             "name": "steps"
           },
-          "link": null
+          "link": null,
+          "label": "steps (from Settings)"
         },
         {
           "label": "Take 3 seed",
@@ -1254,7 +1289,8 @@
           "widget": {
             "name": "sampler"
           },
-          "link": null
+          "link": null,
+          "label": "sampler (from Settings)"
         },
         {
           "localized_name": "scheduler",
@@ -1263,7 +1299,8 @@
           "widget": {
             "name": "scheduler"
           },
-          "link": null
+          "link": null,
+          "label": "scheduler (from Settings)"
         },
         {
           "localized_name": "shift",
@@ -1272,7 +1309,8 @@
           "widget": {
             "name": "shift"
           },
-          "link": null
+          "link": null,
+          "label": "shift (from Settings)"
         },
         {
           "localized_name": "speed",
@@ -1281,7 +1319,8 @@
           "widget": {
             "name": "speed"
           },
-          "link": null
+          "link": null,
+          "label": "speed (from Settings)"
         },
         {
           "localized_name": "save_context",
@@ -1290,7 +1329,8 @@
           "widget": {
             "name": "save_context"
           },
-          "link": null
+          "link": null,
+          "label": "save_context (from Settings)"
         },
         {
           "localized_name": "preview",
@@ -1299,7 +1339,8 @@
           "widget": {
             "name": "preview"
           },
-          "link": null
+          "link": null,
+          "label": "preview (from Settings)"
         },
         {
           "localized_name": "filename_prefix",
@@ -1318,17 +1359,8 @@
           "widget": {
             "name": "reference_image_size"
           },
-          "link": null
-        },
-        {
-          "localized_name": "mode",
-          "name": "mode",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "mode"
-          },
-          "link": null
+          "link": null,
+          "label": "reference_image_size (from Settings)"
         }
       ],
       "outputs": [
@@ -1366,6 +1398,7 @@
         "Node name for S&R": "H3cGenerate"
       },
       "widgets_values": [
+        "continue + references",
         "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her. <Subject 1> looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] And I can keep the take going like this, same voice, same trail, no cut.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
         544,
         960,
@@ -1381,8 +1414,7 @@
         true,
         false,
         "MacH3/t3",
-        "match",
-        "continue + references"
+        "match"
       ],
       "widgets_values_named": {
         "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her. <Subject 1> looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] And I can keep the take going like this, same voice, same trail, no cut.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
@@ -1685,7 +1717,7 @@
       "title": "Read me",
       "properties": {},
       "widgets_values": [
-        "## MacH3 Metal\nMiniMax H3 with sound on a Mac, on the h3.c Metal engine.\n\n1. **Take 1 mode** picks what this run uses: text to video, first frame, first + last frame, references, or continue (the clip in Inputs). Inputs the mode skips never load.\n2. **Join takes** = how many takes render. Takes 2 and 3 continue the one before (last 22 frames + 0.9 s of sound) and add about 6 s each.\n3. Write each continuation so it opens where the take before ended.\n\nRuns outside ComfyUI's latent graph: no LoRA, SLA or latent upscale on this path, and no other H3 model may be loaded while it runs. Apple silicon only.\n\nM5 Pro 48 GB, 544x960, 8 steps: about 7.5 min for a 5 s take, about 15 min for a 7 s continuation."
+        "## MacH3 Metal\nMiniMax H3 with sound on a Mac, on the h3.c Metal engine.\n\n1. **Take 1 mode** picks what this run uses: text to video, first frame, first + last frame, references, or continue (the clip in Inputs). Inputs the mode skips never load.\n2. **Join takes** = how many takes render. Takes 2 and 3 continue the one before (last 22 frames + 0.9 s of sound) and add about 6 s each. They run as *continue + references* to keep the face; set them to *continue* when Take 1 has no identity picture.\n3. Size, steps, sampler and speed live in **Settings**, shared by every take (the take widgets marked *from Settings* follow it).\n4. Write each continuation so it opens where the take before ended.\n\nRuns outside ComfyUI's latent graph: no LoRA, SLA or latent upscale on this path, and no other H3 model may be loaded while it runs. Apple silicon only.\n\nM5 Pro 48 GB, 544x960, 8 steps: about 7.5 min for a 5 s take, about 15 min for a 7 s continuation."
       ],
       "widgets_values_named": {
         "text": "## MacH3 Metal\nMiniMax H3 with sound on a Mac, on the h3.c Metal engine.\n\n1. **Take 1 mode** picks what this run uses: text to video, first frame, first + last frame, references, or continue (the clip in Inputs). Inputs the mode skips never load.\n2. **Join takes** = how many takes render. Takes 2 and 3 continue the one before (last 22 frames + 0.9 s of sound) and add about 6 s each.\n3. Write each continuation so it opens where the take before ended.\n\nRuns outside ComfyUI's latent graph: no LoRA, SLA or latent upscale on this path, and no other H3 model may be loaded while it runs. Apple silicon only.\n\nM5 Pro 48 GB, 544x960, 8 steps: about 7.5 min for a 5 s take, about 15 min for a 7 s continuation."
@@ -1999,6 +2031,10 @@
         ],
         [
           "10",
+          "mode"
+        ],
+        [
+          "10",
           "prompt",
           {
             "height": 160
@@ -2011,6 +2047,10 @@
         [
           "10",
           "seed"
+        ],
+        [
+          "11",
+          "mode"
         ],
         [
           "11",
