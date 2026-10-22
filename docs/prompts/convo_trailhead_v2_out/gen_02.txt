@@ -1,0 +1,23 @@
+subject_definitions:
+<Subject 1> is JESS in <Picture 1>, the woman shown in Picture 1, same face and hair, in a clean slate-blue short-sleeve t-shirt.
+<Subject 2> is MARK in <Picture 2>, the man shown in Picture 2, same face and hair, in a navy crew-neck t-shirt.
+<Subject 3> is the TRAILHEAD, described as a weathered wooden picnic table at a sunny pine-forest trailhead, a dirt parking area and tall pines behind, rocky mountain peaks in the distance, bright clear midday sun and blue sky continuing unchanged.
+
+summary:
+[reference generation] The target video contains one shot set in <Subject 3>. [Shot 1] shows <Subject 1> and <Subject 2>; <Subject 1> speaks and <Subject 2> speaks.
+
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - JESS's complete defined identity and body proportions are preserved.
+<Subject 2> (appears in [Shot 1]): fully_preserved - MARK's complete defined identity and body proportions are preserved.
+<Subject 3> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.
+
+detailed_description:
+The target video is in a live-action style, with photoreal and vertical smartphone video.
+Keep <Subject 1> (JESS) and <Subject 2> (MARK) visually distinct; do not merge or swap identities.
+[Shot 1] The shot takes place in <Subject 3>. At first appearance, <Subject 3> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (JESS) matches the complete defined identity and physical appearance: The woman shown in Picture 1, same face and hair, in a clean slate-blue short-sleeve t-shirt. At first appearance, <Subject 2> (MARK) matches the complete defined identity and physical appearance: The man shown in Picture 2, same face and hair, in a navy crew-neck t-shirt. <Subject 1> and <Subject 2> sit side by side at the picnic table in the same seated positions, the silver laptop already open with its screen toward them and its back to the camera. <Subject 1> taps the laptop and explains while <Subject 2> leans in to look at the screen, then he looks up at her, surprised. Camera: the same slow handheld left-to-right arc keeps going at the same speed, now framing them from the front-left at chest height, waist up, drifting a few degrees further right; no cut and no reframing. <Subject 1> (S1) says in an easy, matter-of-fact tone: <d>[English] It's MiniMax H three, open weights, running right on the Mac, with Metal.</d> <Subject 2> (S2) says in a surprised, half doubtful tone: <d>[English] Like, with sound?</d>
+
+overall_soundscape:
+Light wind in the pines and a few distant birds, opening and closing on a brief quiet pause.
+
+non_diegetic_music:
+N/A

@@ -1,0 +1,169 @@
+{
+  "format": "h3_prompt_composer_ai_import",
+  "schema_version": 5,
+  "operation": "replace_project",
+  "project": {
+    "mode": "REF",
+    "duration_seconds": 6.58,
+    "style": "Live-action, photoreal, vertical smartphone video",
+    "task_types": [
+      "reference generation"
+    ]
+  },
+  "assets": {
+    "subjects": [
+      {
+        "id": "her",
+        "name": "JESS",
+        "type": "character",
+        "description": "the woman shown in Picture 1, same face and hair, in a clean slate-blue short-sleeve t-shirt",
+        "picture_slots": [
+          1
+        ],
+        "video_slots": [],
+        "reference_contribution": "character_sheet"
+      },
+      {
+        "id": "him",
+        "name": "MARK",
+        "type": "character",
+        "description": "the man shown in Picture 2, same face and hair, in a navy crew-neck t-shirt",
+        "picture_slots": [
+          2
+        ],
+        "video_slots": [],
+        "reference_contribution": "character_sheet"
+      }
+    ],
+    "environments": [
+      {
+        "id": "trailhead",
+        "name": "TRAILHEAD",
+        "description": "a weathered wooden picnic table at a sunny pine-forest trailhead, a dirt parking area and tall pines behind, rocky mountain peaks in the distance, bright clear midday sun and blue sky continuing unchanged",
+        "pictures": []
+      }
+    ],
+    "pictures": [],
+    "audio": [],
+    "videos": []
+  },
+  "generations": [
+    {
+      "name": "Take 1 opens",
+      "overall_ambience": "Light wind in the pines and a few distant birds, opening and closing on a brief quiet pause.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "environment": "trailhead",
+          "presence": {
+            "her": "on_screen",
+            "him": "on_screen"
+          },
+          "opening_state": "<Subject 2> sits on the left side of the picnic table and <Subject 1> sits on the right beside him, a closed silver laptop lying flat on the table in front of her.",
+          "action": "<Subject 2> looks around at the empty trailhead, turns to <Subject 1> and asks his question; she grins, answers, and flips the laptop open, its back to the camera so the screen faces the two of them.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "A slow, smooth handheld arc around the picnic table from left to right at chest height, keeping both of them framed from the waist up the whole time, never stopping and never cutting.",
+            "timing": "throughout_shot"
+          },
+          "dialogue": [
+            {
+              "speaker": "him",
+              "delivery": "puzzled, curious tone",
+              "language": "English",
+              "text": "Wait, how are you making video out here? No internet, no power?"
+            },
+            {
+              "speaker": "her",
+              "delivery": "relaxed, slightly smug tone",
+              "language": "English",
+              "text": "Okay so, watch."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Take 2 continues",
+      "overall_ambience": "Light wind in the pines and a few distant birds, opening and closing on a brief quiet pause.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "environment": "trailhead",
+          "presence": {
+            "her": "on_screen",
+            "him": "on_screen"
+          },
+          "opening_state": "<Subject 1> and <Subject 2> sit side by side at the picnic table in the same seated positions, the silver laptop already open with its screen toward them and its back to the camera.",
+          "action": "<Subject 1> taps the laptop and explains while <Subject 2> leans in to look at the screen, then he looks up at her, surprised.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "The same slow handheld left-to-right arc keeps going at the same speed, now framing them from the front-left at chest height, waist up, drifting a few degrees further right; no cut and no reframing.",
+            "timing": "throughout_shot"
+          },
+          "dialogue": [
+            {
+              "speaker": "her",
+              "delivery": "easy, matter-of-fact tone",
+              "language": "English",
+              "text": "It's MiniMax H three, open weights, running right on the Mac, with Metal."
+            },
+            {
+              "speaker": "him",
+              "delivery": "surprised, half doubtful tone",
+              "language": "English",
+              "text": "Like, with sound?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Take 3 continues",
+      "overall_ambience": "Light wind in the pines and a few distant birds, opening and closing on a brief quiet pause.",
+      "music": "N/A",
+      "shots": [
+        {
+          "cut_time_seconds": null,
+          "environment": "trailhead",
+          "presence": {
+            "her": "on_screen",
+            "him": "on_screen"
+          },
+          "opening_state": "<Subject 1> and <Subject 2> sit side by side at the picnic table in the same seated positions, the open silver laptop with its back to the camera, <Subject 2> looking up from the screen at <Subject 1> with his eyebrows raised.",
+          "action": "<Subject 1> nods and answers; <Subject 2> asks one more question; she laughs, answers, and they both sit back smiling.",
+          "camera": {
+            "authoring_mode": "custom",
+            "movement": "custom",
+            "custom_movement": "The same slow handheld left-to-right arc keeps going at the same speed, now framing them close to straight on at chest height, waist up, drifting a few degrees further right; no cut and no reframing.",
+            "timing": "throughout_shot"
+          },
+          "dialogue": [
+            {
+              "speaker": "her",
+              "delivery": "warm, upbeat tone",
+              "language": "English",
+              "text": "Yeah, sound and picture, one pass, Comfy U I, and the take keeps going."
+            },
+            {
+              "speaker": "him",
+              "delivery": "teasing tone",
+              "language": "English",
+              "text": "No cloud?"
+            },
+            {
+              "speaker": "her",
+              "delivery": "laughing, amused tone",
+              "language": "English",
+              "text": "Zero."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -362,13 +362,23 @@ class H3cGenerate:
         bar = comfy.utils.ProgressBar(BAR)
         state = {"images": None, "last": -1}
 
+        def update(*args):
+            """ComfyUI's progress hook raises InterruptProcessingException on a cancel. These
+            callbacks run inside the engine through ctypes, which swallows the exception and
+            returns 0 (keep going), so catch it here and return 1 to stop the engine."""
+            try:
+                bar.update_absolute(*args)
+            except comfy.model_management.InterruptProcessingException:
+                return True
+            return comfy.model_management.processing_interrupted()
+
         def on_progress(phase, done, total):
             for name, lo, hi in PHASE_WEIGHTS:
                 if phase.startswith(name) and total > 0:
                     value = int(BAR * (lo + (hi - lo) * min(done, total) / total))
                     if value > state["last"]:
                         state["last"] = value
-                        bar.update_absolute(value, BAR)
+                        return update(value, BAR)
                     break
             return comfy.model_management.processing_interrupted()
 
@@ -377,8 +387,7 @@ class H3cGenerate:
             pixels = rows[:, : w * 3].reshape(h, w, 3)
             if step >= 0:  # a denoising preview
                 value = max(state["last"], int(BAR * (0.10 + 0.75 * (step + 1) / max(steps_, 1))))
-                bar.update_absolute(value, BAR, ("JPEG", Image.fromarray(pixels.copy()), 512))
-                return comfy.model_management.processing_interrupted()
+                return update(value, BAR, ("JPEG", Image.fromarray(pixels.copy()), 512))
             if state["images"] is None:
                 state["images"] = np.empty((count, h, w, 3), dtype=np.uint8)
             state["images"][index] = pixels
