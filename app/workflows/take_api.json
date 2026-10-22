@@ -113,7 +113,7 @@
         "save_context": true,
         "preview": false,
         "filename_prefix": "MacH3/app",
-        "reference_image_size": "match",
+        "reference_image_size": "max",
         "mode": "references",
         "engine": [
           "1",

@@ -92,7 +92,7 @@ class MacH3App:
         not use, so nothing unneeded is validated, uploaded or loaded."""
         wf = self.client.workflows.from_json(copy.deepcopy(TEMPLATE))
         gen = IDS["gen"]
-        for field in ("prompt", "seconds", "steps", "seed", "width", "height"):
+        for field in ("prompt", "seconds", "steps", "seed", "width", "height", "reference_image_size"):
             if field in req:
                 wf.set_input(gen, field, req[field])
         n = len(self.takes) + 1

@@ -210,7 +210,7 @@
         "exact",
         true,
         false,
-        "match"
+        "max"
       ],
       "widgets_values_named": {
         "width": 544,
