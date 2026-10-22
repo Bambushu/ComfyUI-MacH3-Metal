@@ -66,12 +66,12 @@
       <label><input type="radio" name="tab" value="refs" checked><span>References</span></label>
     </div>
     <label for="prompt">Prompt</label>
-    <textarea id="prompt" placeholder="Describe the shot. Cite identity pictures as Picture 1, Picture 2."></textarea>
+    <textarea id="prompt" placeholder="Describe the shot. Cite reference pictures as Picture 1, 2, 3."></textarea>
     <div id="pictures"><label id="pichead">Pictures (drop or click)</label>
     <div class="tiles">
       <div class="tile" data-k="first"><input type="file" accept="image/png,image/jpeg"><span>Start frame<small class="opt"><br>optional</small></span><button class="x" title="clear">&times;</button></div>
       <div class="tile" data-k="last"><input type="file" accept="image/png,image/jpeg"><span>End frame<small class="opt"><br>optional</small></span><button class="x" title="clear">&times;</button></div>
-      <div class="tile" data-k="refs"><input type="file" accept="image/png,image/jpeg" multiple><span>Who is in it<br><small>up to 2</small></span><button class="x" title="clear">&times;</button></div>
+      <div class="tile" data-k="refs"><input type="file" accept="image/png,image/jpeg" multiple><span>Who or where<br><small>up to 3</small></span><button class="x" title="clear">&times;</button></div>
     </div>
     </div>
     <div class="mode" id="mode"></div>
@@ -151,7 +151,7 @@ document.querySelectorAll('input[name=aspect], input[name=mp]').forEach(r => r.o
 showDims();
 async function setTile(tile, files) {
   const k = tile.dataset.k, imgs = [...files].filter(f => /^image\/(png|jpeg)$/.test(f.type));
-  if (k === 'refs') refs = await Promise.all(imgs.slice(0, 2).map(readFile));
+  if (k === 'refs') refs = await Promise.all(imgs.slice(0, 3).map(readFile));
   else frames[k] = imgs[0] ? await readFile(imgs[0]) : undefined;
   const urls = k === 'refs' ? refs : (frames[k] ? [frames[k]] : []);
   tile.querySelector('.pics')?.remove();

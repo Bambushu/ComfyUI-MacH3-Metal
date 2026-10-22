@@ -113,10 +113,10 @@ class MacH3App:
                 wf.set_input(IDS[key], "image", frames[key])
             else:
                 wf.remove_node(IDS[key])
-        # Identity pictures: fill the two reference slots in order, drop unused
+        # Reference pictures: fill the three reference slots in order, drop unused
         # ones (removing a LoadImage, then its reference node, re-links the chain).
         uses_refs = continuing or MODES[mode][2]
-        for slot, (img, ref) in enumerate((("img1", "ref1"), ("img2", "ref2"))):
+        for slot, (img, ref) in enumerate((("img1", "ref1"), ("img2", "ref2"), ("img3", "ref3"))):
             if uses_refs and slot < len(self.ref_assets):
                 wf.set_input(IDS[img], "image", self.ref_assets[slot])
             else:
@@ -140,7 +140,7 @@ class MacH3App:
                     if needs[key] and not req.get(key):
                         raise ValueError(f"{mode} needs {what}")
                 self.reset()
-                for i, data_url in enumerate(req.get("refs", [])[:2] if needs["refs"] else []):
+                for i, data_url in enumerate(req.get("refs", [])[:3] if needs["refs"] else []):
                     path = save_data_url(data_url, self.dir / f"ref{i + 1}")
                     self.ref_assets.append(self.client.assets.from_file(path))
                     self.refs.append(path.name)

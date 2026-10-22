@@ -1,8 +1,8 @@
 {
-  "id": "00000000-0000-0000-0000-000000000000",
+  "id": "510040af-d379-45c4-b31e-0324edfce240",
   "revision": 0,
-  "last_node_id": 11,
-  "last_link_id": 12,
+  "last_node_id": 13,
+  "last_link_id": 15,
   "nodes": [
     {
       "id": 1,
@@ -18,38 +18,9 @@
       "flags": {},
       "order": 0,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "engine_dir",
-          "name": "engine_dir",
-          "type": "STRING",
-          "widget": {
-            "name": "engine_dir"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "model_dir",
-          "name": "model_dir",
-          "type": "STRING",
-          "widget": {
-            "name": "model_dir"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "keep_resident",
-          "name": "keep_resident",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "keep_resident"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "engine",
           "name": "engine",
           "type": "H3C_ENGINE",
           "links": [
@@ -86,29 +57,9 @@
       "flags": {},
       "order": 1,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "image",
-          "name": "image",
-          "type": "COMBO",
-          "widget": {
-            "name": "image"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "choose file to upload",
-          "name": "upload",
-          "type": "IMAGEUPLOAD",
-          "widget": {
-            "name": "upload"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "IMAGE",
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
@@ -116,7 +67,6 @@
           ]
         },
         {
-          "localized_name": "MASK",
           "name": "MASK",
           "type": "MASK",
           "links": null
@@ -149,29 +99,9 @@
       "flags": {},
       "order": 2,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "image",
-          "name": "image",
-          "type": "COMBO",
-          "widget": {
-            "name": "image"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "choose file to upload",
-          "name": "upload",
-          "type": "IMAGEUPLOAD",
-          "widget": {
-            "name": "upload"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "IMAGE",
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
@@ -179,7 +109,6 @@
           ]
         },
         {
-          "localized_name": "MASK",
           "name": "MASK",
           "type": "MASK",
           "links": null
@@ -212,29 +141,9 @@
       "flags": {},
       "order": 3,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "image",
-          "name": "image",
-          "type": "COMBO",
-          "widget": {
-            "name": "image"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "choose file to upload",
-          "name": "upload",
-          "type": "IMAGEUPLOAD",
-          "widget": {
-            "name": "upload"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "IMAGE",
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
@@ -242,7 +151,6 @@
           ]
         },
         {
-          "localized_name": "MASK",
           "name": "MASK",
           "type": "MASK",
           "links": null
@@ -273,17 +181,15 @@
         46
       ],
       "flags": {},
-      "order": 6,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "image",
           "name": "image",
           "type": "IMAGE",
           "link": 4
         },
         {
-          "localized_name": "references",
           "name": "references",
           "shape": 7,
           "type": "H3C_REFS",
@@ -292,7 +198,6 @@
       ],
       "outputs": [
         {
-          "localized_name": "references",
           "name": "references",
           "type": "H3C_REFS",
           "links": [
@@ -319,29 +224,9 @@
       "flags": {},
       "order": 4,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "image",
-          "name": "image",
-          "type": "COMBO",
-          "widget": {
-            "name": "image"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "choose file to upload",
-          "name": "upload",
-          "type": "IMAGEUPLOAD",
-          "widget": {
-            "name": "upload"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "IMAGE",
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
@@ -349,7 +234,6 @@
           ]
         },
         {
-          "localized_name": "MASK",
           "name": "MASK",
           "type": "MASK",
           "links": null
@@ -380,17 +264,15 @@
         46
       ],
       "flags": {},
-      "order": 7,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "image",
           "name": "image",
           "type": "IMAGE",
           "link": 6
         },
         {
-          "localized_name": "references",
           "name": "references",
           "shape": 7,
           "type": "H3C_REFS",
@@ -399,11 +281,10 @@
       ],
       "outputs": [
         {
-          "localized_name": "references",
           "name": "references",
           "type": "H3C_REFS",
           "links": [
-            7
+            14
           ]
         }
       ],
@@ -426,20 +307,9 @@
       "flags": {},
       "order": 5,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "path",
-          "name": "path",
-          "type": "STRING",
-          "widget": {
-            "name": "path"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "motion_context",
           "name": "motion_context",
           "type": "H3C_CONTEXT",
           "links": [
@@ -470,200 +340,47 @@
         572
       ],
       "flags": {},
-      "order": 8,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "engine",
           "name": "engine",
           "type": "H3C_ENGINE",
           "link": 1
         },
         {
-          "localized_name": "first_frame",
           "name": "first_frame",
           "shape": 7,
           "type": "IMAGE",
           "link": 2
         },
         {
-          "localized_name": "last_frame",
           "name": "last_frame",
           "shape": 7,
           "type": "IMAGE",
           "link": 3
         },
         {
-          "localized_name": "references",
           "name": "references",
           "shape": 7,
           "type": "H3C_REFS",
-          "link": 7
+          "link": 15
         },
         {
-          "localized_name": "motion_context",
           "name": "motion_context",
           "shape": 7,
           "type": "H3C_CONTEXT",
           "link": 8
         },
         {
-          "localized_name": "settings",
           "name": "settings",
           "shape": 7,
           "type": "H3C_SETTINGS",
-          "link": null
-        },
-        {
-          "localized_name": "prompt",
-          "name": "prompt",
-          "type": "STRING",
-          "widget": {
-            "name": "prompt"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "width",
-          "name": "width",
-          "type": "INT",
-          "widget": {
-            "name": "width"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "height",
-          "name": "height",
-          "type": "INT",
-          "widget": {
-            "name": "height"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "seconds",
-          "name": "seconds",
-          "type": "FLOAT",
-          "widget": {
-            "name": "seconds"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "frames",
-          "name": "frames",
-          "type": "INT",
-          "widget": {
-            "name": "frames"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "steps",
-          "name": "steps",
-          "type": "INT",
-          "widget": {
-            "name": "steps"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "seed",
-          "name": "seed",
-          "type": "INT",
-          "widget": {
-            "name": "seed"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "sampler",
-          "name": "sampler",
-          "type": "COMBO",
-          "widget": {
-            "name": "sampler"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "scheduler",
-          "name": "scheduler",
-          "type": "COMBO",
-          "widget": {
-            "name": "scheduler"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "shift",
-          "name": "shift",
-          "type": "FLOAT",
-          "widget": {
-            "name": "shift"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "speed",
-          "name": "speed",
-          "type": "COMBO",
-          "widget": {
-            "name": "speed"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "save_context",
-          "name": "save_context",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "save_context"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "preview",
-          "name": "preview",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "preview"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "filename_prefix",
-          "name": "filename_prefix",
-          "type": "STRING",
-          "widget": {
-            "name": "filename_prefix"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "reference_image_size",
-          "name": "reference_image_size",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "reference_image_size"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "mode",
-          "name": "mode",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "mode"
-          },
           "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "images",
           "name": "images",
           "type": "IMAGE",
           "links": [
@@ -671,7 +388,6 @@
           ]
         },
         {
-          "localized_name": "audio",
           "name": "audio",
           "type": "AUDIO",
           "links": [
@@ -679,7 +395,6 @@
           ]
         },
         {
-          "localized_name": "fps",
           "name": "fps",
           "type": "FLOAT",
           "links": [
@@ -687,7 +402,6 @@
           ]
         },
         {
-          "localized_name": "context",
           "name": "context",
           "type": "H3C_CONTEXT",
           "links": null
@@ -698,6 +412,7 @@
         "Node name for S&R": "H3cGenerate"
       },
       "widgets_values": [
+        "references",
         "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie, facing the camera, pine trees and the mountain peaks behind her. <Subject 1> catches her breath, looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] So this whole clip came out of Comfy U I, running on my Mac.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, opening and closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
         544,
         960,
@@ -713,10 +428,10 @@
         true,
         false,
         "MacH3/app",
-        "match",
-        "references"
+        "max"
       ],
       "widgets_values_named": {
+        "mode": "references",
         "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie, facing the camera, pine trees and the mountain peaks behind her. <Subject 1> catches her breath, looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] So this whole clip came out of Comfy U I, running on my Mac.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, opening and closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
         "width": 544,
         "height": 960,
@@ -732,8 +447,7 @@
         "save_context": true,
         "preview": false,
         "filename_prefix": "MacH3/app",
-        "reference_image_size": "match",
-        "mode": "references"
+        "reference_image_size": "max"
       }
     },
     {
@@ -748,55 +462,31 @@
         126
       ],
       "flags": {},
-      "order": 9,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "images",
           "name": "images",
           "type": "IMAGE",
           "link": 9
         },
         {
-          "localized_name": "audio",
           "name": "audio",
           "shape": 7,
           "type": "AUDIO",
           "link": 10
         },
         {
-          "localized_name": "fps",
           "name": "fps",
           "type": "FLOAT",
           "widget": {
             "name": "fps"
           },
           "link": 11
-        },
-        {
-          "localized_name": "bit_depth",
-          "name": "bit_depth",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "bit_depth"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "color_space",
-          "name": "color_space",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "color_space"
-          },
-          "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "VIDEO",
           "name": "VIDEO",
           "type": "VIDEO",
           "links": [
@@ -831,56 +521,17 @@
         106
       ],
       "flags": {},
-      "order": 10,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "video",
           "name": "video",
           "type": "VIDEO",
           "link": 12
-        },
-        {
-          "localized_name": "filename_prefix",
-          "name": "filename_prefix",
-          "type": "STRING",
-          "widget": {
-            "name": "filename_prefix"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "codec",
-          "name": "format.codec",
-          "type": "COMFY_DYNAMICCOMBO_V3",
-          "widget": {
-            "name": "format.codec"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "format",
-          "name": "format",
-          "type": "COMFY_DYNAMICCOMBO_V3",
-          "widget": {
-            "name": "format"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "codec",
-          "name": "codec",
-          "shape": 7,
-          "type": "COMFY_DYNAMICCOMBO_V3",
-          "widget": {
-            "name": "codec"
-          },
-          "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "video",
           "name": "video",
           "type": "VIDEO",
           "links": null
@@ -901,6 +552,89 @@
         "format": "auto",
         "format.codec": "auto",
         "codec": "auto"
+      }
+    },
+    {
+      "id": 12,
+      "type": "LoadImage",
+      "pos": [
+        700,
+        760
+      ],
+      "size": [
+        282.798828125,
+        102
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Picture 3",
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "h3c_sample_identity.jpg",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "h3c_sample_identity.jpg",
+        "upload": "image"
+      }
+    },
+    {
+      "id": 13,
+      "type": "H3cReferenceImage",
+      "pos": [
+        900,
+        760
+      ],
+      "size": [
+        180.8638671875,
+        46
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 13
+        },
+        {
+          "name": "references",
+          "shape": 7,
+          "type": "H3C_REFS",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "references",
+          "type": "H3C_REFS",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "title": "Ref 3",
+      "properties": {
+        "Node name for S&R": "H3cReferenceImage"
       }
     }
   ],
@@ -954,14 +688,6 @@
       "IMAGE"
     ],
     [
-      7,
-      7,
-      0,
-      9,
-      3,
-      "H3C_REFS"
-    ],
-    [
       8,
       8,
       0,
@@ -1000,6 +726,30 @@
       11,
       0,
       "VIDEO"
+    ],
+    [
+      13,
+      12,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      14,
+      7,
+      0,
+      13,
+      1,
+      "H3C_REFS"
+    ],
+    [
+      15,
+      13,
+      0,
+      9,
+      3,
+      "H3C_REFS"
     ]
   ],
   "groups": [],
@@ -1011,7 +761,12 @@
         60,
         230
       ]
-    }
+    },
+    "frontendVersion": "1.51.9",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
   },
   "version": 0.4
 }
