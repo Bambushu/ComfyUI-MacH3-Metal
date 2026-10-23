@@ -5,6 +5,8 @@
 // - while h3c Settings is wired into a Take, the Take hides the fields Settings sets.
 // - h3c Settings shows the size its megapixels and aspect give, and its lane switch
 //   sets the steps to match.
+// - the key dials (mode, prompt, length, seed; size, lane, continue) are drawn in
+//   amber, bold and in capitals, so they stand out from the rest.
 import { app } from "../../scripts/app.js";
 
 // Mirrors MAIN_MODES / GENERATE_MODES in nodes.py.
@@ -28,10 +30,16 @@ const INPUTS = ["first_frame", "last_frame", "references", "motion_context"];
 const MUTED = 2;
 const GREY = "#444444";
 
+function settingsOf(take) {
+  const slot = take.inputs?.findIndex((i) => i.name === "settings") ?? -1;
+  return slot >= 0 ? take.getInputNode(slot) : null;
+}
+
 function wantedInputs(take) {
-  const get = (name) => take.widgets?.find((w) => w.name === name)?.value;
-  const wanted = new Set(MODES[get("mode")] ?? INPUTS);
-  const cont = get("continue_from") ?? "off";
+  const get = (node, name) => node?.widgets?.find((w) => w.name === name)?.value;
+  const wanted = new Set(MODES[get(take, "mode")] ?? INPUTS);
+  // Continue sits on h3c Settings when one is wired in (as in nodes.py).
+  const cont = get(settingsOf(take), "continue_from") ?? get(take, "continue_from") ?? "off";
   if (cont !== "off") {
     wanted.delete("first_frame");
     wanted.delete("motion_context");
@@ -104,8 +112,7 @@ function apply(take) {
 }
 
 // Mirrors H3cSettings.OVERRIDES and size_for() in nodes.py.
-const OVERRIDES = ["width", "height", "steps", "sampler", "scheduler", "shift", "speed",
-  "save_context", "preview", "reference_image_size"];
+const OVERRIDES = ["width", "height", "steps", "continue_from"];
 const ASPECTS = { "9:16 portrait": 9 / 16, "16:9 landscape": 16 / 9, "1:1 square": 1 };
 // Steps a lane switch sets (as in the MacH3 Metal app): Turbo is tuned for 5-6.
 const LANE_STEPS = { quality: 12, speed: 6 };
@@ -121,8 +128,7 @@ function sizeFor(megapixels, aspect) {
 }
 
 function hideOverridden(take, resize = true) {
-  const slot = take.inputs?.findIndex((i) => i.name === "settings") ?? -1;
-  const wired = slot >= 0 && take.inputs[slot].link != null;
+  const wired = settingsOf(take) != null;
   let changed = false;
   for (const w of take.widgets ?? []) {
     if (!OVERRIDES.includes(w.name) || !!w.hidden === wired) continue;
@@ -133,12 +139,57 @@ function hideOverridden(take, resize = true) {
   if (changed && resize) take.setSize([take.size[0], Math.max(take.size[1], take.computeSize()[1])]);
 }
 
+// The key dials per node, and the label each is drawn with.
+const KEYS = {
+  H3cGenerate: { mode: "MODE", prompt: null, seconds: "SECONDS", seed: "SEED" },
+  H3cSettings: { megapixels: "MEGAPIXELS", aspect: "ASPECT", lane: "LANE", continue_from: "CONTINUE" },
+};
+const KEY_COLORS = { background_color: "#3a2a10", outline_color: "#f0a830",
+  secondary_text_color: "#f5c26b", text_color: "#ffffff" };
+
+function bold(widget) {
+  const draw = Object.getPrototypeOf(widget).drawWidget;
+  if (!draw || widget.h3cBold) return;
+  widget.h3cBold = true;
+  const font = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, "font");
+  widget.drawWidget = function (ctx, options) {
+    // The widget sets its own font while it draws; make every font it sets bold.
+    const before = ctx.font;
+    Object.defineProperty(ctx, "font", { configurable: true,
+      get: () => font.get.call(ctx),
+      set: (v) => font.set.call(ctx, /bold|[6-9]00/.test(v) ? v : `bold ${v}`) });
+    ctx.font = before;
+    try {
+      return draw.call(this, ctx, options);
+    } finally {
+      delete ctx.font;
+      ctx.font = before;
+    }
+  };
+}
+
+function flagKeys(node) {
+  const keys = KEYS[node.comfyClass];
+  if (!keys) return;
+  for (const widget of node.widgets ?? []) {
+    if (!(widget.name in keys)) continue;
+    if (widget.element) {  // the prompt box is a DOM textarea
+      widget.element.style.outline = `2px solid ${KEY_COLORS.outline_color}`;
+      continue;
+    }
+    for (const [k, v] of Object.entries(KEY_COLORS))
+      Object.defineProperty(widget, k, { configurable: true, get: () => v });
+    if (keys[widget.name] && !(widget.name === "megapixels" && widget.label)) widget.label = keys[widget.name];
+    bold(widget);
+  }
+}
+
 function showSize(settings) {
   const get = (name) => settings.widgets?.find((w) => w.name === name);
   const mp = get("megapixels");
   if (!mp) return;
   const [w, h] = sizeFor(mp.value, get("aspect")?.value);
-  mp.label = `megapixels (${w} x ${h})`;
+  mp.label = `MEGAPIXELS (${w} x ${h})`;
   settings.setDirtyCanvas?.(true, true);
 }
 
@@ -157,6 +208,16 @@ app.registerExtension({
           return result;
         };
       }
+      const cont = node.widgets?.find((w) => w.name === "continue_from");
+      if (cont) {
+        const original = cont.callback;
+        cont.callback = function (...args) {
+          const result = original?.apply(this, args);
+          for (const take of node.graph?._nodes ?? [])
+            if (take.comfyClass === "H3cGenerate" && settingsOf(take) === node) apply(take);
+          return result;
+        };
+      }
       for (const name of ["megapixels", "aspect"]) {
         const widget = node.widgets?.find((w) => w.name === name);
         if (!widget) continue;
@@ -167,9 +228,11 @@ app.registerExtension({
           return result;
         };
       }
+      flagKeys(node);
       return;
     }
     if (node.comfyClass !== "H3cGenerate") return;
+    flagKeys(node);
     const onConnectionsChange = node.onConnectionsChange;
     node.onConnectionsChange = function (...args) {
       const result = onConnectionsChange?.apply(this, args);
@@ -197,6 +260,7 @@ app.registerExtension({
         apply(node);
       }
       if (node.comfyClass === "H3cSettings") showSize(node);
+      flagKeys(node);  // after configure: saved labels must not undo the key labels
     }
   },
 });

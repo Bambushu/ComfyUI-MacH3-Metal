@@ -35,7 +35,16 @@
       "widgets_values": [
         "",
         "",
-        false
+        false,
+        "",
+        1,
+        "euler",
+        "linear",
+        0,
+        "exact",
+        true,
+        false,
+        "max"
       ],
       "widgets_values_named": {
         "engine_dir": "",
@@ -421,14 +430,8 @@
         8,
         7311,
         "fixed",
-        "euler",
-        "linear",
-        0,
-        "exact",
-        true,
-        false,
         "MacH3/app",
-        "max"
+        "off"
       ],
       "widgets_values_named": {
         "mode": "references",

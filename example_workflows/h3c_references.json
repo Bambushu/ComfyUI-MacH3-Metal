@@ -63,7 +63,16 @@
       "widgets_values": [
         "",
         "",
-        false
+        false,
+        "",
+        1,
+        "euler",
+        "linear",
+        0,
+        "exact",
+        true,
+        false,
+        "max"
       ],
       "widgets_values_named": {
         "engine_dir": "",
@@ -299,75 +308,11 @@
           "link": null
         },
         {
-          "localized_name": "sampler",
-          "name": "sampler",
-          "type": "COMBO",
-          "widget": {
-            "name": "sampler"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "scheduler",
-          "name": "scheduler",
-          "type": "COMBO",
-          "widget": {
-            "name": "scheduler"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "shift",
-          "name": "shift",
-          "type": "FLOAT",
-          "widget": {
-            "name": "shift"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "speed",
-          "name": "speed",
-          "type": "COMBO",
-          "widget": {
-            "name": "speed"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "save_context",
-          "name": "save_context",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "save_context"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "preview",
-          "name": "preview",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "preview"
-          },
-          "link": null
-        },
-        {
           "localized_name": "filename_prefix",
           "name": "filename_prefix",
           "type": "STRING",
           "widget": {
             "name": "filename_prefix"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "reference_image_size",
-          "name": "reference_image_size",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "reference_image_size"
           },
           "link": null
         }
@@ -417,14 +362,8 @@
         8,
         7129,
         "fixed",
-        "euler",
-        "linear",
-        0,
-        "exact",
-        true,
-        false,
         "h3c/ref",
-        "max"
+        "off"
       ],
       "widgets_values_named": {
         "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the STUDIO DESK, described as a small home studio with a wooden desk, a laptop and a warm desk lamp, soft late-afternoon window light from the left continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> sits at the desk facing the camera, hands resting beside the laptop. <Subject 1> looks into the lens, speaks the line with one small nod, then holds a relaxed smile for the rest of the video. Camera: a static vertical medium close-up at chest height with very slight handheld drift. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] Same face, new scene. One reference picture is all it took.</d>\n\noverall_soundscape:\nQuiet room tone, a faint distant street hum, opening and closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",

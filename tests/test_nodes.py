@@ -108,9 +108,9 @@ class NodeLogicTest(unittest.TestCase):
         self.n._LAST_TAKES["p/take"] = {"path": "/x/one.h3ctx", "kind": "h3ctx"}
         self.assertEqual(g.IS_CHANGED(continue_from="last take", filename_prefix="p/take"), "/x/one.h3ctx")
         self.assertEqual(g.IS_CHANGED(continue_from="off", filename_prefix="p/take"), "")
-        args = dict(engine=None, prompt="x", width=544, height=960, seconds=5.0, frames=0, steps=6,
-                    seed=1, sampler="euler", scheduler="linear", shift=0.0, speed="exact",
-                    save_context=False, preview=False, filename_prefix="p/take")
+        sampling = {k: spec[1]["default"] for k, spec in self.n.SAMPLING.items()}
+        args = dict(engine=self.n.EngineHandle(None, sampling), prompt="x", width=544, height=960,
+                    seconds=5.0, frames=0, steps=6, seed=1, filename_prefix="p/take")
         for mode in ("I2V · first frame", "R2V · references"):
             with self.assertRaisesRegex(ValueError, "needs"):
                 g().generate(mode=mode, **args)
@@ -130,13 +130,35 @@ class NodeLogicTest(unittest.TestCase):
         self.assertEqual(size("1.0", "1:1 square"), (992, 992))
         settings = self.n.H3cSettings().make(megapixels="0.8", aspect="9:16 portrait",
                                              lane="Speed (Turbo)", steps=6,
-                                             sampler="euler", scheduler="linear", shift=0.0,
-                                             speed="exact", save_context=True, preview=False,
-                                             reference_image_size="max")[0]
+                                             continue_from="last take")[0]
         self.assertEqual((settings["width"], settings["height"]), (672, 1216))
         for key in self.n.H3cSettings.OVERRIDES:
             self.assertIn(key, settings)
         self.assertEqual(settings["lane"], "Speed (Turbo)")
+        # Continue on Settings drives what the Take reads and keys the cache
+        g = self.n.H3cGenerate()
+        pending = dict(first_frame=None, last_frame=None, references=None, motion_context=None)
+        self.assertEqual(sorted(g.check_lazy_status("R2V · references", "off", settings, **pending)),
+                         ["references"])
+        settings["continue_from"] = "clip input"
+        self.assertEqual(sorted(g.check_lazy_status("I2V · first frame", "off", settings, **pending)),
+                         ["motion_context"])
+        self.n._LAST_TAKES["s/take"] = {"path": "/x/two.h3ctx", "kind": "h3ctx"}
+        self.assertIn("/x/two.h3ctx", self.n.H3cSettings.IS_CHANGED(continue_from="last take"))
+        self.assertEqual(self.n.H3cSettings.IS_CHANGED(continue_from="off"), "")
+
+    def test_engine_carries_sampling_and_keeps_the_open_engine(self):
+        load = self.n.H3cLoader().load
+        sentinel = object()
+        self.n._OPEN.clear()
+        self.n._OPEN[("/e", "/m", False, "", 1.0)] = sentinel
+        a = load("/e", "/m", False, sampler="euler", speed="fast")
+        b = load("/e", "/m", False, sampler="euler", speed="exact", preview=True)[0]
+        self.assertIs(a[0].engine, sentinel)
+        self.assertIs(b.engine, sentinel)                       # a sampling change reopens nothing
+        self.assertEqual((a[0].sampling["speed"], b.sampling["preview"]), ("fast", True))
+        self.assertEqual(a[0].sampling["reference_image_size"], "max")  # defaults fill the rest
+        self.n._OPEN.clear()
 
 if __name__ == "__main__":
     unittest.main()

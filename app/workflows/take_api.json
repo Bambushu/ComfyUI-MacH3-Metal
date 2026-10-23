@@ -19,7 +19,16 @@
       "inputs": {
         "engine_dir": "",
         "model_dir": "",
-        "keep_resident": false
+        "keep_resident": false,
+        "lora": "",
+        "lora_scale": 1,
+        "sampler": "euler",
+        "scheduler": "linear",
+        "shift": 0,
+        "speed": "exact",
+        "save_context": true,
+        "preview": false,
+        "reference_image_size": "max"
       },
       "class_type": "H3cLoader",
       "_meta": {
@@ -109,14 +118,8 @@
         "frames": 0,
         "steps": 8,
         "seed": 7311,
-        "sampler": "euler",
-        "scheduler": "linear",
-        "shift": 0,
-        "speed": "exact",
-        "save_context": true,
-        "preview": false,
         "filename_prefix": "MacH3/app",
-        "reference_image_size": "max",
+        "continue_from": "off",
         "engine": [
           "1",
           0

@@ -17,12 +17,12 @@ Apple silicon only. Measured on an M5 Pro with 48 GB.
 
 | Node | Does |
 | --- | --- |
-| h3c Load Engine | Opens the engine. Reads model metadata only; weights are mapped per generation and freed after it. Optional `lora`: `turbo` for the 5-6 step speed lane on the same weights (see Turbo weights). |
-| h3c Generate | Prompt, size, seconds or frames, steps, seed, sampler, scheduler, shift, speed preset, a **mode** and **continue** (off, last take, or the clip input). Optional first frame, last frame, ordered references and a motion context. Returns IMAGE frames, AUDIO, fps and a context for a next take. |
+| h3c Load Engine | Opens the engine. Reads model metadata only; weights are mapped per generation and freed after it. Optional `lora`: `turbo` for the 5-6 step speed lane on the same weights (see Turbo weights). Also holds how every take samples: sampler, scheduler, shift, speed preset, save_context, preview and reference picture size. Changing those keeps the open engine. |
+| h3c Generate | A **mode**, prompt, size, seconds or frames, steps, seed and **continue** (off, last take, or the clip input). Optional first frame, last frame, ordered references and a motion context. Returns IMAGE frames, AUDIO, fps and a context for a next take. |
 | h3c Reference Image / Video / Audio | Build the ordered reference list. The first image is `<Picture 1>` in the prompt, the first video `<Video 1>`, and so on. |
 | h3c Load Motion Context | A `.h3ctx` from an earlier take (bit-exact) or any finished `.mp4` (45 s max). |
 | h3c Motion Context From Video | Continue a clip that is already in the graph as a VIDEO. |
-| h3c Settings | Size as **megapixels** (0.2 to 1.0) and **aspect** (portrait, landscape, square), the **lane** (Quality, or Speed with the Turbo LoRA; switching sets the steps), plus steps, sampler, scheduler, shift and speed. A Generate it is wired to hides the fields it sets. |
+| h3c Settings | Size as **megapixels** (0.2 to 1.0) and **aspect** (portrait, landscape, square), the **lane** (Quality, or Speed with the Turbo LoRA; switching sets the steps), steps and **continue**. A Generate it is wired to hides the fields it sets. |
 | h3c Add to Shot | Builds a shot across runs: a take that continues the shot's last take is added to the end, any other take starts a new shot. Keeps a manifest in the shot folder, so it carries on after a ComfyUI restart; a rerun never adds the same take twice. Plays the whole shot. |
 | h3c Picture | A reference picture in one node (pick or upload, chain the next). Bypass it with Ctrl+B to leave it out. |
 | h3c Join Takes / Join All Takes | Takes in order as one IMAGE batch and one AUDIO track, for chains wired inside one graph. Join All Takes renders only the first N takes. |
@@ -41,12 +41,13 @@ and SaveVideo nodes write the file.
 ### One workflow for everything
 
 `example_workflows/macH3_metal_all_in_one.json` is one graph for every mode.
-The control panel holds the Take (mode, continue, prompt, length, seed), the
-Engine (lane) and Settings. Each mode's pictures have their own group, and picking a mode greys out the others: T2V (none),
+The control panel holds the Take (mode, prompt, length, seed). Below it,
+Settings (size, lane, continue) and the Engine (LoRA and sampling), with a
+short read me. The dials that matter are drawn in amber, bold and capitals. Each mode's pictures have their own group, and picking a mode greys out the others: T2V (none),
 I2V / FL2V (first frame, last frame), R2V (up to three references, people or
 places; pictures 2 and 3 start bypassed, Ctrl+B turns one on) and a clip to
-continue. Pick the mode, write the prompt, Run. To keep going, set Continue to
-*last take*, write what happens next and Run again: the Shot node adds it to
+continue. Pick the mode, write the prompt, Run. To keep going, set Continue (on
+Settings) to *last take*, write what happens next and Run again: the Shot node adds it to
 the end. Continue works in every mode.
 
 `macH3_metal.app.json` is the same graph for ComfyUI's App Mode: a form with

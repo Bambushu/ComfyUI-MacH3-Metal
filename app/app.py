@@ -101,13 +101,16 @@ class MacH3App:
         lora, steps = LANES[req.get("lane", "quality")]
         req.setdefault("steps", steps)
         wf.set_input(IDS["load"], "lora", req.get("lora", lora))
-        for field in ("prompt", "seconds", "steps", "seed", "width", "height", "reference_image_size", "speed"):
+        for field in ("prompt", "seconds", "steps", "seed", "width", "height"):
             if field in req:
                 wf.set_input(gen, field, req[field])
+        for field in ("reference_image_size", "speed"):  # sampling sits on the engine node
+            if field in req:
+                wf.set_input(IDS["load"], field, req[field])
         if req.get("model_dir"):  # another weights folder (base weights: lanes add the LoRA)
             wf.set_input(IDS["load"], "model_dir", req["model_dir"])
         n = len(self.takes) + 1
-        wf.set_input(gen, "save_context", True)
+        wf.set_input(IDS["load"], "save_context", True)
         wf.set_input(gen, "filename_prefix", f"MacH3/app/take{n:02d}")
         wf.set_input(IDS["sv"], "filename_prefix", f"MacH3/app/take{n:02d}")
         if continuing:

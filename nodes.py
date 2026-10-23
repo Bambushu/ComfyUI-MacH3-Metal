@@ -8,6 +8,7 @@ files and take back IMAGE frames and AUDIO, so the stock video nodes
 
 from __future__ import annotations
 
+import collections
 import glob
 import json
 import os
@@ -121,6 +122,28 @@ def _resolve_comfy_path(name: str) -> str:
     raise FileNotFoundError(f"h3c: no motion context file at {name}")
 
 
+# How a take samples. They sit on h3c Load Engine, under the LoRA, and reach
+# every Take wired to it.
+SAMPLING = {
+    "sampler": (h3c.SAMPLERS, {"default": "euler"}),
+    "scheduler": (h3c.SCHEDULERS, {"default": "linear"}),
+    "shift": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 100.0, "step": 0.5,
+        "tooltip": "Video sigma shift. 0 = the released 12. Audio stays at 3."}),
+    "speed": (list(h3c.SPEED_PRESETS), {"default": "exact"}),
+    "save_context": ("BOOLEAN", {"default": True, "tooltip":
+        "Write each take's final latents (.h3ctx) so a later take continues it bit-exact."}),
+    "preview": ("BOOLEAN", {"default": False, "tooltip":
+        "Decode one frame per denoise step into the progress bar. Costs about "
+        "10 GiB more unified memory and some decode time."}),
+    "reference_image_size": (["match", "max"], {"default": "max", "tooltip":
+        "Size reference pictures are encoded at. max = their own size up to 2048 px "
+        "on the short side, never upscaled (the most detail, more memory and time "
+        "for big pictures); match = scaled down to the video's size."}),
+}
+EngineHandle = collections.namedtuple("EngineHandle", "engine sampling")
+_OPEN: dict = {}  # the one opened engine, by its load fields
+
+
 class H3cLoader:
     @classmethod
     def INPUT_TYPES(cls):
@@ -143,6 +166,7 @@ class H3cLoader:
                 "is built once on the first run."}),
             "lora_scale": ("FLOAT", {"default": 1.0, "min": -4.0, "max": 4.0, "step": 0.05,
                 "tooltip": "LoRA strength. 1 for the Turbo adapter."}),
+            **SAMPLING,
         }}
 
     RETURN_TYPES = (ENGINE,)
@@ -151,11 +175,16 @@ class H3cLoader:
     CATEGORY = CATEGORY
     DESCRIPTION = "Open the h3.c engine. Reads model metadata only; weights map per generation."
 
-    def load(self, engine_dir, model_dir, keep_resident, lora="", lora_scale=1.0):
+    def load(self, engine_dir, model_dir, keep_resident, lora="", lora_scale=1.0, **sampling):
         engine_dir = engine_dir.strip() or h3c.default_engine_dir()
         model_dir = model_dir.strip() or h3c.default_model_dir(os.path.expanduser(engine_dir))
-        return (h3c.Engine(engine_dir, model_dir, keep_resident,
-                           lora=lora.strip() or None, lora_scale=lora_scale),)
+        key = (engine_dir, model_dir, keep_resident, lora.strip(), lora_scale)
+        if key not in _OPEN:  # a sampling change keeps the open (maybe resident) engine
+            _OPEN.clear()
+            _OPEN[key] = h3c.Engine(engine_dir, model_dir, keep_resident,
+                                    lora=lora.strip() or None, lora_scale=lora_scale)
+        defaults = {k: spec[1]["default"] for k, spec in SAMPLING.items()}
+        return (EngineHandle(_OPEN[key], dict(defaults, **sampling)),)
 
 
 def _append(refs, item):
@@ -331,16 +360,6 @@ class H3cGenerate:
                     "tooltip": "8 is the measured M5 Pro production lane; the engine's own default is 20."}),
                 "seed": ("INT", {"default": 42, "min": 0, "max": 0xFFFFFFFFFFFFFFFF,
                                  "control_after_generate": True}),
-                "sampler": (h3c.SAMPLERS, {"default": "euler"}),
-                "scheduler": (h3c.SCHEDULERS, {"default": "linear"}),
-                "shift": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 100.0, "step": 0.5,
-                    "tooltip": "Video sigma shift. 0 = the released 12. Audio stays at 3."}),
-                "speed": (list(h3c.SPEED_PRESETS), {"default": "exact"}),
-                "save_context": ("BOOLEAN", {"default": True, "tooltip":
-                    "Write this take's final latents (.h3ctx) so a later take continues it bit-exact."}),
-                "preview": ("BOOLEAN", {"default": False, "tooltip":
-                    "Decode one frame per denoise step into the progress bar. Costs about "
-                    "10 GiB more unified memory and some decode time."}),
                 "filename_prefix": ("STRING", {"default": "h3c/take"}),
             },
             "optional": {
@@ -349,14 +368,9 @@ class H3cGenerate:
                 "references": (REFS, {"lazy": True}),
                 "motion_context": (CONTEXT, {"lazy": True, "tooltip":
                     "Continue a previous take. Replaces first_frame; references and last_frame ride along."}),
-                "reference_image_size": (["match", "max"], {"default": "max", "tooltip":
-                    "Size reference pictures are encoded at. max = their own size up to 2048 px "
-                    "on the short side, never upscaled (the most detail, more memory and time "
-                    "for big pictures); match = scaled down to the video's size."}),
                 "settings": (SETTINGS, {"tooltip":
-                    "From h3c Settings: overrides this node's size, steps, sampler, scheduler, "
-                    "shift, speed, preview, save_context and reference size, so every take of "
-                    "a chain shares one set."}),
+                    "From h3c Settings: overrides this node's size, steps and continue, so "
+                    "every take of a chain shares one set."}),
                 "continue_from": (CONTINUE_FROM, {"default": "off", "tooltip":
                     "off = a new shot. last take = pick up where the previous take ended. "
                     "Works in every mode: the previous take's last 22 frames and 0.9 s of "
@@ -389,27 +403,27 @@ class H3cGenerate:
         # The dropdown shows MAIN_MODES; the older names stay valid.
         return True if mode in GENERATE_MODES else f"h3c: unknown mode {mode!r}"
 
-    def check_lazy_status(self, mode="auto", continue_from="off", **inputs):
+    def check_lazy_status(self, mode="auto", continue_from="off", settings=None, **inputs):
         # A connected input that has not run yet arrives as None; an unconnected
         # one is absent, and must not be requested.
-        wanted = _wanted(mode, continue_from)
+        wanted = _wanted(mode, (settings or {}).get("continue_from", continue_from))
         return [k for k in wanted if k in inputs and inputs[k] is None]
 
     def generate(self, engine, prompt, width, height, seconds, frames, steps, seed,
-                 sampler, scheduler, shift, speed, save_context, preview, filename_prefix,
-                 first_frame=None, last_frame=None, references=None, motion_context=None,
-                 reference_image_size="max", mode="auto", settings=None, continue_from="off"):
+                 filename_prefix, first_frame=None, last_frame=None, references=None,
+                 motion_context=None, mode="auto", settings=None, continue_from="off"):
+        if settings:
+            width, height, steps = settings["width"], settings["height"], settings["steps"]
+            continue_from = settings["continue_from"]
+        engine, sampling = engine
+        sampler, scheduler, shift = sampling["sampler"], sampling["scheduler"], sampling["shift"]
+        speed, preview, save_context = sampling["speed"], sampling["preview"], sampling["save_context"]
+        reference_image_size = sampling["reference_image_size"]
         wanted = _wanted(mode, continue_from)
         first_frame = first_frame if "first_frame" in wanted else None
         last_frame = last_frame if "last_frame" in wanted else None
         references = references if "references" in wanted else None
         motion_context = motion_context if "motion_context" in wanted else None
-        if settings:
-            width, height, steps = settings["width"], settings["height"], settings["steps"]
-            sampler, scheduler, shift = settings["sampler"], settings["scheduler"], settings["shift"]
-            speed, preview = settings["speed"], settings["preview"]
-            save_context = settings["save_context"]
-            reference_image_size = settings["reference_image_size"]
         turbo = bool(settings) and settings.get("lane", "").startswith("Speed")
         if continue_from == "last take":
             last = _last_take_context(filename_prefix)
@@ -577,8 +591,7 @@ def size_for(megapixels: str, aspect: str) -> tuple[int, int]:
 
 class H3cSettings:
     # Generate fields this node takes over; Generate hides them while it is wired in.
-    OVERRIDES = ("width", "height", "steps", "sampler", "scheduler", "shift", "speed",
-                 "save_context", "preview", "reference_image_size")
+    OVERRIDES = ("width", "height", "steps", "continue_from")
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -592,16 +605,22 @@ class H3cSettings:
                     "Quality = the released weights (12-16 steps). Speed = the same weights with "
                     "the Turbo LoRA applied while they load (5-6 steps; its first take builds an "
                     "18 GiB cache once). Switching the lane sets the steps to match."})}
-        for k in ("steps", "sampler", "scheduler", "shift", "speed", "save_context", "preview"):
-            spec[k] = req[k]
-        spec["reference_image_size"] = opt["reference_image_size"]
+        spec["steps"] = req["steps"]
+        spec["continue_from"] = opt["continue_from"]
         return {"required": spec}
+
+    @classmethod
+    def IS_CHANGED(cls, continue_from="off", **_):
+        # As on h3c Generate: a "last take" continuation follows the newest take.
+        if continue_from != "last take":
+            return ""
+        return "|".join(sorted(v["path"] for v in _LAST_TAKES.values()))
 
     RETURN_TYPES = (SETTINGS,)
     RETURN_NAMES = ("settings",)
     FUNCTION = "make"
     CATEGORY = CATEGORY
-    DESCRIPTION = "Size, steps and sampling for the take(s) it is wired to."
+    DESCRIPTION = "Size, lane, steps and continue for the take(s) it is wired to."
 
     def make(self, megapixels, aspect, **kwargs):
         width, height = size_for(megapixels, aspect)
