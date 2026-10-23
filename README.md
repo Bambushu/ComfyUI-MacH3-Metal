@@ -126,6 +126,38 @@ the same join quality.
 `preview` decodes one frame per denoising step into the progress bar. It
 keeps a preview decoder resident, about 10 GiB more memory.
 
+### Turbo weights (recommended speed lane)
+
+h3c has no LoRA runtime, so the step-distillation adapter
+[larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora)
+is folded into a copy of the transformer once, with h3c's own tool:
+
+```bash
+python3 ~/h3c/tools/fold_turbo_lora.py \
+  --checkpoint MiniMax-H3/FL2VA/transformer \
+  --lora minimax_h3_turbo_v4_step600_ema.safetensors \
+  --out MiniMax-H3-turbo/FL2VA/transformer
+```
+
+Link the rest of the model folder (`audio_vae`, `video_vae`, `text_encoder`,
+`tokenizer`, `processor`, `model_index.json`) into `MiniMax-H3-turbo/FL2VA`,
+make `MiniMax-H3-turbo/Ref2VA` point at the same folder, then set that folder
+as `model_dir` on h3c Engine (or `$H3C_MODEL_DIR`) and render at 5 or 6 steps
+with the `exact` preset. The fold takes about 3 minutes and a full copy of the
+transformer on disk (62 GB) unless the filesystem can clone it.
+
+Same prompt and seed, 768x1344, 124 frames, M5 Pro 48 GB, inside ComfyUI:
+
+| Weights | Steps | Wall |
+| --- | ---: | ---: |
+| original | 16 | 36 min |
+| original | 6 | 15.4 min |
+| turbo | 6 | 17.2 min (first run, weights read cold) |
+
+Turbo at 6 steps came closest to the 16-step take; the original weights at 6
+steps keep the same shot but look softer. Tested on text to video; references
+and continuation on turbo weights are not measured yet.
+
 ## Numbers
 
 Engine, M5 Pro 48 GB, 124 frames (5.2 s), 8 steps, exact preset, from the
