@@ -92,9 +92,11 @@ class MacH3App:
         not use, so nothing unneeded is validated, uploaded or loaded."""
         wf = self.client.workflows.from_json(copy.deepcopy(TEMPLATE))
         gen = IDS["gen"]
-        for field in ("prompt", "seconds", "steps", "seed", "width", "height", "reference_image_size"):
+        for field in ("prompt", "seconds", "steps", "seed", "width", "height", "reference_image_size", "speed"):
             if field in req:
                 wf.set_input(gen, field, req[field])
+        if req.get("model_dir"):  # another weights folder, e.g. a folded turbo checkpoint
+            wf.set_input(IDS["load"], "model_dir", req["model_dir"])
         n = len(self.takes) + 1
         wf.set_input(gen, "save_context", True)
         wf.set_input(gen, "filename_prefix", f"MacH3/app/take{n:02d}")
