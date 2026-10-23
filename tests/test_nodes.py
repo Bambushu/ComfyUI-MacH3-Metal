@@ -92,6 +92,13 @@ class NodeLogicTest(unittest.TestCase):
         r3 = add(a, aa, 24.0, {"continues": False}, "t/shot")       # a new shot
         self.assertNotEqual(r3["ui"]["images"][0]["filename"], r2["ui"]["images"][0]["filename"])
 
+    def test_dropdown_shows_four_modes_and_old_names_still_validate(self):
+        g = self.n.H3cGenerate
+        self.assertEqual(len(g.INPUT_TYPES()["required"]["mode"][0]), 4)
+        for name in ("R2V · references", "continue + references", "auto"):
+            self.assertIs(g.VALIDATE_INPUTS(name), True)
+        self.assertIsInstance(g.VALIDATE_INPUTS("nope"), str)
+
     def test_settings_carry_every_generate_field(self):
         spec = self.n.H3cSettings.INPUT_TYPES()["required"]
         defaults = {k: (v[1].get("default") if len(v) > 1 and isinstance(v[1], dict) else None)

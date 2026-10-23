@@ -9,7 +9,7 @@
       "type": "H3cLoader",
       "pos": [
         0,
-        510
+        1036
       ],
       "size": [
         300,
@@ -51,8 +51,8 @@
       "id": 2,
       "type": "H3cSettings",
       "pos": [
-        0,
-        704
+        380,
+        1036
       ],
       "size": [
         300,
@@ -150,7 +150,7 @@
       ],
       "flags": {},
       "order": 2,
-      "mode": 0,
+      "mode": 2,
       "inputs": [
         {
           "label": "First frame (I2V / FL2V)",
@@ -178,7 +178,9 @@
       ],
       "title": "First frame",
       "properties": {
-        "Node name for S&R": "LoadImage"
+        "Node name for S&R": "LoadImage",
+        "h3c_user_mode": 0,
+        "h3c_off": true
       },
       "widgets_values": [
         "h3c_sample_first_frame.png",
@@ -202,7 +204,7 @@
       ],
       "flags": {},
       "order": 3,
-      "mode": 0,
+      "mode": 2,
       "inputs": [
         {
           "label": "Last frame (FL2V)",
@@ -230,7 +232,9 @@
       ],
       "title": "Last frame",
       "properties": {
-        "Node name for S&R": "LoadImage"
+        "Node name for S&R": "LoadImage",
+        "h3c_user_mode": 0,
+        "h3c_off": true
       },
       "widgets_values": [
         "h3c_sample_last_frame.png",
@@ -347,7 +351,7 @@
       ],
       "flags": {},
       "order": 5,
-      "mode": 0,
+      "mode": 2,
       "inputs": [
         {
           "label": "Clip to continue (Continue = clip input)",
@@ -370,7 +374,9 @@
       ],
       "title": "Clip to continue",
       "properties": {
-        "Node name for S&R": "LoadVideo"
+        "Node name for S&R": "LoadVideo",
+        "h3c_user_mode": 0,
+        "h3c_off": true
       },
       "widgets_values": [
         "h3c_sample_clip.mp4",
@@ -394,7 +400,7 @@
       ],
       "flags": {},
       "order": 11,
-      "mode": 0,
+      "mode": 2,
       "inputs": [
         {
           "name": "video",
@@ -413,7 +419,9 @@
       ],
       "title": "Clip context",
       "properties": {
-        "Node name for S&R": "H3cContextFromVideo"
+        "Node name for S&R": "H3cContextFromVideo",
+        "h3c_user_mode": 0,
+        "h3c_off": true
       }
     },
     {
@@ -636,10 +644,16 @@
       ],
       "title": "Take",
       "properties": {
-        "Node name for S&R": "H3cGenerate"
+        "Node name for S&R": "H3cGenerate",
+        "h3c_group_colors": {
+          "T2V · text to video": "#88A",
+          "I2V / FL2V · first frame, first + last frame": "#5b8a5b",
+          "R2V · references: up to 3 people or places (Pictures 2-3: Ctrl+B to use)": "#a1309b",
+          "Continue a clip (Continue = clip input)": "#b06634"
+        }
       },
       "widgets_values": [
-        "references",
+        "R2V · references",
         "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie, facing the camera, pine trees and the mountain peaks behind her. <Subject 1> catches her breath, looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] So this whole clip came out of Comfy U I, running on my Mac.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, opening and closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
         544,
         960,
@@ -659,7 +673,7 @@
         "off"
       ],
       "widgets_values_named": {
-        "mode": "references",
+        "mode": "R2V · references",
         "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie, facing the camera, pine trees and the mountain peaks behind her. <Subject 1> catches her breath, looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] So this whole clip came out of Comfy U I, running on my Mac.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, opening and closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
         "width": 544,
         "height": 960,
@@ -698,10 +712,10 @@
       "title": "MacH3 Metal",
       "properties": {},
       "widgets_values": [
-        "## MacH3 Metal\nMiniMax H3 with sound, native on a Mac (h3.c Metal engine).\n\n**1.** On **Take**, pick a **Mode**: text to video, first frame, first + last frame or references. Each mode's pictures sit in their own group on the right; the others never load.\n\n**2.** Write the **prompt**, press **Run**. **Shot** plays it.\n\n**3.** To keep going: set **Continue** to *last take*, write what happens next, Run again. Shot adds it to the end. Continue works in every mode.\n\n**Lane** (Engine): Quality = `lora` empty, 12-16 steps in Settings. Speed = `lora` **turbo**, 6 steps."
+        "## MacH3 Metal\nMiniMax H3 with sound, native on a Mac (h3.c Metal engine).\n\n**1.** On **Take**, pick a **Mode**: T2V, I2V, FL2V or R2V. That mode's group lights up; the others grey out and never load.\n\n**2.** Write the **prompt**, press **Run**. **Shot** plays it.\n\n**3.** To keep going: set **Continue** to *last take*, write what happens next, Run again. Shot adds it to the end. Continue works in every mode.\n\nSize, steps and the Speed or Quality lane are in **Settings and lane** below."
       ],
       "widgets_values_named": {
-        "text": "## MacH3 Metal\nMiniMax H3 with sound, native on a Mac (h3.c Metal engine).\n\n**1.** On **Take**, pick a **Mode**: text to video, first frame, first + last frame or references. Each mode's pictures sit in their own group on the right; the others never load.\n\n**2.** Write the **prompt**, press **Run**. **Shot** plays it.\n\n**3.** To keep going: set **Continue** to *last take*, write what happens next, Run again. Shot adds it to the end. Continue works in every mode.\n\n**Lane** (Engine): Quality = `lora` empty, 12-16 steps in Settings. Speed = `lora` **turbo**, 6 steps."
+        "text": "## MacH3 Metal\nMiniMax H3 with sound, native on a Mac (h3.c Metal engine).\n\n**1.** On **Take**, pick a **Mode**: T2V, I2V, FL2V or R2V. That mode's group lights up; the others grey out and never load.\n\n**2.** Write the **prompt**, press **Run**. **Shot** plays it.\n\n**3.** To keep going: set **Continue** to *last take*, write what happens next, Run again. Shot adds it to the end. Continue works in every mode.\n\nSize, steps and the Speed or Quality lane are in **Settings and lane** below."
       },
       "color": "#432",
       "bgcolor": "#653"
@@ -1106,7 +1120,7 @@
         -28,
         -66,
         836,
-        1078
+        956
       ],
       "color": "#3f789e",
       "flags": {}
@@ -1120,7 +1134,7 @@
         356,
         300
       ],
-      "color": "#88A",
+      "color": "#444444",
       "flags": {}
     },
     {
@@ -1132,7 +1146,7 @@
         356,
         960
       ],
-      "color": "#5b8a5b",
+      "color": "#444444",
       "flags": {}
     },
     {
@@ -1156,7 +1170,7 @@
         800,
         840
       ],
-      "color": "#b06634",
+      "color": "#444444",
       "flags": {}
     },
     {
@@ -1169,6 +1183,18 @@
         900
       ],
       "color": "#b58b2a",
+      "flags": {}
+    },
+    {
+      "id": 15,
+      "title": "Settings and lane (Speed: Engine lora = turbo, 6 steps)",
+      "bounding": [
+        -28,
+        930,
+        836,
+        440
+      ],
+      "color": "#2f7f7a",
       "flags": {}
     }
   ],

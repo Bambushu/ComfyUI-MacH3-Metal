@@ -249,7 +249,16 @@ class H3cLoadContext:
 
 
 # Generate modes: which optional inputs a take uses.
+# The four modes the dropdown offers; each reads only its own inputs.
+MAIN_MODES = {
+    "T2V · text to video": set(),
+    "I2V · first frame": {"first_frame"},
+    "FL2V · first + last frame": {"first_frame", "last_frame"},
+    "R2V · references": {"references"},
+}
+# Older names, still accepted (the app and earlier workflows send them).
 GENERATE_MODES = {
+    **MAIN_MODES,
     "auto": {"first_frame", "last_frame", "references", "motion_context"},
     "text to video": set(),
     "first frame": {"first_frame"},
@@ -296,9 +305,9 @@ class H3cGenerate:
         return {
             "required": {
                 "engine": (ENGINE,),
-                "mode": (list(GENERATE_MODES), {"default": "auto", "tooltip":
-                    "Which connected inputs this take uses. auto = all of them. Inputs the mode "
-                    "leaves out are skipped, and the loaders feeding them never run."}),
+                "mode": (list(MAIN_MODES), {"default": "T2V · text to video", "tooltip":
+                    "Which inputs this take uses. Inputs the mode leaves out are skipped, and "
+                    "the loaders feeding them never run (in the all-in-one their groups grey out)."}),
                 "prompt": ("STRING", {"multiline": True, "default": ""}),
                 "width": ("INT", {"default": 544, "min": 64, "max": 2048, "step": 32}),
                 "height": ("INT", {"default": 960, "min": 64, "max": 2048, "step": 32}),
@@ -351,6 +360,11 @@ class H3cGenerate:
     CATEGORY = CATEGORY
     DESCRIPTION = ("Generate video with native sound on h3.c (Apple silicon). T2V, first/last "
                    "frame, Ref2VA references and motion-context continuation.")
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, mode):
+        # The dropdown shows MAIN_MODES; the older names stay valid.
+        return True if mode in GENERATE_MODES else f"h3c: unknown mode {mode!r}"
 
     def check_lazy_status(self, mode="auto", continue_from="off", **inputs):
         # A connected input that has not run yet arrives as None; an unconnected

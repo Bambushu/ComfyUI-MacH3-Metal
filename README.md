@@ -26,11 +26,13 @@ Apple silicon only. Measured on an M5 Pro with 48 GB.
 | h3c Add to Shot | Builds a shot across runs: a take that continues the last one is added to the end, any other take starts a new shot. Plays the whole shot. |
 | h3c Join Takes / Join All Takes | Takes in order as one IMAGE batch and one AUDIO track, for chains wired inside one graph. Join All Takes renders only the first N takes. |
 
-The **mode** on h3c Generate picks which connected inputs a take uses: auto
-(all of them), text to video, first frame, first + last frame, references
-(optionally with first or first + last frame), or continue (optionally with
-references and a last frame). Inputs the mode leaves out are skipped, and the
-loaders feeding them never run.
+The **mode** on h3c Generate is one of four: T2V (text to video), I2V (first
+frame), FL2V (first + last frame) or R2V (references). Inputs the mode leaves out
+are skipped and the loaders feeding them never run; in a workflow the pack's
+frontend script greys out their groups too. **continue** (off, last take, clip
+input) picks up where a take ended and works under every mode. The older
+combined mode names (auto, references + first frame, continue + references, ...)
+are still accepted from the API.
 
 Frames and audio leave as ordinary IMAGE and AUDIO, so the stock CreateVideo
 and SaveVideo nodes write the file.
@@ -39,7 +41,7 @@ and SaveVideo nodes write the file.
 
 `example_workflows/macH3_metal_all_in_one.json` is one graph for every mode.
 The control panel holds the Take (mode, continue, prompt, length, seed), the
-Engine (lane) and Settings. Each mode's pictures have their own group: T2V (none),
+Engine (lane) and Settings. Each mode's pictures have their own group, and picking a mode greys out the others: T2V (none),
 I2V / FL2V (first frame, last frame), R2V (up to three references, people or
 places; pictures 2 and 3 start bypassed, Ctrl+B turns one on) and a clip to
 continue. Pick the mode, write the prompt, Run. To keep going, set Continue to
