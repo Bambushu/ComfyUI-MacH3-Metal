@@ -68,6 +68,31 @@ def default_model_dir(engine_dir: str) -> str:
     return os.path.join(engine_dir, "MiniMax-H3")
 
 
+TURBO_LORA = "minimax_h3_turbo_v4_step600_ema.safetensors"
+
+
+def find_turbo_lora(engine_dir: str, model_dir: str) -> str:
+    """The Turbo step-distillation adapter (larryvrh/MiniMax-H3-Turbo-Lora):
+    $H3C_TURBO_LORA, else the first TURBO_LORA beside the engine, the model
+    folder or in ComfyUI's models/loras."""
+    env = os.environ.get("H3C_TURBO_LORA")
+    if env:
+        return os.path.expanduser(env)
+    folders = [os.path.join(engine_dir, "turbo_lora"), engine_dir, model_dir]
+    try:
+        import folder_paths  # inside ComfyUI only
+        folders += folder_paths.get_folder_paths("loras")
+    except Exception:
+        pass
+    for folder in folders:
+        candidate = os.path.join(os.path.expanduser(folder), TURBO_LORA)
+        if os.path.isfile(candidate):
+            return candidate
+    raise H3cError(
+        f"{TURBO_LORA} not found in {', '.join(folders)}. Download it from "
+        "https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora or set $H3C_TURBO_LORA.")
+
+
 def ensure_ffmpeg_env() -> None:
     """The engine shells out to ffmpeg. A GUI-launched ComfyUI often lacks
     Homebrew on PATH, so point H3_FFMPEG at a real binary."""
@@ -177,9 +202,15 @@ ProgressSink = Callable[[str, int, int], bool]
 
 
 class Engine:
-    """One h3_ctx. h3_load_dir only reads metadata; weights map per run."""
+    """One h3_ctx. h3_load_dir only reads metadata; weights map per run.
 
-    def __init__(self, engine_dir: str, model_dir: str, keep_resident: bool = False):
+    lora: a DiT adapter applied while the weights load (W + scale * B @ A), or
+    "turbo" for the Turbo step-distillation adapter (sample at 5-6 steps).
+    None keeps the base weights. The engine builds a separate int8 cache for
+    it once, beside the base one."""
+
+    def __init__(self, engine_dir: str, model_dir: str, keep_resident: bool = False,
+                 lora: Optional[str] = None, lora_scale: float = 1.0):
         ensure_ffmpeg_env()
         self.engine_dir = os.path.abspath(os.path.expanduser(engine_dir))
         self.model_dir = os.path.abspath(os.path.expanduser(model_dir))
@@ -189,6 +220,16 @@ class Engine:
         self.ctx = self.lib.h3_load_dir(self.model_dir.encode())
         if not self.ctx:
             raise H3cError(f"h3_load_dir failed for {self.model_dir}")
+        if lora == "turbo":
+            lora = find_turbo_lora(self.engine_dir, self.model_dir)
+        if lora:
+            lora = os.path.abspath(os.path.expanduser(lora))
+            if not os.path.isfile(lora):
+                raise H3cError(f"LoRA not found: {lora}")
+            if not lora_scale:
+                raise H3cError("lora_scale must be nonzero")
+        self.lora = lora or None
+        self.lora_scale = float(lora_scale)
         self.keep_resident = keep_resident
         self.lib.h3_cache_set_enabled(self.ctx, 1 if keep_resident else 0)
 
@@ -236,6 +277,11 @@ class Engine:
             for name in ("output_path", "first_frame", "last_frame",
                          "motion_context", "save_context"):
                 lib.h3_flat_params_set_string(p, name.encode(), self._abs(getattr(request, name)))
+            if self.lora:
+                if not (lib.h3_flat_params_set_string(p, b"lora_path", self.lora.encode())
+                        and lib.h3_flat_params_set_double(p, b"lora_scale", self.lora_scale)):
+                    raise H3cError("this libh3.dylib has no LoRA support; rebuild it "
+                                   f"from an h3.c with --lora: make -C {self.engine_dir} libh3.dylib")
             for ref in request.references:
                 if not lib.h3_flat_params_add_reference(
                         p, ref.kind, self._abs(ref.path), self._abs(ref.audio_path),

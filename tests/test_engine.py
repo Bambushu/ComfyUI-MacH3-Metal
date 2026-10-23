@@ -27,6 +27,30 @@ class FramesTest(unittest.TestCase):
             self.assertFalse(preset["denoise_reuse"] > 1 and preset["core_reuse"] > 1, name)
 
 
+class TurboLoraTest(unittest.TestCase):
+    def setUp(self):
+        import tempfile
+        self.tmp = tempfile.TemporaryDirectory()
+        self.saved = os.environ.pop("H3C_TURBO_LORA", None)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+        if self.saved is not None:
+            os.environ["H3C_TURBO_LORA"] = self.saved
+
+    def test_found_beside_the_engine_or_by_env(self):
+        engine = os.path.join(self.tmp.name, "h3c")
+        os.makedirs(os.path.join(engine, "turbo_lora"))
+        with self.assertRaisesRegex(h3c.H3cError, h3c.TURBO_LORA):
+            h3c.find_turbo_lora(engine, self.tmp.name)
+        adapter = os.path.join(engine, "turbo_lora", h3c.TURBO_LORA)
+        open(adapter, "wb").close()
+        self.assertEqual(h3c.find_turbo_lora(engine, self.tmp.name), adapter)
+        os.environ["H3C_TURBO_LORA"] = "/elsewhere/turbo.safetensors"
+        self.assertEqual(h3c.find_turbo_lora(engine, self.tmp.name),
+                         "/elsewhere/turbo.safetensors")
+
+
 @unittest.skipUnless(HAVE_LIB, "libh3.dylib not built or not Apple silicon")
 class EngineTest(unittest.TestCase):
     @classmethod
@@ -46,6 +70,22 @@ class EngineTest(unittest.TestCase):
     def test_bad_frames_rejected(self):
         with self.assertRaisesRegex(h3c.H3cError, "frames"):
             self.engine.generate(h3c.Request(prompt="x", frames=400))
+
+    def test_lora_marshals(self):
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix=".safetensors") as adapter:
+            engine = h3c.Engine(ENGINE_DIR, h3c.default_model_dir(ENGINE_DIR),
+                                lora=adapter.name, lora_scale=0.5)
+            try:
+                # The dylib takes both fields; the engine's own validation
+                # still runs first.
+                with self.assertRaisesRegex(h3c.H3cError, "denoising steps"):
+                    engine.generate(h3c.Request(prompt="x", steps=1))
+            finally:
+                engine.close()
+        with self.assertRaisesRegex(h3c.H3cError, "LoRA not found"):
+            h3c.Engine(ENGINE_DIR, h3c.default_model_dir(ENGINE_DIR),
+                       lora="/nonexistent.safetensors")
 
     def test_callbacks_and_references_marshal(self):
         seen = []

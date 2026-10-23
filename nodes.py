@@ -128,6 +128,15 @@ class H3cLoader:
             "keep_resident": ("BOOLEAN", {"default": False, "tooltip":
                 "Keep the prepared DiT and VAE decoder in memory between runs. Off frees "
                 "everything after each take (the engine's one-shot lifetime)."}),
+        }, "optional": {
+            "lora": ("STRING", {"default": "", "tooltip":
+                "Empty = base weights (quality lane). \"turbo\" = the Turbo step-distillation "
+                "LoRA (speed lane: render at 5 or 6 steps), found via $H3C_TURBO_LORA, "
+                "<engine_dir>/turbo_lora/, the model folder or models/loras. Or a path to "
+                "another DiT LoRA. Applied while the weights load; its int8 cache (18 GiB) "
+                "is built once on the first run."}),
+            "lora_scale": ("FLOAT", {"default": 1.0, "min": -4.0, "max": 4.0, "step": 0.05,
+                "tooltip": "LoRA strength. 1 for the Turbo adapter."}),
         }}
 
     RETURN_TYPES = (ENGINE,)
@@ -136,10 +145,11 @@ class H3cLoader:
     CATEGORY = CATEGORY
     DESCRIPTION = "Open the h3.c engine. Reads model metadata only; weights map per generation."
 
-    def load(self, engine_dir, model_dir, keep_resident):
+    def load(self, engine_dir, model_dir, keep_resident, lora="", lora_scale=1.0):
         engine_dir = engine_dir.strip() or h3c.default_engine_dir()
         model_dir = model_dir.strip() or h3c.default_model_dir(os.path.expanduser(engine_dir))
-        return (h3c.Engine(engine_dir, model_dir, keep_resident),)
+        return (h3c.Engine(engine_dir, model_dir, keep_resident,
+                           lora=lora.strip() or None, lora_scale=lora_scale),)
 
 
 def _append(refs, item):

@@ -17,7 +17,7 @@ Apple silicon only. Measured on an M5 Pro with 48 GB.
 
 | Node | Does |
 | --- | --- |
-| h3c Load Engine | Opens the engine. Reads model metadata only; weights are mapped per generation and freed after it. |
+| h3c Load Engine | Opens the engine. Reads model metadata only; weights are mapped per generation and freed after it. Optional `lora`: `turbo` for the 5-6 step speed lane on the same weights (see Turbo weights). |
 | h3c Generate | Prompt, size, seconds or frames, steps, seed, sampler, scheduler, shift, speed preset, and a **mode**. Optional first frame, last frame, ordered references and a motion context. Returns IMAGE frames, AUDIO, fps and a context for a next take. |
 | h3c Reference Image / Video / Audio | Build the ordered reference list. The first image is `<Picture 1>` in the prompt, the first video `<Video 1>`, and so on. |
 | h3c Load Motion Context | A `.h3ctx` from an earlier take (bit-exact) or any finished `.mp4` (45 s max). |
@@ -128,23 +128,21 @@ keeps a preview decoder resident, about 10 GiB more memory.
 
 ### Turbo weights (recommended speed lane)
 
-h3c has no LoRA runtime, so the step-distillation adapter
+The step-distillation adapter
 [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora)
-is folded into a copy of the transformer once, with h3c's own tool:
+runs on the same weights as the quality lane. Download
+`minimax_h3_turbo_v4_step600_ema.safetensors` (780 MB) into `~/h3c/turbo_lora/`
+(or ComfyUI's `models/loras`, or set `$H3C_TURBO_LORA`), set `lora` on h3c Load Engine
+to `turbo`, and render at 5 or 6 steps with the `exact` preset. Leave `lora`
+empty for the base weights. `lora` also takes a path to another DiT adapter,
+with `lora_scale` as its strength.
 
-```bash
-python3 ~/h3c/tools/fold_turbo_lora.py \
-  --checkpoint MiniMax-H3/FL2VA/transformer \
-  --lora minimax_h3_turbo_v4_step600_ema.safetensors \
-  --out MiniMax-H3-turbo/FL2VA/transformer
-```
-
-Link the rest of the model folder (`audio_vae`, `video_vae`, `text_encoder`,
-`tokenizer`, `processor`, `model_index.json`) into `MiniMax-H3-turbo/FL2VA`,
-make `MiniMax-H3-turbo/Ref2VA` point at the same folder, then set that folder
-as `model_dir` on h3c Engine (or `$H3C_MODEL_DIR`) and render at 5 or 6 steps
-with the `exact` preset. The fold takes about 3 minutes and a full copy of the
-transformer on disk (62 GB) unless the filesystem can clone it.
+h3c applies the adapter while it loads the weights, byte-identical to folding
+it into a copy of the transformer, so there is no second 62 GB checkpoint. The
+first turbo run builds its own int8 cache (18 GiB, beside the base one in
+`~/Library/Caches/h3c/dit`); later runs map it like the base cache. It needs a
+`libh3.dylib` built from an h3.c with `--lora`, and does not combine with SSD
+streaming.
 
 Same prompt and seed, 768x1344, 124 frames, M5 Pro 48 GB, inside ComfyUI:
 
@@ -152,7 +150,7 @@ Same prompt and seed, 768x1344, 124 frames, M5 Pro 48 GB, inside ComfyUI:
 | --- | ---: | ---: |
 | original | 16 | 36 min |
 | original | 6 | 15.4 min |
-| turbo | 6 | 17.2 min (first run, weights read cold) |
+| turbo | 6 | 17.2 min (first run, weights read cold, folded copy) |
 
 Turbo at 6 steps came closest to the 16-step take; the original weights at 6
 steps keep the same shot but look softer. Tested on text to video; references
