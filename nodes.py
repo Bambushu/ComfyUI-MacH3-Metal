@@ -512,14 +512,42 @@ class H3cJoinTakes:
 
 
 
+MEGAPIXELS = ["0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0"]
+ASPECTS = {"9:16 portrait": 9 / 16, "16:9 landscape": 16 / 9, "1:1 square": 1.0}
+MAX_PIXELS = 768 * 1344  # the largest canvas the released weights take
+
+
+def size_for(megapixels: str, aspect: str) -> tuple[int, int]:
+    """Width and height for a megapixel count (1 MP = 1024 x 1024, as in ComfyUI)
+    and an aspect, on the engine's 32-pixel grid and within its pixel cap."""
+    pixels, ratio = float(megapixels) * 1024 * 1024, ASPECTS[aspect]
+    r32 = lambda v: max(64, int(round(v / 32)) * 32)
+    w, h = r32((pixels * ratio) ** 0.5), r32((pixels / ratio) ** 0.5)
+    while w * h > MAX_PIXELS:
+        if w > h:
+            w -= 32
+        elif h > w:
+            h -= 32
+        else:
+            w, h = w - 32, h - 32
+    return w, h
+
+
 class H3cSettings:
+    # Generate fields this node takes over; Generate hides them while it is wired in.
+    OVERRIDES = ("width", "height", "steps", "sampler", "scheduler", "shift", "speed",
+                 "save_context", "preview", "reference_image_size")
+
     @classmethod
     def INPUT_TYPES(cls):
         g = H3cGenerate.INPUT_TYPES()
         req, opt = g["required"], g["optional"]
-        keys = ("width", "height", "steps", "sampler", "scheduler", "shift", "speed",
-                "save_context", "preview")
-        spec = {k: req[k] for k in keys}
+        spec = {"megapixels": (MEGAPIXELS, {"default": "0.5", "tooltip":
+                    "Video size in megapixels (1 MP = 1024 x 1024), on the engine's 32-pixel grid. "
+                    "1.0 (768 x 1344 portrait) is the largest canvas the weights take."}),
+                "aspect": (list(ASPECTS), {"default": "9:16 portrait"})}
+        for k in ("steps", "sampler", "scheduler", "shift", "speed", "save_context", "preview"):
+            spec[k] = req[k]
         spec["reference_image_size"] = opt["reference_image_size"]
         return {"required": spec}
 
@@ -527,10 +555,11 @@ class H3cSettings:
     RETURN_NAMES = ("settings",)
     FUNCTION = "make"
     CATEGORY = CATEGORY
-    DESCRIPTION = "One set of render settings for every take of a chain."
+    DESCRIPTION = "Size, steps and sampling for the take(s) it is wired to."
 
-    def make(self, **kwargs):
-        return (dict(kwargs),)
+    def make(self, megapixels, aspect, **kwargs):
+        width, height = size_for(megapixels, aspect)
+        return (dict(kwargs, width=width, height=height),)
 
 
 

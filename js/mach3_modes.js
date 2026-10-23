@@ -1,7 +1,9 @@
-// MacH3 Metal: the Take's Mode and Continue switch the input groups on and off.
-// Loaders a take does not read are muted (greyed, never run) and their group goes
-// grey; switching back restores each node to the state it had, so a picture you
-// bypassed yourself stays bypassed.
+// MacH3 Metal frontend helpers:
+// - the Take's Mode and Continue switch the input groups on and off. Loaders a take
+//   does not read are muted (greyed, never run) and their group goes grey; switching
+//   back restores each node to the state it had, so a picture you bypassed stays so.
+// - while h3c Settings is wired into a Take, the Take hides the fields Settings sets.
+// - h3c Settings shows the size its megapixels and aspect give.
 import { app } from "../../scripts/app.js";
 
 // Mirrors MAIN_MODES / GENERATE_MODES in nodes.py.
@@ -101,10 +103,66 @@ function apply(take) {
   graph.setDirtyCanvas?.(true, true);
 }
 
+// Mirrors H3cSettings.OVERRIDES and size_for() in nodes.py.
+const OVERRIDES = ["width", "height", "steps", "sampler", "scheduler", "shift", "speed",
+  "save_context", "preview", "reference_image_size"];
+const ASPECTS = { "9:16 portrait": 9 / 16, "16:9 landscape": 16 / 9, "1:1 square": 1 };
+
+function sizeFor(megapixels, aspect) {
+  const px = Number(megapixels) * 1024 * 1024, a = ASPECTS[aspect] ?? 9 / 16;
+  const r32 = (v) => Math.max(64, Math.round(v / 32) * 32);
+  let w = r32(Math.sqrt(px * a)), h = r32(Math.sqrt(px / a));
+  while (w * h > 768 * 1344) {
+    if (w > h) w -= 32; else if (h > w) h -= 32; else { w -= 32; h -= 32; }
+  }
+  return [w, h];
+}
+
+function hideOverridden(take, resize = true) {
+  const slot = take.inputs?.findIndex((i) => i.name === "settings") ?? -1;
+  const wired = slot >= 0 && take.inputs[slot].link != null;
+  let changed = false;
+  for (const w of take.widgets ?? []) {
+    if (!OVERRIDES.includes(w.name) || !!w.hidden === wired) continue;
+    w.hidden = wired;
+    changed = true;
+  }
+  // Never shrink (the prompt box keeps the freed space); grow when fields come back.
+  if (changed && resize) take.setSize([take.size[0], Math.max(take.size[1], take.computeSize()[1])]);
+}
+
+function showSize(settings) {
+  const get = (name) => settings.widgets?.find((w) => w.name === name);
+  const mp = get("megapixels");
+  if (!mp) return;
+  const [w, h] = sizeFor(mp.value, get("aspect")?.value);
+  mp.label = `megapixels (${w} x ${h})`;
+  settings.setDirtyCanvas?.(true, true);
+}
+
 app.registerExtension({
   name: "MacH3Metal.ModeGroups",
   nodeCreated(node) {
+    if (node.comfyClass === "H3cSettings") {
+      for (const name of ["megapixels", "aspect"]) {
+        const widget = node.widgets?.find((w) => w.name === name);
+        if (!widget) continue;
+        const original = widget.callback;
+        widget.callback = function (...args) {
+          const result = original?.apply(this, args);
+          showSize(node);
+          return result;
+        };
+      }
+      return;
+    }
     if (node.comfyClass !== "H3cGenerate") return;
+    const onConnectionsChange = node.onConnectionsChange;
+    node.onConnectionsChange = function (...args) {
+      const result = onConnectionsChange?.apply(this, args);
+      hideOverridden(node);
+      return result;
+    };
     for (const name of ["mode", "continue_from"]) {
       const widget = node.widgets?.find((w) => w.name === name);
       if (!widget) continue;
@@ -118,7 +176,11 @@ app.registerExtension({
   },
   afterConfigureGraph() {
     for (const node of app.graph?._nodes ?? []) {
-      if (node.comfyClass === "H3cGenerate") apply(node);
+      if (node.comfyClass === "H3cGenerate") {
+        hideOverridden(node, false);
+        apply(node);
+      }
+      if (node.comfyClass === "H3cSettings") showSize(node);
     }
   },
 });

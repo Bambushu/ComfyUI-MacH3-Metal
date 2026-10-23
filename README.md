@@ -22,7 +22,7 @@ Apple silicon only. Measured on an M5 Pro with 48 GB.
 | h3c Reference Image / Video / Audio | Build the ordered reference list. The first image is `<Picture 1>` in the prompt, the first video `<Video 1>`, and so on. |
 | h3c Load Motion Context | A `.h3ctx` from an earlier take (bit-exact) or any finished `.mp4` (45 s max). |
 | h3c Motion Context From Video | Continue a clip that is already in the graph as a VIDEO. |
-| h3c Settings | One set of size, steps, sampler, scheduler, shift and speed for several Generate nodes. |
+| h3c Settings | Size as **megapixels** (0.2 to 1.0) and **aspect** (portrait, landscape, square), plus steps, sampler, scheduler, shift and speed. A Generate it is wired to hides the fields it sets. |
 | h3c Add to Shot | Builds a shot across runs: a take that continues the last one is added to the end, any other take starts a new shot. Plays the whole shot. |
 | h3c Join Takes / Join All Takes | Takes in order as one IMAGE batch and one AUDIO track, for chains wired inside one graph. Join All Takes renders only the first N takes. |
 

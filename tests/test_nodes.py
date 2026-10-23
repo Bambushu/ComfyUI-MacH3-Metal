@@ -99,17 +99,19 @@ class NodeLogicTest(unittest.TestCase):
             self.assertIs(g.VALIDATE_INPUTS(name), True)
         self.assertIsInstance(g.VALIDATE_INPUTS("nope"), str)
 
-    def test_settings_carry_every_generate_field(self):
-        spec = self.n.H3cSettings.INPUT_TYPES()["required"]
-        defaults = {k: (v[1].get("default") if len(v) > 1 and isinstance(v[1], dict) else None)
-                    for k, v in spec.items()}
-        defaults["sampler"], defaults["scheduler"], defaults["speed"] = "euler", "linear", "exact"
-        defaults["reference_image_size"] = "max"
-        settings = self.n.H3cSettings().make(**defaults)[0]
-        for key in ("width", "height", "steps", "sampler", "scheduler", "shift", "speed",
-                    "preview", "save_context", "reference_image_size"):
+    def test_settings_size_from_megapixels_and_aspect(self):
+        size = self.n.size_for
+        self.assertEqual(size("0.5", "9:16 portrait"), (544, 960))
+        self.assertEqual(size("1.0", "9:16 portrait"), (768, 1344))   # capped
+        self.assertEqual(size("1.0", "16:9 landscape"), (1344, 768))
+        self.assertEqual(size("1.0", "1:1 square"), (992, 992))
+        settings = self.n.H3cSettings().make(megapixels="0.8", aspect="9:16 portrait", steps=6,
+                                             sampler="euler", scheduler="linear", shift=0.0,
+                                             speed="exact", save_context=True, preview=False,
+                                             reference_image_size="max")[0]
+        self.assertEqual((settings["width"], settings["height"]), (672, 1216))
+        for key in self.n.H3cSettings.OVERRIDES:
             self.assertIn(key, settings)
-
 
 if __name__ == "__main__":
     unittest.main()

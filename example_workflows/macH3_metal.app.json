@@ -9,7 +9,7 @@
       "type": "H3cLoader",
       "pos": [
         0,
-        1036
+        716
       ],
       "size": [
         300,
@@ -52,7 +52,7 @@
       "type": "H3cSettings",
       "pos": [
         380,
-        1036
+        716
       ],
       "size": [
         300,
@@ -62,24 +62,6 @@
       "order": 1,
       "mode": 0,
       "inputs": [
-        {
-          "label": "Width",
-          "name": "width",
-          "type": "INT",
-          "widget": {
-            "name": "width"
-          },
-          "link": null
-        },
-        {
-          "label": "Height",
-          "name": "height",
-          "type": "INT",
-          "widget": {
-            "name": "height"
-          },
-          "link": null
-        },
         {
           "label": "Steps",
           "name": "steps",
@@ -113,8 +95,8 @@
         "Node name for S&R": "H3cSettings"
       },
       "widgets_values": [
-        544,
-        960,
+        "0.5",
+        "9:16 portrait",
         12,
         "euler",
         "linear",
@@ -125,8 +107,8 @@
         "max"
       ],
       "widgets_values_named": {
-        "width": 544,
-        "height": 960,
+        "megapixels": "0.5",
+        "aspect": "9:16 portrait",
         "steps": 12,
         "sampler": "euler",
         "scheduler": "linear",
@@ -433,7 +415,7 @@
       ],
       "size": [
         420,
-        820
+        500
       ],
       "flags": {},
       "order": 14,
@@ -484,7 +466,7 @@
           "link": null
         },
         {
-          "label": "Take 1 prompt",
+          "label": "Prompt",
           "name": "prompt",
           "type": "STRING",
           "widget": {
@@ -511,7 +493,7 @@
           "link": null
         },
         {
-          "label": "Take 1 length (s)",
+          "label": "Length (s); a continuation includes 0.9 s overlap",
           "name": "seconds",
           "type": "FLOAT",
           "widget": {
@@ -529,7 +511,7 @@
           "link": null
         },
         {
-          "label": "Take 1 seed",
+          "label": "Seed",
           "name": "seed",
           "type": "INT",
           "widget": {
@@ -1120,7 +1102,7 @@
         -28,
         -66,
         836,
-        956
+        636
       ],
       "color": "#3f789e",
       "flags": {}
@@ -1190,9 +1172,9 @@
       "title": "Settings and lane (Speed: Engine lora = turbo, 6 steps)",
       "bounding": [
         -28,
-        930,
+        610,
         836,
-        440
+        424
       ],
       "color": "#2f7f7a",
       "flags": {}
@@ -1256,11 +1238,11 @@
         ],
         [
           "2",
-          "width"
+          "megapixels"
         ],
         [
           "2",
-          "height"
+          "aspect"
         ],
         [
           "2",
