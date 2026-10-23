@@ -32,8 +32,11 @@ class TurboLoraTest(unittest.TestCase):
         import tempfile
         self.tmp = tempfile.TemporaryDirectory()
         self.saved = os.environ.pop("H3C_TURBO_LORA", None)
+        self.home = os.environ.get("HOME")
+        os.environ["HOME"] = self.tmp.name  # hide a real ~/h3c/turbo_lora
 
     def tearDown(self):
+        os.environ["HOME"] = self.home
         self.tmp.cleanup()
         if self.saved is not None:
             os.environ["H3C_TURBO_LORA"] = self.saved

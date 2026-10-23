@@ -34,6 +34,7 @@
   .tabs label { margin:0; text-transform:none; letter-spacing:0; }
   .tile .opt { display:none; } .tiles.refsmode .opt { display:inline; } .tiles.refsmode .tile[data-k=refs] { order:-1; }
   .dims { text-transform:none; letter-spacing:0; color:var(--fg); margin-left:6px; }
+  .seg.lane { grid-template-columns: repeat(2, 1fr); }
   .seg.mp { grid-template-columns: repeat(9, 1fr); } .seg.mp span { padding:8px 0; font-size:13px; }
   .seg { display:grid; grid-template-columns: repeat(3, 1fr); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
   .seg label { margin:0; text-transform:none; letter-spacing:0; font-size:14px; } .seg input { display:none; }
@@ -80,6 +81,11 @@
       <label><input type="radio" name="aspect" value="0.5625" checked><span>Portrait</span></label>
       <label><input type="radio" name="aspect" value="1.7778"><span>Landscape</span></label>
       <label><input type="radio" name="aspect" value="1"><span>Square</span></label>
+    </div>
+    <label>Lane</label>
+    <div class="seg lane" title="Both lanes use the same weights; Speed adds the Turbo LoRA (its first take builds an 18 GiB cache once).">
+      <label><input type="radio" name="lane" value="quality" checked><span>Quality</span></label>
+      <label><input type="radio" name="lane" value="speed"><span>Speed (Turbo, 6 steps)</span></label>
     </div>
     <label>Megapixels</label>
     <div class="seg mp" id="mp"></div>
@@ -146,6 +152,10 @@ const dims = () => {
   }
   return [w, h];
 };
+// Each lane has its own step count: switching lanes sets the field to it.
+const LANE_STEPS = { quality: 8, speed: 6 };
+const lane = () => document.querySelector('input[name=lane]:checked').value;
+document.querySelectorAll('input[name=lane]').forEach(r => r.onchange = () => { $('steps').value = LANE_STEPS[lane()]; });
 const showDims = () => { const [w, h] = dims(); $('dims').textContent = `${w} x ${h}`; };
 document.querySelectorAll('input[name=aspect], input[name=mp]').forEach(r => r.onchange = showDims);
 showDims();
@@ -170,7 +180,7 @@ for (const tile of document.querySelectorAll('.tile')) {
 }
 async function go(cont) {
   const [width, height] = dims(), slots = SLOTS[tab()];
-  const body = { width, height, mode: pickMode()[0], prompt: $('prompt').value, seconds: +$('seconds').value, seed: +$('seed').value, steps: +$('steps').value, continue: cont,
+  const body = { width, height, mode: pickMode()[0], prompt: $('prompt').value, seconds: +$('seconds').value, seed: +$('seed').value, steps: +$('steps').value, lane: lane(), continue: cont,
     refs: cont || !slots.includes('refs') ? [] : refs,
     first: cont || !slots.includes('first') ? undefined : frames.first, last: cont || !slots.includes('last') ? undefined : frames.last };
   const r = await fetch('/api/take', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -189,9 +199,9 @@ async function poll() {
     $('new').dataset.busy = busy ? '1' : ''; showMode(); $('cont').disabled = busy || !s.takes.length; $('stop').disabled = !busy;
     const esc = x => String(x ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     $('now').style.display = s.current ? 'block' : 'none';
-    if (s.current) $('now').innerHTML = `Rendering take ${s.current.n}, ${s.current.seconds} s, seed ${s.current.seed}${s.current.n > 1 ? ', continuing take ' + (s.current.n - 1) : ''}<q>${esc(s.current.line)}</q>`;
+    if (s.current) $('now').innerHTML = `Rendering take ${s.current.n}, ${s.current.lane} lane, ${s.current.seconds} s, seed ${s.current.seed}${s.current.n > 1 ? ', continuing take ' + (s.current.n - 1) : ''}<q>${esc(s.current.line)}</q>`;
     $('who').innerHTML = s.refs.length ? s.refs.map(r => `<img src="/media/${r}" alt="">`).join('') + '<span>identity, cited as Picture 1' + (s.refs.length > 1 ? ', 2' : '') + '</span>' : '';
-    $('takes').innerHTML = s.takes.map(t => `<li><a href="/media/${t.video}" target="_blank">take ${t.n}</a>, ${t.seconds} s, ${Math.round(t.wall / 60 * 10) / 10} min<br><q>${esc(t.line)}</q></li>`).join('') +
+    $('takes').innerHTML = s.takes.map(t => `<li><a href="/media/${t.video}" target="_blank">take ${t.n}</a>, ${t.lane}, ${t.steps} steps, ${t.seconds} s, ${Math.round(t.wall / 60 * 10) / 10} min<br><q>${esc(t.line)}</q></li>`).join('') +
       (s.takes.length > 1 ? `<li><a href="/media/${s.joined}" target="_blank">joined take</a></li>` : '');
     if (s.joined && s.joined !== shown) { shown = s.joined; $('video').src = '/media/' + s.joined; }
   } catch (e) {}

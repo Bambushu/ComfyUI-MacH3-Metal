@@ -132,7 +132,7 @@ class H3cLoader:
             "lora": ("STRING", {"default": "", "tooltip":
                 "Empty = base weights (quality lane). \"turbo\" = the Turbo step-distillation "
                 "LoRA (speed lane: render at 5 or 6 steps), found via $H3C_TURBO_LORA, "
-                "<engine_dir>/turbo_lora/, the model folder or models/loras. Or a path to "
+                "<engine_dir>/turbo_lora/, ~/h3c/turbo_lora/, the model folder or models/loras. Or a path to "
                 "another DiT LoRA. Applied while the weights load; its int8 cache (18 GiB) "
                 "is built once on the first run."}),
             "lora_scale": ("FLOAT", {"default": 1.0, "min": -4.0, "max": 4.0, "step": 0.05,

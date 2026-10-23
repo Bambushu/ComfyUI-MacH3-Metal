@@ -73,12 +73,13 @@ TURBO_LORA = "minimax_h3_turbo_v4_step600_ema.safetensors"
 
 def find_turbo_lora(engine_dir: str, model_dir: str) -> str:
     """The Turbo step-distillation adapter (larryvrh/MiniMax-H3-Turbo-Lora):
-    $H3C_TURBO_LORA, else the first TURBO_LORA beside the engine, the model
-    folder or in ComfyUI's models/loras."""
+    $H3C_TURBO_LORA, else the first TURBO_LORA beside the engine, in
+    ~/h3c/turbo_lora, the model folder or in ComfyUI's models/loras."""
     env = os.environ.get("H3C_TURBO_LORA")
     if env:
         return os.path.expanduser(env)
-    folders = [os.path.join(engine_dir, "turbo_lora"), engine_dir, model_dir]
+    folders = [os.path.join(engine_dir, "turbo_lora"), engine_dir,
+               os.path.expanduser("~/h3c/turbo_lora"), model_dir]
     try:
         import folder_paths  # inside ComfyUI only
         folders += folder_paths.get_folder_paths("loras")

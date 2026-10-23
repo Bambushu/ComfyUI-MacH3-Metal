@@ -52,6 +52,11 @@ MODES = {
 }
 
 
+# lane -> h3c Load Engine lora and the default step count. Both lanes run on the
+# same base weights; "speed" applies the Turbo step-distillation LoRA at load.
+LANES = {"quality": ("", 8), "speed": ("turbo", 6)}
+
+
 def save_data_url(data_url: str, path_stem: Path) -> Path:
     header, b64 = data_url.split(",", 1)
     path = path_stem.with_suffix(".png" if "png" in header else ".jpg")
@@ -82,7 +87,8 @@ class MacH3App:
 
     def state(self) -> dict:
         return {"status": self.status, "progress": round(self.progress, 3), "error": self.error,
-                "takes": [{k: t[k] for k in ("n", "line", "seed", "seconds", "video", "wall")}
+                "takes": [{k: t[k] for k in ("n", "line", "seed", "seconds", "video", "wall",
+                                             "lane", "steps")}
                           for t in self.takes],
                 "current": self.current, "refs": self.refs, "joined": self.joined}
 
@@ -92,10 +98,13 @@ class MacH3App:
         not use, so nothing unneeded is validated, uploaded or loaded."""
         wf = self.client.workflows.from_json(copy.deepcopy(TEMPLATE))
         gen = IDS["gen"]
+        lora, steps = LANES[req.get("lane", "quality")]
+        req.setdefault("steps", steps)
+        wf.set_input(IDS["load"], "lora", req.get("lora", lora))
         for field in ("prompt", "seconds", "steps", "seed", "width", "height", "reference_image_size", "speed"):
             if field in req:
                 wf.set_input(gen, field, req[field])
-        if req.get("model_dir"):  # another weights folder, e.g. a folded turbo checkpoint
+        if req.get("model_dir"):  # another weights folder (base weights: lanes add the LoRA)
             wf.set_input(IDS["load"], "model_dir", req["model_dir"])
         n = len(self.takes) + 1
         wf.set_input(gen, "save_context", True)
@@ -134,6 +143,8 @@ class MacH3App:
             mode = req.get("mode", "text to video")
             if not continuing and mode not in MODES:
                 raise ValueError(f"unknown mode {mode!r}")
+            if req.get("lane", "quality") not in LANES:
+                raise ValueError(f"unknown lane {req['lane']!r}")
             frames = {}
             if not continuing:
                 needs = dict(zip(("first", "last", "refs"), MODES[mode]))
@@ -152,7 +163,8 @@ class MacH3App:
                             save_data_url(req[key], self.dir / f"{key}_frame"))
             self.status, self.progress, self.error = "running", 0.0, ""
             self.current = {"n": len(self.takes) + 1, "line": spoken_line(req["prompt"]),
-                            "seconds": req.get("seconds"), "seed": req.get("seed")}
+                            "seconds": req.get("seconds"), "seed": req.get("seed"),
+                            "lane": req.get("lane", "quality")}
             started = time.time()
             job = self.job = self.client.submit(self.build(req, continuing, frames))
             for event in job.events():
@@ -170,6 +182,7 @@ class MacH3App:
             context = [o for o in job.get_outputs(IDS["gen"]) if o.name.endswith(".h3ctx")][0]
             self.takes.append({"n": n, "line": spoken_line(req["prompt"]), "seed": req.get("seed"),
                                "seconds": req.get("seconds"), "video": video.name,
+                               "lane": req.get("lane", "quality"), "steps": req["steps"],
                                "context_id": context.id, "wall": round(time.time() - started, 1),
                                "width": req.get("width", 544), "height": req.get("height", 960)})
             self.join()
