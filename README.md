@@ -64,8 +64,6 @@ Load from the workflow templates browser, or drag in from `example_workflows/`:
 | `h3c_first_last_frame.json` | First frame, optional last frame |
 | `h3c_references.json` | Identity picture as `<Picture 1>` |
 | `h3c_reference_video_audio.json` | Ordered reference video and audio |
-| `h3c_chain_two_takes.json` | Take A, take B continuing A, and the joined take |
-| `h3c_continue_video.json` | Continue any finished MP4 |
 
 ## What it is not
 

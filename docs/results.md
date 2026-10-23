@@ -6,7 +6,7 @@ Measured on a MacBook Pro M5 Pro, 48 GB, 2026-10-21. ComfyUI 0.34.0, h3.c
 
 ## Two-take chain inside ComfyUI
 
-`example_workflows/h3c_chain_two_takes.json` as shipped: the bench prompt,
+Two takes wired in one graph: the bench prompt,
 take A seed 77001 (124 frames, saves its context), take B seed 77002
 continuing A's context file (124 frames requested, 102 delivered).
 
