@@ -3,3 +3,4 @@ __pycache__/
 .DS_Store
 app/.venv/
 app/session/
+dist/

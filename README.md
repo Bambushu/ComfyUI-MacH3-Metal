@@ -84,8 +84,9 @@ That means:
 
 ## Setup on a Mac
 
-You need an Apple silicon Mac (48 GB or more is comfortable for 0.5 MP; see
-the h3.c README for the low-memory modes), ffmpeg (`brew install ffmpeg`),
+You need an Apple silicon Mac (tested on an M5 Pro with 48 GB; 24 GB or more on
+M1 or newer should work but is untested; see the h3.c README for the
+low-memory modes), ffmpeg (`brew install ffmpeg`),
 and the MiniMax-H3 weights.
 
 ```bash
