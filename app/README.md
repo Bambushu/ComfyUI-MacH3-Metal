@@ -6,8 +6,9 @@ Pick a mode at the top (text to video, first frame, first + last, references;
 references also takes an optional start and end frame), write the prompt, drop
 in the pictures it asks for, pick portrait, landscape or square and 0.2 to 1.0
 megapixels, and generate. The lane picks the weights: Quality is the
-base model (8 steps by default), Speed adds the Turbo step-distillation LoRA
-to the same weights at load (6 steps). The first Speed take builds its own
+base model (8, 12, 16 or 20 steps; 12 by default, 16 is the reference look),
+Speed adds the Turbo step-distillation LoRA to the same weights at load (5 or
+6 steps). The first Speed take builds its own
 18 GiB int8 cache once (about 100 s); later takes in either lane map theirs
 in seconds. Speed needs a `libh3.dylib` built from an h3.c with `--lora`, and
 the model folder must hold the base weights, not a folded Turbo copy. To keep going, write what happens next and press

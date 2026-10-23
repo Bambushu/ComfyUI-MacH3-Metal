@@ -54,7 +54,7 @@ MODES = {
 
 # lane -> h3c Load Engine lora and the default step count. Both lanes run on the
 # same base weights; "speed" applies the Turbo step-distillation LoRA at load.
-LANES = {"quality": ("", 8), "speed": ("turbo", 6)}
+LANES = {"quality": ("", 12), "speed": ("turbo", 6)}
 
 
 def save_data_url(data_url: str, path_stem: Path) -> Path:
