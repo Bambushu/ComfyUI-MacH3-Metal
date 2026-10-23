@@ -89,7 +89,7 @@ the h3.c README for the low-memory modes), ffmpeg (`brew install ffmpeg`),
 and the MiniMax-H3 weights.
 
 ```bash
-git clone https://github.com/Bambushu/h3.c ~/h3c
+git clone -b comfy-node-lora https://github.com/Bambushu/h3.c ~/h3c
 make -C ~/h3c libh3.dylib
 ```
 
