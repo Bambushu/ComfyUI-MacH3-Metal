@@ -188,6 +188,12 @@ ended. It talks to ComfyUI through comfy-api-proxy, so the same code runs
 against any Comfy API v2 surface that has this pack installed. See
 `app/README.md`.
 
+The app needs ComfyUI running (headless is fine): the page talks to the proxy,
+the proxy to ComfyUI, and ComfyUI renders through this pack. A later version
+could offer a second backend that drives the h3c engine directly, without a
+ComfyUI process in memory. On a smaller Mac that would leave the memory
+ComfyUI itself holds to the engine. Not built yet.
+
 ## License
 
 MIT, Maikel Slomp.
