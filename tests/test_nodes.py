@@ -59,6 +59,39 @@ class NodeLogicTest(unittest.TestCase):
         images, audio = j.join(1, images_1=a, audio_1=aa)
         self.assertEqual(images.shape[0], 4)
 
+    def test_continue_option_works_under_any_mode(self):
+        g = self.n.H3cGenerate()
+        pending = dict(first_frame=None, last_frame=None, references=None, motion_context=None)
+        # continuing the last take: the first frame is replaced, refs and last frame stay
+        self.assertEqual(sorted(g.check_lazy_status("references + first + last frame", "last take", **pending)),
+                         ["last_frame", "references"])
+        self.assertEqual(g.check_lazy_status("text to video", "last take", **pending), [])
+        # continuing a clip also reads the motion_context input
+        self.assertEqual(sorted(g.check_lazy_status("references", "clip input", **pending)),
+                         ["motion_context", "references"])
+
+    def test_add_to_shot_appends_continuations_and_restarts_otherwise(self):
+        import tempfile, subprocess
+        import folder_paths
+        out = tempfile.mkdtemp()
+        folder_paths.set_output_directory(out)
+        folder_paths.set_temp_directory(tempfile.mkdtemp())
+        add = self.n.H3cAddToShot().add
+        a, aa = self.clip(24, 0.2, 32000)
+        b, ba = self.clip(48, 0.8, 64000)
+        r1 = add(a, aa, 24.0, {"continues": False}, "t/shot")
+        r2 = add(b, ba, 24.0, {"continues": True}, "t/shot")
+        shot = os.path.join(out, r2["ui"]["images"][0]["subfolder"], r2["ui"]["images"][0]["filename"])
+        self.assertEqual(r1["ui"]["images"][0]["filename"], r2["ui"]["images"][0]["filename"])
+        probe = lambda kind: subprocess.run(
+            ["ffprobe", "-v", "error", "-select_streams", kind, "-count_frames", "-show_entries",
+             "stream=nb_read_frames,duration", "-of", "csv=p=0", shot],
+            capture_output=True, text=True).stdout.strip()
+        self.assertEqual(probe("v").split(",")[-1], "72")          # 24 + 48 frames
+        self.assertAlmostEqual(float(probe("a").split(",")[0]), 3.0, delta=0.03)
+        r3 = add(a, aa, 24.0, {"continues": False}, "t/shot")       # a new shot
+        self.assertNotEqual(r3["ui"]["images"][0]["filename"], r2["ui"]["images"][0]["filename"])
+
     def test_settings_carry_every_generate_field(self):
         spec = self.n.H3cSettings.INPUT_TYPES()["required"]
         defaults = {k: (v[1].get("default") if len(v) > 1 and isinstance(v[1], dict) else None)

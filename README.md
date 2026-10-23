@@ -18,12 +18,13 @@ Apple silicon only. Measured on an M5 Pro with 48 GB.
 | Node | Does |
 | --- | --- |
 | h3c Load Engine | Opens the engine. Reads model metadata only; weights are mapped per generation and freed after it. Optional `lora`: `turbo` for the 5-6 step speed lane on the same weights (see Turbo weights). |
-| h3c Generate | Prompt, size, seconds or frames, steps, seed, sampler, scheduler, shift, speed preset, and a **mode**. Optional first frame, last frame, ordered references and a motion context. Returns IMAGE frames, AUDIO, fps and a context for a next take. |
+| h3c Generate | Prompt, size, seconds or frames, steps, seed, sampler, scheduler, shift, speed preset, a **mode** and **continue** (off, last take, or the clip input). Optional first frame, last frame, ordered references and a motion context. Returns IMAGE frames, AUDIO, fps and a context for a next take. |
 | h3c Reference Image / Video / Audio | Build the ordered reference list. The first image is `<Picture 1>` in the prompt, the first video `<Video 1>`, and so on. |
 | h3c Load Motion Context | A `.h3ctx` from an earlier take (bit-exact) or any finished `.mp4` (45 s max). |
 | h3c Motion Context From Video | Continue a clip that is already in the graph as a VIDEO. |
 | h3c Settings | One set of size, steps, sampler, scheduler, shift and speed for several Generate nodes. |
-| h3c Join Takes / Join All Takes | Takes in order as one IMAGE batch and one AUDIO track. Join All Takes renders only the first N takes. |
+| h3c Add to Shot | Builds a shot across runs: a take that continues the last one is added to the end, any other take starts a new shot. Plays the whole shot. |
+| h3c Join Takes / Join All Takes | Takes in order as one IMAGE batch and one AUDIO track, for chains wired inside one graph. Join All Takes renders only the first N takes. |
 
 The **mode** on h3c Generate picks which connected inputs a take uses: auto
 (all of them), text to video, first frame, first + last frame, references
@@ -36,14 +37,18 @@ and SaveVideo nodes write the file.
 
 ### One workflow for everything
 
-`example_workflows/macH3_metal_all_in_one.json` holds every input in one graph:
-first frame, last frame, an identity picture, a clip to continue, three takes
-and the join. Pick the mode on Take 1 and the number of takes on Join; takes
-2 and 3 continue the take before them and only render when asked for.
+`example_workflows/macH3_metal_all_in_one.json` is one graph for every mode.
+The control panel holds the Take (mode, continue, prompt, length, seed), the
+Engine (lane) and Settings. Each mode's pictures have their own group: T2V (none),
+I2V / FL2V (first frame, last frame), R2V (up to three references, people or
+places; pictures 2 and 3 start bypassed, Ctrl+B turns one on) and a clip to
+continue. Pick the mode, write the prompt, Run. To keep going, set Continue to
+*last take*, write what happens next and Run again: the Shot node adds it to
+the end. Continue works in every mode.
 
 `macH3_metal.app.json` is the same graph for ComfyUI's App Mode: a form with
-the mode, takes, pictures, prompts, lengths and seeds, and the finished video
-as its output.
+the mode, continue, pictures, prompt, length, seed, size, steps and lane, and
+the shot as its output.
 
 Both run as shipped: the pack copies its `h3c_sample_*` pictures, clip and
 voice line into ComfyUI's input folder on first load (it never overwrites a
@@ -107,7 +112,8 @@ Turn on `save_context` on a take, connect its `context` output to the next
 h3c Generate's `motion_context`, and keep the same references on both. The
 continuation counts the 22 pinned frames in its length and delivers 22 fewer,
 so a 5 s continuation adds about 4.1 s. Feed both takes into h3c Join Takes
-for the whole shot. Write each continuation's prompt so it opens on the state
+for the whole shot, or, across runs, set Continue to *last take* and let h3c
+Add to Shot collect them. Write each continuation's prompt so it opens on the state
 the previous take ended in.
 
 A take rendered without a context file can still be continued from its MP4.

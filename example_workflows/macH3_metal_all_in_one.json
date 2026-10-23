@@ -1,61 +1,30 @@
 {
-  "id": "00000000-0000-0000-0000-000000000000",
+  "id": "ecb4bd7d-f158-44f1-acee-3b65ea71770f",
   "revision": 0,
-  "last_node_id": 15,
-  "last_link_id": 25,
+  "last_node_id": 23,
+  "last_link_id": 36,
   "nodes": [
     {
       "id": 1,
       "type": "H3cLoader",
       "pos": [
         0,
-        40
+        510
       ],
       "size": [
         300,
-        110
+        154
       ],
       "flags": {},
       "order": 0,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "engine_dir",
-          "name": "engine_dir",
-          "type": "STRING",
-          "widget": {
-            "name": "engine_dir"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "model_dir",
-          "name": "model_dir",
-          "type": "STRING",
-          "widget": {
-            "name": "model_dir"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "keep_resident",
-          "name": "keep_resident",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "keep_resident"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "engine",
           "name": "engine",
           "type": "H3C_ENGINE",
           "links": [
-            3,
-            6,
-            9
+            3
           ]
         }
       ],
@@ -66,12 +35,16 @@
       "widgets_values": [
         "",
         "",
-        false
+        false,
+        "",
+        1
       ],
       "widgets_values_named": {
         "engine_dir": "",
         "model_dir": "",
-        "keep_resident": false
+        "keep_resident": false,
+        "lora": "",
+        "lora_scale": 1
       }
     },
     {
@@ -79,7 +52,7 @@
       "type": "H3cSettings",
       "pos": [
         0,
-        236
+        704
       ],
       "size": [
         300,
@@ -91,7 +64,6 @@
       "inputs": [
         {
           "label": "Width",
-          "localized_name": "width",
           "name": "width",
           "type": "INT",
           "widget": {
@@ -101,7 +73,6 @@
         },
         {
           "label": "Height",
-          "localized_name": "height",
           "name": "height",
           "type": "INT",
           "widget": {
@@ -111,7 +82,6 @@
         },
         {
           "label": "Steps",
-          "localized_name": "steps",
           "name": "steps",
           "type": "INT",
           "widget": {
@@ -120,79 +90,21 @@
           "link": null
         },
         {
-          "localized_name": "sampler",
-          "name": "sampler",
-          "type": "COMBO",
-          "widget": {
-            "name": "sampler"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "scheduler",
-          "name": "scheduler",
-          "type": "COMBO",
-          "widget": {
-            "name": "scheduler"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "shift",
-          "name": "shift",
-          "type": "FLOAT",
-          "widget": {
-            "name": "shift"
-          },
-          "link": null
-        },
-        {
           "label": "Speed",
-          "localized_name": "speed",
           "name": "speed",
           "type": "COMBO",
           "widget": {
             "name": "speed"
           },
           "link": null
-        },
-        {
-          "localized_name": "save_context",
-          "name": "save_context",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "save_context"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "preview",
-          "name": "preview",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "preview"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "reference_image_size",
-          "name": "reference_image_size",
-          "type": "COMBO",
-          "widget": {
-            "name": "reference_image_size"
-          },
-          "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "settings",
           "name": "settings",
           "type": "H3C_SETTINGS",
           "links": [
-            4,
-            7,
-            10
+            4
           ]
         }
       ],
@@ -203,7 +115,7 @@
       "widgets_values": [
         544,
         960,
-        8,
+        12,
         "euler",
         "linear",
         0,
@@ -215,7 +127,7 @@
       "widgets_values_named": {
         "width": 544,
         "height": 960,
-        "steps": 8,
+        "steps": 12,
         "sampler": "euler",
         "scheduler": "linear",
         "shift": 0,
@@ -229,8 +141,8 @@
       "id": 3,
       "type": "LoadImage",
       "pos": [
-        436,
-        40
+        864,
+        380
       ],
       "size": [
         300,
@@ -241,28 +153,17 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "First frame (first-frame modes)",
-          "localized_name": "image",
+          "label": "First frame (I2V / FL2V)",
           "name": "image",
           "type": "COMBO",
           "widget": {
             "name": "image"
           },
           "link": null
-        },
-        {
-          "localized_name": "choose file to upload",
-          "name": "upload",
-          "type": "IMAGEUPLOAD",
-          "widget": {
-            "name": "upload"
-          },
-          "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "IMAGE",
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
@@ -270,7 +171,6 @@
           ]
         },
         {
-          "localized_name": "MASK",
           "name": "MASK",
           "type": "MASK",
           "links": null
@@ -293,8 +193,8 @@
       "id": 4,
       "type": "LoadImage",
       "pos": [
-        436,
-        506
+        864,
+        800
       ],
       "size": [
         300,
@@ -305,28 +205,17 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "Last frame (last-frame modes)",
-          "localized_name": "image",
+          "label": "Last frame (FL2V)",
           "name": "image",
           "type": "COMBO",
           "widget": {
             "name": "image"
           },
           "link": null
-        },
-        {
-          "localized_name": "choose file to upload",
-          "name": "upload",
-          "type": "IMAGEUPLOAD",
-          "widget": {
-            "name": "upload"
-          },
-          "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "IMAGE",
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
@@ -334,7 +223,6 @@
           ]
         },
         {
-          "localized_name": "MASK",
           "name": "MASK",
           "type": "MASK",
           "links": null
@@ -357,11 +245,11 @@
       "id": 5,
       "type": "LoadImage",
       "pos": [
-        782,
+        1228,
         40
       ],
       "size": [
-        300,
+        304.091796875,
         380
       ],
       "flags": {},
@@ -369,28 +257,17 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "Identity picture (references modes)",
-          "localized_name": "image",
+          "label": "Picture 1 (R2V)",
           "name": "image",
           "type": "COMBO",
           "widget": {
             "name": "image"
           },
           "link": null
-        },
-        {
-          "localized_name": "choose file to upload",
-          "name": "upload",
-          "type": "IMAGEUPLOAD",
-          "widget": {
-            "name": "upload"
-          },
-          "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "IMAGE",
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
@@ -398,13 +275,12 @@
           ]
         },
         {
-          "localized_name": "MASK",
           "name": "MASK",
           "type": "MASK",
           "links": null
         }
       ],
-      "title": "Identity (Picture 1)",
+      "title": "Picture 1",
       "properties": {
         "Node name for S&R": "LoadImage"
       },
@@ -421,25 +297,23 @@
       "id": 6,
       "type": "H3cReferenceImage",
       "pos": [
-        782,
-        506
+        1228,
+        440
       ],
       "size": [
         300,
-        266
+        70
       ],
       "flags": {},
-      "order": 7,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "image",
           "name": "image",
           "type": "IMAGE",
           "link": 1
         },
         {
-          "localized_name": "references",
           "name": "references",
           "shape": 7,
           "type": "H3C_REFS",
@@ -448,61 +322,45 @@
       ],
       "outputs": [
         {
-          "localized_name": "references",
           "name": "references",
           "type": "H3C_REFS",
           "links": [
-            5,
-            8,
-            11
+            29
           ]
         }
       ],
-      "title": "Reference",
+      "title": "Reference 1",
       "properties": {
         "Node name for S&R": "H3cReferenceImage"
-      },
-      "widgets_values": [],
-      "widgets_values_named": {}
+      }
     },
     {
       "id": 7,
       "type": "LoadVideo",
       "pos": [
-        1128,
-        40
+        1228,
+        660
       ],
       "size": [
-        300,
-        573.0567555147059
+        354.330078125,
+        699.2883731617648
       ],
       "flags": {},
       "order": 5,
       "mode": 0,
       "inputs": [
         {
-          "label": "Clip to continue (continue modes, 45 s max)",
-          "localized_name": "file",
+          "label": "Clip to continue (Continue = clip input)",
           "name": "file",
           "type": "COMBO",
           "widget": {
             "name": "file"
           },
           "link": null
-        },
-        {
-          "localized_name": "choose file to upload",
-          "name": "upload",
-          "type": "IMAGEUPLOAD",
-          "widget": {
-            "name": "upload"
-          },
-          "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "VIDEO",
           "name": "VIDEO",
           "type": "VIDEO",
           "links": [
@@ -527,19 +385,18 @@
       "id": 8,
       "type": "H3cContextFromVideo",
       "pos": [
-        1128,
-        686
+        1628,
+        660
       ],
       "size": [
         300,
-        246
+        80
       ],
       "flags": {},
-      "order": 8,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "video",
           "name": "video",
           "type": "VIDEO",
           "link": 2
@@ -547,7 +404,6 @@
       ],
       "outputs": [
         {
-          "localized_name": "motion_context",
           "name": "motion_context",
           "type": "H3C_CONTEXT",
           "links": [
@@ -558,15 +414,13 @@
       "title": "Clip context",
       "properties": {
         "Node name for S&R": "H3cContextFromVideo"
-      },
-      "widgets_values": [],
-      "widgets_values_named": {}
+      }
     },
     {
       "id": 9,
       "type": "H3cGenerate",
       "pos": [
-        1564,
+        360,
         40
       ],
       "size": [
@@ -574,45 +428,39 @@
         820
       ],
       "flags": {},
-      "order": 9,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "engine",
           "name": "engine",
           "type": "H3C_ENGINE",
           "link": 3
         },
         {
-          "localized_name": "first_frame",
           "name": "first_frame",
           "shape": 7,
           "type": "IMAGE",
           "link": 12
         },
         {
-          "localized_name": "last_frame",
           "name": "last_frame",
           "shape": 7,
           "type": "IMAGE",
           "link": 13
         },
         {
-          "localized_name": "references",
           "name": "references",
           "shape": 7,
           "type": "H3C_REFS",
-          "link": 5
+          "link": 32
         },
         {
-          "localized_name": "motion_context",
           "name": "motion_context",
           "shape": 7,
           "type": "H3C_CONTEXT",
           "link": 14
         },
         {
-          "localized_name": "settings",
           "name": "settings",
           "shape": 7,
           "type": "H3C_SETTINGS",
@@ -620,9 +468,7 @@
         },
         {
           "label": "Mode",
-          "localized_name": "mode",
           "name": "mode",
-          "shape": 7,
           "type": "COMBO",
           "widget": {
             "name": "mode"
@@ -631,7 +477,6 @@
         },
         {
           "label": "Take 1 prompt",
-          "localized_name": "prompt",
           "name": "prompt",
           "type": "STRING",
           "widget": {
@@ -640,28 +485,25 @@
           "link": null
         },
         {
-          "localized_name": "width",
+          "label": "width (from Settings)",
           "name": "width",
           "type": "INT",
           "widget": {
             "name": "width"
           },
-          "link": null,
-          "label": "width (from Settings)"
+          "link": null
         },
         {
-          "localized_name": "height",
+          "label": "height (from Settings)",
           "name": "height",
           "type": "INT",
           "widget": {
             "name": "height"
           },
-          "link": null,
-          "label": "height (from Settings)"
+          "link": null
         },
         {
           "label": "Take 1 length (s)",
-          "localized_name": "seconds",
           "name": "seconds",
           "type": "FLOAT",
           "widget": {
@@ -670,27 +512,16 @@
           "link": null
         },
         {
-          "localized_name": "frames",
-          "name": "frames",
-          "type": "INT",
-          "widget": {
-            "name": "frames"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "steps",
+          "label": "steps (from Settings)",
           "name": "steps",
           "type": "INT",
           "widget": {
             "name": "steps"
           },
-          "link": null,
-          "label": "steps (from Settings)"
+          "link": null
         },
         {
           "label": "Take 1 seed",
-          "localized_name": "seed",
           "name": "seed",
           "type": "INT",
           "widget": {
@@ -699,119 +530,111 @@
           "link": null
         },
         {
-          "localized_name": "sampler",
+          "label": "sampler (from Settings)",
           "name": "sampler",
           "type": "COMBO",
           "widget": {
             "name": "sampler"
           },
-          "link": null,
-          "label": "sampler (from Settings)"
+          "link": null
         },
         {
-          "localized_name": "scheduler",
+          "label": "scheduler (from Settings)",
           "name": "scheduler",
           "type": "COMBO",
           "widget": {
             "name": "scheduler"
           },
-          "link": null,
-          "label": "scheduler (from Settings)"
+          "link": null
         },
         {
-          "localized_name": "shift",
+          "label": "shift (from Settings)",
           "name": "shift",
           "type": "FLOAT",
           "widget": {
             "name": "shift"
           },
-          "link": null,
-          "label": "shift (from Settings)"
+          "link": null
         },
         {
-          "localized_name": "speed",
+          "label": "speed (from Settings)",
           "name": "speed",
           "type": "COMBO",
           "widget": {
             "name": "speed"
           },
-          "link": null,
-          "label": "speed (from Settings)"
+          "link": null
         },
         {
-          "localized_name": "save_context",
+          "label": "save_context (from Settings)",
           "name": "save_context",
           "type": "BOOLEAN",
           "widget": {
             "name": "save_context"
           },
-          "link": null,
-          "label": "save_context (from Settings)"
+          "link": null
         },
         {
-          "localized_name": "preview",
+          "label": "preview (from Settings)",
           "name": "preview",
           "type": "BOOLEAN",
           "widget": {
             "name": "preview"
           },
-          "link": null,
-          "label": "preview (from Settings)"
-        },
-        {
-          "localized_name": "filename_prefix",
-          "name": "filename_prefix",
-          "type": "STRING",
-          "widget": {
-            "name": "filename_prefix"
-          },
           "link": null
         },
         {
-          "localized_name": "reference_image_size",
+          "label": "reference_image_size (from Settings)",
           "name": "reference_image_size",
           "shape": 7,
           "type": "COMBO",
           "widget": {
             "name": "reference_image_size"
           },
-          "link": null,
-          "label": "reference_image_size (from Settings)"
+          "link": null
+        },
+        {
+          "label": "Continue (off / last take / clip input)",
+          "name": "continue_from",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "continue_from"
+          },
+          "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "images",
           "name": "images",
           "type": "IMAGE",
           "links": [
-            17
+            33
           ]
         },
         {
-          "localized_name": "audio",
           "name": "audio",
           "type": "AUDIO",
           "links": [
-            18
+            34
           ]
         },
         {
-          "localized_name": "fps",
           "name": "fps",
           "type": "FLOAT",
-          "links": null
+          "links": [
+            35
+          ]
         },
         {
-          "localized_name": "context",
           "name": "context",
           "type": "H3C_CONTEXT",
           "links": [
-            15
+            36
           ]
         }
       ],
-      "title": "Take 1",
+      "title": "Take",
       "properties": {
         "Node name for S&R": "H3cGenerate"
       },
@@ -822,7 +645,7 @@
         960,
         5,
         0,
-        8,
+        12,
         7311,
         "fixed",
         "euler",
@@ -832,15 +655,17 @@
         true,
         false,
         "MacH3/t1",
-        "max"
+        "max",
+        "off"
       ],
       "widgets_values_named": {
+        "mode": "references",
         "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie, facing the camera, pine trees and the mountain peaks behind her. <Subject 1> catches her breath, looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] So this whole clip came out of Comfy U I, running on my Mac.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, opening and closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
         "width": 544,
         "height": 960,
         "seconds": 5,
         "frames": 0,
-        "steps": 8,
+        "steps": 12,
         "seed": 7311,
         "control_after_generate": "fixed",
         "sampler": "euler",
@@ -851,851 +676,7 @@
         "preview": false,
         "filename_prefix": "MacH3/t1",
         "reference_image_size": "max",
-        "mode": "references"
-      }
-    },
-    {
-      "id": 10,
-      "type": "H3cGenerate",
-      "pos": [
-        2030,
-        40
-      ],
-      "size": [
-        420,
-        820
-      ],
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "engine",
-          "name": "engine",
-          "type": "H3C_ENGINE",
-          "link": 6
-        },
-        {
-          "localized_name": "first_frame",
-          "name": "first_frame",
-          "shape": 7,
-          "type": "IMAGE",
-          "link": null
-        },
-        {
-          "localized_name": "last_frame",
-          "name": "last_frame",
-          "shape": 7,
-          "type": "IMAGE",
-          "link": null
-        },
-        {
-          "localized_name": "references",
-          "name": "references",
-          "shape": 7,
-          "type": "H3C_REFS",
-          "link": 8
-        },
-        {
-          "localized_name": "motion_context",
-          "name": "motion_context",
-          "shape": 7,
-          "type": "H3C_CONTEXT",
-          "link": 15
-        },
-        {
-          "localized_name": "settings",
-          "name": "settings",
-          "shape": 7,
-          "type": "H3C_SETTINGS",
-          "link": 7
-        },
-        {
-          "localized_name": "mode",
-          "name": "mode",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "mode"
-          },
-          "link": null,
-          "label": "Mode"
-        },
-        {
-          "label": "Take 2 prompt",
-          "localized_name": "prompt",
-          "name": "prompt",
-          "type": "STRING",
-          "widget": {
-            "name": "prompt"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "width",
-          "name": "width",
-          "type": "INT",
-          "widget": {
-            "name": "width"
-          },
-          "link": null,
-          "label": "width (from Settings)"
-        },
-        {
-          "localized_name": "height",
-          "name": "height",
-          "type": "INT",
-          "widget": {
-            "name": "height"
-          },
-          "link": null,
-          "label": "height (from Settings)"
-        },
-        {
-          "label": "Take 2 length (s), incl. 0.9 s overlap",
-          "localized_name": "seconds",
-          "name": "seconds",
-          "type": "FLOAT",
-          "widget": {
-            "name": "seconds"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "frames",
-          "name": "frames",
-          "type": "INT",
-          "widget": {
-            "name": "frames"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "steps",
-          "name": "steps",
-          "type": "INT",
-          "widget": {
-            "name": "steps"
-          },
-          "link": null,
-          "label": "steps (from Settings)"
-        },
-        {
-          "label": "Take 2 seed",
-          "localized_name": "seed",
-          "name": "seed",
-          "type": "INT",
-          "widget": {
-            "name": "seed"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "sampler",
-          "name": "sampler",
-          "type": "COMBO",
-          "widget": {
-            "name": "sampler"
-          },
-          "link": null,
-          "label": "sampler (from Settings)"
-        },
-        {
-          "localized_name": "scheduler",
-          "name": "scheduler",
-          "type": "COMBO",
-          "widget": {
-            "name": "scheduler"
-          },
-          "link": null,
-          "label": "scheduler (from Settings)"
-        },
-        {
-          "localized_name": "shift",
-          "name": "shift",
-          "type": "FLOAT",
-          "widget": {
-            "name": "shift"
-          },
-          "link": null,
-          "label": "shift (from Settings)"
-        },
-        {
-          "localized_name": "speed",
-          "name": "speed",
-          "type": "COMBO",
-          "widget": {
-            "name": "speed"
-          },
-          "link": null,
-          "label": "speed (from Settings)"
-        },
-        {
-          "localized_name": "save_context",
-          "name": "save_context",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "save_context"
-          },
-          "link": null,
-          "label": "save_context (from Settings)"
-        },
-        {
-          "localized_name": "preview",
-          "name": "preview",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "preview"
-          },
-          "link": null,
-          "label": "preview (from Settings)"
-        },
-        {
-          "localized_name": "filename_prefix",
-          "name": "filename_prefix",
-          "type": "STRING",
-          "widget": {
-            "name": "filename_prefix"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "reference_image_size",
-          "name": "reference_image_size",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "reference_image_size"
-          },
-          "link": null,
-          "label": "reference_image_size (from Settings)"
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "images",
-          "name": "images",
-          "type": "IMAGE",
-          "links": [
-            19
-          ]
-        },
-        {
-          "localized_name": "audio",
-          "name": "audio",
-          "type": "AUDIO",
-          "links": [
-            20
-          ]
-        },
-        {
-          "localized_name": "fps",
-          "name": "fps",
-          "type": "FLOAT",
-          "links": null
-        },
-        {
-          "localized_name": "context",
-          "name": "context",
-          "type": "H3C_CONTEXT",
-          "links": [
-            16
-          ]
-        }
-      ],
-      "title": "Take 2",
-      "properties": {
-        "Node name for S&R": "H3cGenerate"
-      },
-      "widgets_values": [
-        "continue + references",
-        "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her. <Subject 1> glances up briefly toward the peaks while speaking the line, then looks back into the lens and holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] No cloud, no G P U server, it's just Metal on Apple silikon, sound and all.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
-        544,
-        960,
-        7,
-        0,
-        8,
-        7322,
-        "fixed",
-        "euler",
-        "linear",
-        0,
-        "exact",
-        true,
-        false,
-        "MacH3/t2",
-        "max"
-      ],
-      "widgets_values_named": {
-        "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her. <Subject 1> glances up briefly toward the peaks while speaking the line, then looks back into the lens and holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] No cloud, no G P U server, it's just Metal on Apple silikon, sound and all.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
-        "width": 544,
-        "height": 960,
-        "seconds": 7,
-        "frames": 0,
-        "steps": 8,
-        "seed": 7322,
-        "control_after_generate": "fixed",
-        "sampler": "euler",
-        "scheduler": "linear",
-        "shift": 0,
-        "speed": "exact",
-        "save_context": true,
-        "preview": false,
-        "filename_prefix": "MacH3/t2",
-        "reference_image_size": "max",
-        "mode": "continue + references"
-      }
-    },
-    {
-      "id": 11,
-      "type": "H3cGenerate",
-      "pos": [
-        2496,
-        40
-      ],
-      "size": [
-        420,
-        820
-      ],
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "engine",
-          "name": "engine",
-          "type": "H3C_ENGINE",
-          "link": 9
-        },
-        {
-          "localized_name": "first_frame",
-          "name": "first_frame",
-          "shape": 7,
-          "type": "IMAGE",
-          "link": null
-        },
-        {
-          "localized_name": "last_frame",
-          "name": "last_frame",
-          "shape": 7,
-          "type": "IMAGE",
-          "link": null
-        },
-        {
-          "localized_name": "references",
-          "name": "references",
-          "shape": 7,
-          "type": "H3C_REFS",
-          "link": 11
-        },
-        {
-          "localized_name": "motion_context",
-          "name": "motion_context",
-          "shape": 7,
-          "type": "H3C_CONTEXT",
-          "link": 16
-        },
-        {
-          "localized_name": "settings",
-          "name": "settings",
-          "shape": 7,
-          "type": "H3C_SETTINGS",
-          "link": 10
-        },
-        {
-          "localized_name": "mode",
-          "name": "mode",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "mode"
-          },
-          "link": null,
-          "label": "Mode"
-        },
-        {
-          "label": "Take 3 prompt",
-          "localized_name": "prompt",
-          "name": "prompt",
-          "type": "STRING",
-          "widget": {
-            "name": "prompt"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "width",
-          "name": "width",
-          "type": "INT",
-          "widget": {
-            "name": "width"
-          },
-          "link": null,
-          "label": "width (from Settings)"
-        },
-        {
-          "localized_name": "height",
-          "name": "height",
-          "type": "INT",
-          "widget": {
-            "name": "height"
-          },
-          "link": null,
-          "label": "height (from Settings)"
-        },
-        {
-          "label": "Take 3 length (s), incl. 0.9 s overlap",
-          "localized_name": "seconds",
-          "name": "seconds",
-          "type": "FLOAT",
-          "widget": {
-            "name": "seconds"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "frames",
-          "name": "frames",
-          "type": "INT",
-          "widget": {
-            "name": "frames"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "steps",
-          "name": "steps",
-          "type": "INT",
-          "widget": {
-            "name": "steps"
-          },
-          "link": null,
-          "label": "steps (from Settings)"
-        },
-        {
-          "label": "Take 3 seed",
-          "localized_name": "seed",
-          "name": "seed",
-          "type": "INT",
-          "widget": {
-            "name": "seed"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "sampler",
-          "name": "sampler",
-          "type": "COMBO",
-          "widget": {
-            "name": "sampler"
-          },
-          "link": null,
-          "label": "sampler (from Settings)"
-        },
-        {
-          "localized_name": "scheduler",
-          "name": "scheduler",
-          "type": "COMBO",
-          "widget": {
-            "name": "scheduler"
-          },
-          "link": null,
-          "label": "scheduler (from Settings)"
-        },
-        {
-          "localized_name": "shift",
-          "name": "shift",
-          "type": "FLOAT",
-          "widget": {
-            "name": "shift"
-          },
-          "link": null,
-          "label": "shift (from Settings)"
-        },
-        {
-          "localized_name": "speed",
-          "name": "speed",
-          "type": "COMBO",
-          "widget": {
-            "name": "speed"
-          },
-          "link": null,
-          "label": "speed (from Settings)"
-        },
-        {
-          "localized_name": "save_context",
-          "name": "save_context",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "save_context"
-          },
-          "link": null,
-          "label": "save_context (from Settings)"
-        },
-        {
-          "localized_name": "preview",
-          "name": "preview",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "preview"
-          },
-          "link": null,
-          "label": "preview (from Settings)"
-        },
-        {
-          "localized_name": "filename_prefix",
-          "name": "filename_prefix",
-          "type": "STRING",
-          "widget": {
-            "name": "filename_prefix"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "reference_image_size",
-          "name": "reference_image_size",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "reference_image_size"
-          },
-          "link": null,
-          "label": "reference_image_size (from Settings)"
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "images",
-          "name": "images",
-          "type": "IMAGE",
-          "links": [
-            21
-          ]
-        },
-        {
-          "localized_name": "audio",
-          "name": "audio",
-          "type": "AUDIO",
-          "links": [
-            22
-          ]
-        },
-        {
-          "localized_name": "fps",
-          "name": "fps",
-          "type": "FLOAT",
-          "links": null
-        },
-        {
-          "localized_name": "context",
-          "name": "context",
-          "type": "H3C_CONTEXT",
-          "links": null
-        }
-      ],
-      "title": "Take 3",
-      "properties": {
-        "Node name for S&R": "H3cGenerate"
-      },
-      "widgets_values": [
-        "continue + references",
-        "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her. <Subject 1> looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] And I can keep the take going like this, same voice, same trail, no cut.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
-        544,
-        960,
-        7,
-        0,
-        8,
-        7323,
-        "fixed",
-        "euler",
-        "linear",
-        0,
-        "exact",
-        true,
-        false,
-        "MacH3/t3",
-        "max"
-      ],
-      "widgets_values_named": {
-        "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie with a relaxed smile, pine trees and the mountain peaks behind her. <Subject 1> looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] And I can keep the take going like this, same voice, same trail, no cut.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
-        "width": 544,
-        "height": 960,
-        "seconds": 7,
-        "frames": 0,
-        "steps": 8,
-        "seed": 7323,
-        "control_after_generate": "fixed",
-        "sampler": "euler",
-        "scheduler": "linear",
-        "shift": 0,
-        "speed": "exact",
-        "save_context": true,
-        "preview": false,
-        "filename_prefix": "MacH3/t3",
-        "reference_image_size": "max",
-        "mode": "continue + references"
-      }
-    },
-    {
-      "id": 12,
-      "type": "H3cJoinAll",
-      "pos": [
-        1564,
-        1034
-      ],
-      "size": [
-        270,
-        158
-      ],
-      "flags": {},
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "images_1",
-          "name": "images_1",
-          "type": "IMAGE",
-          "link": 17
-        },
-        {
-          "localized_name": "audio_1",
-          "name": "audio_1",
-          "type": "AUDIO",
-          "link": 18
-        },
-        {
-          "localized_name": "images_2",
-          "name": "images_2",
-          "shape": 7,
-          "type": "IMAGE",
-          "link": 19
-        },
-        {
-          "localized_name": "audio_2",
-          "name": "audio_2",
-          "shape": 7,
-          "type": "AUDIO",
-          "link": 20
-        },
-        {
-          "localized_name": "images_3",
-          "name": "images_3",
-          "shape": 7,
-          "type": "IMAGE",
-          "link": 21
-        },
-        {
-          "localized_name": "audio_3",
-          "name": "audio_3",
-          "shape": 7,
-          "type": "AUDIO",
-          "link": 22
-        },
-        {
-          "label": "Takes (1 to 3)",
-          "localized_name": "takes",
-          "name": "takes",
-          "type": "INT",
-          "widget": {
-            "name": "takes"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "images",
-          "name": "images",
-          "type": "IMAGE",
-          "links": [
-            23
-          ]
-        },
-        {
-          "localized_name": "audio",
-          "name": "audio",
-          "type": "AUDIO",
-          "links": [
-            24
-          ]
-        }
-      ],
-      "title": "Join",
-      "properties": {
-        "Node name for S&R": "H3cJoinAll"
-      },
-      "widgets_values": [
-        1
-      ],
-      "widgets_values_named": {
-        "takes": 1
-      }
-    },
-    {
-      "id": 13,
-      "type": "CreateVideo",
-      "pos": [
-        1880,
-        1034
-      ],
-      "size": [
-        270,
-        126
-      ],
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "images",
-          "name": "images",
-          "type": "IMAGE",
-          "link": 23
-        },
-        {
-          "localized_name": "audio",
-          "name": "audio",
-          "shape": 7,
-          "type": "AUDIO",
-          "link": 24
-        },
-        {
-          "localized_name": "fps",
-          "name": "fps",
-          "type": "FLOAT",
-          "widget": {
-            "name": "fps"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "bit_depth",
-          "name": "bit_depth",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "bit_depth"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "color_space",
-          "name": "color_space",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "color_space"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "VIDEO",
-          "name": "VIDEO",
-          "type": "VIDEO",
-          "links": [
-            25
-          ]
-        }
-      ],
-      "title": "Video",
-      "properties": {
-        "Node name for S&R": "CreateVideo"
-      },
-      "widgets_values": [
-        24,
-        "auto",
-        "sRGB"
-      ],
-      "widgets_values_named": {
-        "fps": 24,
-        "bit_depth": "auto",
-        "color_space": "sRGB"
-      }
-    },
-    {
-      "id": 14,
-      "type": "SaveVideo",
-      "pos": [
-        2196,
-        1034
-      ],
-      "size": [
-        270,
-        106
-      ],
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "video",
-          "name": "video",
-          "type": "VIDEO",
-          "link": 25
-        },
-        {
-          "localized_name": "filename_prefix",
-          "name": "filename_prefix",
-          "type": "STRING",
-          "widget": {
-            "name": "filename_prefix"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "codec",
-          "name": "format.codec",
-          "type": "COMFY_DYNAMICCOMBO_V3",
-          "widget": {
-            "name": "format.codec"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "format",
-          "name": "format",
-          "type": "COMFY_DYNAMICCOMBO_V3",
-          "widget": {
-            "name": "format"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "codec",
-          "name": "codec",
-          "shape": 7,
-          "type": "COMFY_DYNAMICCOMBO_V3",
-          "widget": {
-            "name": "codec"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "video",
-          "name": "video",
-          "type": "VIDEO",
-          "links": null
-        }
-      ],
-      "title": "Save",
-      "properties": {
-        "Node name for S&R": "SaveVideo"
-      },
-      "widgets_values": [
-        "MacH3/shot",
-        "auto",
-        "auto",
-        "auto"
-      ],
-      "widgets_values_named": {
-        "filename_prefix": "MacH3/shot",
-        "format": "auto",
-        "format.codec": "auto",
-        "codec": "auto"
+        "continue_from": "off"
       }
     },
     {
@@ -1703,24 +684,285 @@
       "type": "MarkdownNote",
       "pos": [
         0,
-        634
+        40
       ],
       "size": [
-        300,
-        620
+        320,
+        430
       ],
       "flags": {},
       "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [],
-      "title": "Read me",
+      "title": "MacH3 Metal",
       "properties": {},
       "widgets_values": [
-        "## MacH3 Metal\nMiniMax H3 with sound on a Mac, on the h3.c Metal engine.\n\n1. **Take 1 mode** picks what this run uses: text to video, first frame, first + last frame, references, or continue (the clip in Inputs). Inputs the mode skips never load.\n2. **Join takes** = how many takes render. Takes 2 and 3 continue the one before (last 22 frames + 0.9 s of sound) and add about 6 s each. They run as *continue + references* to keep the face; set them to *continue* when Take 1 has no identity picture.\n3. Size, steps, sampler and speed live in **Settings**, shared by every take (the take widgets marked *from Settings* follow it).\n4. Write each continuation so it opens where the take before ended.\n\nRuns outside ComfyUI's latent graph: no LoRA, SLA or latent upscale on this path, and no other H3 model may be loaded while it runs. Apple silicon only.\n\nM5 Pro 48 GB, 544x960, 8 steps: about 7.5 min for a 5 s take, about 15 min for a 7 s continuation."
+        "## MacH3 Metal\nMiniMax H3 with sound, native on a Mac (h3.c Metal engine).\n\n**1.** On **Take**, pick a **Mode**: text to video, first frame, first + last frame or references. Each mode's pictures sit in their own group on the right; the others never load.\n\n**2.** Write the **prompt**, press **Run**. **Shot** plays it.\n\n**3.** To keep going: set **Continue** to *last take*, write what happens next, Run again. Shot adds it to the end. Continue works in every mode.\n\n**Lane** (Engine): Quality = `lora` empty, 12-16 steps in Settings. Speed = `lora` **turbo**, 6 steps."
       ],
       "widgets_values_named": {
-        "text": "## MacH3 Metal\nMiniMax H3 with sound on a Mac, on the h3.c Metal engine.\n\n1. **Take 1 mode** picks what this run uses: text to video, first frame, first + last frame, references, or continue (the clip in Inputs). Inputs the mode skips never load.\n2. **Join takes** = how many takes render. Takes 2 and 3 continue the one before (last 22 frames + 0.9 s of sound) and add about 6 s each.\n3. Write each continuation so it opens where the take before ended.\n\nRuns outside ComfyUI's latent graph: no LoRA, SLA or latent upscale on this path, and no other H3 model may be loaded while it runs. Apple silicon only.\n\nM5 Pro 48 GB, 544x960, 8 steps: about 7.5 min for a 5 s take, about 15 min for a 7 s continuation."
+        "text": "## MacH3 Metal\nMiniMax H3 with sound, native on a Mac (h3.c Metal engine).\n\n**1.** On **Take**, pick a **Mode**: text to video, first frame, first + last frame or references. Each mode's pictures sit in their own group on the right; the others never load.\n\n**2.** Write the **prompt**, press **Run**. **Shot** plays it.\n\n**3.** To keep going: set **Continue** to *last take*, write what happens next, Run again. Shot adds it to the end. Continue works in every mode.\n\n**Lane** (Engine): Quality = `lora` empty, 12-16 steps in Settings. Speed = `lora` **turbo**, 6 steps."
+      },
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 18,
+      "type": "LoadImage",
+      "pos": [
+        1568,
+        40
+      ],
+      "size": [
+        282.798828125,
+        314
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 4,
+      "inputs": [
+        {
+          "label": "Picture 2 (R2V, optional)",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            28
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Picture 2 (optional)",
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "h3c_sample_identity.jpg",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "h3c_sample_identity.jpg",
+        "upload": "image"
+      }
+    },
+    {
+      "id": 19,
+      "type": "H3cReferenceImage",
+      "pos": [
+        1568,
+        440
+      ],
+      "size": [
+        300,
+        70
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 28
+        },
+        {
+          "name": "references",
+          "shape": 7,
+          "type": "H3C_REFS",
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "references",
+          "type": "H3C_REFS",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "title": "Reference 2",
+      "properties": {
+        "Node name for S&R": "H3cReferenceImage"
+      }
+    },
+    {
+      "id": 20,
+      "type": "LoadImage",
+      "pos": [
+        1908,
+        40
+      ],
+      "size": [
+        282.798828125,
+        314
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 4,
+      "inputs": [
+        {
+          "label": "Picture 3 (R2V, optional)",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            30
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Picture 3 (optional)",
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "h3c_sample_identity.jpg",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "h3c_sample_identity.jpg",
+        "upload": "image"
+      }
+    },
+    {
+      "id": 21,
+      "type": "H3cReferenceImage",
+      "pos": [
+        1908,
+        440
+      ],
+      "size": [
+        300,
+        70
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 30
+        },
+        {
+          "name": "references",
+          "shape": 7,
+          "type": "H3C_REFS",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "references",
+          "type": "H3C_REFS",
+          "links": [
+            32
+          ]
+        }
+      ],
+      "title": "Reference 3",
+      "properties": {
+        "Node name for S&R": "H3cReferenceImage"
+      }
+    },
+    {
+      "id": 22,
+      "type": "H3cAddToShot",
+      "pos": [
+        2316,
+        40
+      ],
+      "size": [
+        440,
+        760
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 33
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 34
+        },
+        {
+          "name": "fps",
+          "type": "FLOAT",
+          "link": 35
+        },
+        {
+          "name": "context",
+          "type": "H3C_CONTEXT",
+          "link": 36
+        }
+      ],
+      "outputs": [],
+      "title": "Shot",
+      "properties": {
+        "Node name for S&R": "H3cAddToShot"
+      },
+      "widgets_values": [
+        "MacH3/shot"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "MacH3/shot"
+      }
+    },
+    {
+      "id": 23,
+      "type": "MarkdownNote",
+      "pos": [
+        864,
+        40
+      ],
+      "size": [
+        300,
+        170
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Text to video",
+      "properties": {},
+      "widgets_values": [
+        "No pictures. Set **Mode** to *text to video* and describe the shot, the sound and any spoken line in the prompt."
+      ],
+      "widgets_values_named": {
+        "text": "No pictures. Set **Mode** to *text to video* and describe the shot, the sound and any spoken line in the prompt."
       },
       "color": "#432",
       "bgcolor": "#653"
@@ -1760,62 +1002,6 @@
       "H3C_SETTINGS"
     ],
     [
-      5,
-      6,
-      0,
-      9,
-      3,
-      "H3C_REFS"
-    ],
-    [
-      6,
-      1,
-      0,
-      10,
-      0,
-      "H3C_ENGINE"
-    ],
-    [
-      7,
-      2,
-      0,
-      10,
-      5,
-      "H3C_SETTINGS"
-    ],
-    [
-      8,
-      6,
-      0,
-      10,
-      3,
-      "H3C_REFS"
-    ],
-    [
-      9,
-      1,
-      0,
-      11,
-      0,
-      "H3C_ENGINE"
-    ],
-    [
-      10,
-      2,
-      0,
-      11,
-      5,
-      "H3C_SETTINGS"
-    ],
-    [
-      11,
-      6,
-      0,
-      11,
-      3,
-      "H3C_REFS"
-    ],
-    [
       12,
       3,
       0,
@@ -1840,153 +1026,166 @@
       "H3C_CONTEXT"
     ],
     [
-      15,
-      9,
-      3,
-      10,
-      4,
-      "H3C_CONTEXT"
-    ],
-    [
-      16,
-      10,
-      3,
-      11,
-      4,
-      "H3C_CONTEXT"
-    ],
-    [
-      17,
-      9,
-      0,
-      12,
-      0,
-      "IMAGE"
-    ],
-    [
+      28,
       18,
+      0,
+      19,
+      0,
+      "IMAGE"
+    ],
+    [
+      29,
+      6,
+      0,
+      19,
+      1,
+      "H3C_REFS"
+    ],
+    [
+      30,
+      20,
+      0,
+      21,
+      0,
+      "IMAGE"
+    ],
+    [
+      31,
+      19,
+      0,
+      21,
+      1,
+      "H3C_REFS"
+    ],
+    [
+      32,
+      21,
+      0,
+      9,
+      3,
+      "H3C_REFS"
+    ],
+    [
+      33,
+      9,
+      0,
+      22,
+      0,
+      "IMAGE"
+    ],
+    [
+      34,
       9,
       1,
-      12,
-      1,
-      "AUDIO"
-    ],
-    [
-      19,
-      10,
-      0,
-      12,
-      2,
-      "IMAGE"
-    ],
-    [
-      20,
-      10,
-      1,
-      12,
-      3,
-      "AUDIO"
-    ],
-    [
-      21,
-      11,
-      0,
-      12,
-      4,
-      "IMAGE"
-    ],
-    [
       22,
-      11,
-      1,
-      12,
-      5,
-      "AUDIO"
-    ],
-    [
-      23,
-      12,
-      0,
-      13,
-      0,
-      "IMAGE"
-    ],
-    [
-      24,
-      12,
-      1,
-      13,
       1,
       "AUDIO"
     ],
     [
-      25,
-      13,
-      0,
-      14,
-      0,
-      "VIDEO"
+      35,
+      9,
+      2,
+      22,
+      2,
+      "FLOAT"
+    ],
+    [
+      36,
+      9,
+      3,
+      22,
+      3,
+      "H3C_CONTEXT"
     ]
   ],
   "groups": [
     {
-      "id": 5,
-      "title": "Engine",
+      "id": 9,
+      "title": "Control panel",
       "bounding": [
         -28,
         -66,
-        356,
-        620
+        836,
+        1078
       ],
       "color": "#3f789e",
       "flags": {}
     },
     {
-      "id": 6,
-      "title": "Inputs: the mode on Take 1 picks which are used",
+      "id": 10,
+      "title": "T2V · text to video",
       "bounding": [
-        408,
+        836,
         -66,
-        1048,
-        980
+        356,
+        300
+      ],
+      "color": "#88A",
+      "flags": {}
+    },
+    {
+      "id": 11,
+      "title": "I2V / FL2V · first frame, first + last frame",
+      "bounding": [
+        836,
+        274,
+        356,
+        960
       ],
       "color": "#5b8a5b",
       "flags": {}
     },
     {
-      "id": 7,
-      "title": "Takes: 2 and 3 continue the take before; Join decides how many render",
+      "id": 12,
+      "title": "R2V · references: up to 3 people or places (Pictures 2-3: Ctrl+B to use)",
       "bounding": [
-        1536,
+        1200,
         -66,
-        1408,
-        954
+        1048,
+        590
       ],
-      "color": "#b58b2a",
+      "color": "#a1309b",
       "flags": {}
     },
     {
-      "id": 8,
-      "title": "Output",
+      "id": 13,
+      "title": "Continue a clip (Continue = clip input)",
       "bounding": [
-        1536,
-        928,
-        958,
-        292
+        1200,
+        554,
+        800,
+        840
       ],
-      "color": "#555555",
+      "color": "#b06634",
+      "flags": {}
+    },
+    {
+      "id": 14,
+      "title": "Shot",
+      "bounding": [
+        2288,
+        -66,
+        496,
+        900
+      ],
+      "color": "#b58b2a",
       "flags": {}
     }
   ],
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.3,
+      "scale": 0.48214285714285715,
       "offset": [
-        50,
-        140
+        476.66666666666674,
+        372.44444444444446
       ]
-    }
+    },
+    "frontendVersion": "1.51.9",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
   },
   "version": 0.4
 }
