@@ -9,6 +9,7 @@ files and take back IMAGE frames and AUDIO, so the stock video nodes
 from __future__ import annotations
 
 import glob
+import json
 import os
 import subprocess
 import time
@@ -61,17 +62,21 @@ def _save_image(image: torch.Tensor, name: str) -> str:
     return path
 
 
-def _save_audio(audio: dict, name: str) -> str:
-    """AUDIO dict to a 16-bit WAV; the engine resamples references itself."""
+def _write_wav(audio: dict, path: str) -> str:
+    """AUDIO dict to a 16-bit WAV at path."""
     waveform = audio["waveform"][0].clamp(-1, 1).cpu().numpy()  # [C, T]
     pcm = (waveform.T * 32767.0).astype("<i2")
-    path = os.path.join(_work_dir(), f"{name}-{_stamp()}.wav")
     with wave.open(path, "wb") as out:
         out.setnchannels(pcm.shape[1])
         out.setsampwidth(2)
         out.setframerate(int(audio["sample_rate"]))
         out.writeframes(pcm.tobytes())
     return path
+
+
+def _save_audio(audio: dict, name: str) -> str:
+    """AUDIO dict to a 16-bit WAV in the work folder; the engine resamples references itself."""
+    return _write_wav(audio, os.path.join(_work_dir(), f"{name}-{_stamp()}.wav"))
 
 
 def _save_video(video, name: str) -> str:
@@ -272,8 +277,8 @@ GENERATE_MODES = {
 }
 
 CONTINUE_FROM = ["off", "last take", "clip input"]
-# The newest take this ComfyUI has rendered, for continue_from = "last take".
-_LAST_TAKE: dict = {}
+# The newest take per filename_prefix, for continue_from = "last take".
+_LAST_TAKES: dict = {}
 
 
 def _wanted(mode: str, continue_from: str = "off") -> set:
@@ -288,15 +293,21 @@ def _wanted(mode: str, continue_from: str = "off") -> set:
 
 
 def _last_take_context(filename_prefix: str) -> dict:
-    if _LAST_TAKE:
-        return dict(_LAST_TAKE)
-    # After a restart: the newest context file this prefix saved.
+    if filename_prefix in _LAST_TAKES:
+        return dict(_LAST_TAKES[filename_prefix])
+    # After a restart: the newest context file this prefix saved, and its size.
     pattern = os.path.join(folder_paths.get_output_directory(), f"{filename_prefix}_ctx_*.h3ctx")
     found = sorted(glob.glob(pattern), key=os.path.getmtime)
     if not found:
-        raise ValueError("h3c: there is no take to continue yet. Run one with continue_from "
-                         "off (save_context on) first.")
-    return {"path": found[-1], "kind": "h3ctx"}
+        raise ValueError("h3c: there is no take to continue yet. Run one with Continue off "
+                         "(save_context on) first.")
+    last = {"path": found[-1], "kind": "h3ctx"}
+    try:
+        with open(found[-1] + ".json") as f:
+            last["size"] = tuple(json.load(f)["size"])
+    except (OSError, ValueError, KeyError):
+        pass
+    return last
 
 
 class H3cGenerate:
@@ -347,10 +358,11 @@ class H3cGenerate:
                     "shift, speed, preview, save_context and reference size, so every take of "
                     "a chain shares one set."}),
                 "continue_from": (CONTINUE_FROM, {"default": "off", "tooltip":
-                    "off = a new shot. last take = pick up where the previous take ended, in "
-                    "any mode (its references and last frame still apply; the first frame is "
-                    "replaced by the previous take's tail). clip input = continue the clip "
-                    "wired to motion_context."}),
+                    "off = a new shot. last take = pick up where the previous take ended. "
+                    "Works in every mode: the previous take's last 22 frames and 0.9 s of "
+                    "sound replace the first frame (I2V/FL2V first frames are not used), "
+                    "references and a last frame still apply, and T2V becomes a plain "
+                    "continuation. clip input = continue the clip in the Continue a clip group."}),
             },
         }
 
@@ -360,6 +372,17 @@ class H3cGenerate:
     CATEGORY = CATEGORY
     DESCRIPTION = ("Generate video with native sound on h3.c (Apple silicon). T2V, first/last "
                    "frame, Ref2VA references and motion-context continuation.")
+
+    @classmethod
+    def IS_CHANGED(cls, continue_from="off", filename_prefix="h3c/take", **_):
+        # A "last take" continuation depends on which take is last, which ComfyUI's
+        # cache cannot see: key the cache on it.
+        if continue_from != "last take":
+            return ""
+        try:
+            return _last_take_context(filename_prefix)["path"]
+        except ValueError:
+            return ""
 
     @classmethod
     def VALIDATE_INPUTS(cls, mode):
@@ -387,6 +410,7 @@ class H3cGenerate:
             speed, preview = settings["speed"], settings["preview"]
             save_context = settings["save_context"]
             reference_image_size = settings["reference_image_size"]
+        turbo = bool(settings) and settings.get("lane", "").startswith("Speed")
         if continue_from == "last take":
             last = _last_take_context(filename_prefix)
             if "size" in last and (width, height) != last["size"]:
@@ -395,6 +419,16 @@ class H3cGenerate:
             motion_context = {"path": last["path"], "kind": last["kind"]}
         if not prompt.strip():
             raise ValueError("h3c: the prompt is empty")
+        if mode != "auto":  # say what is missing before anything loads
+            missing = [what for name, what, value in (
+                ("first_frame", "a first frame", first_frame),
+                ("last_frame", "a last frame", last_frame),
+                ("references", "a reference picture", references),
+                ("motion_context", "a clip to continue (motion_context)", motion_context))
+                if name in wanted and not value]
+            if missing:
+                raise ValueError(f"h3c: {mode} needs {' and '.join(missing)}; connect it or "
+                                 f"switch the mode")
         if motion_context is not None and first_frame is not None:
             raise ValueError("h3c: motion_context replaces first_frame; pick a mode that uses one of them")
         # Nothing else may hold an H3 (or any) model while this runs.
@@ -420,7 +454,7 @@ class H3cGenerate:
             last_frame=_save_image(last_frame, "last") if last_frame is not None else None,
             motion_context=motion_context["path"] if motion_context else None,
             save_context=context_path, references=list(references or []),
-            reference_image_size=reference_image_size, preview=preview)
+            reference_image_size=reference_image_size, preview=preview, turbo=turbo)
 
         bar = comfy.utils.ProgressBar(BAR)
         state = {"images": None, "last": -1}
@@ -464,16 +498,23 @@ class H3cGenerate:
         except h3c.H3cError:
             comfy.model_management.throw_exception_if_processing_interrupted()
             raise
+        comfy.model_management.throw_exception_if_processing_interrupted()
         print(f"h3c: delivered {result.frames} frames in {time.time() - started:.1f} s")
         bar.update_absolute(BAR, BAR)
+        if state["images"] is None:
+            raise RuntimeError("h3c: the engine finished but delivered no frames")
 
         images = torch.from_numpy(state["images"]).float().div_(255.0)
         audio = _read_audio(mp4, result.sample_rate, result.frames, result.fps)
         context = ({"path": context_path, "kind": "h3ctx"} if context_path
                    else {"path": mp4, "kind": "video"})
-        _LAST_TAKE.clear()
-        _LAST_TAKE.update(context, size=(width, height))
-        context["continues"] = motion_context is not None
+        if context_path:
+            with open(context_path + ".json", "w") as f:  # lets a restart continue at this size
+                json.dump({"size": [width, height]}, f)
+        _LAST_TAKES[filename_prefix] = dict(context, size=(width, height))
+        # Lineage for h3c Add to Shot: this take, and the take it continues.
+        context.update(take_id=context["path"], continues=motion_context is not None,
+                       parent=motion_context["path"] if motion_context else None)
         ui = {}
         if context_path:
             # Listed as a file output: the Comfy API v2 proxy exposes it as an
@@ -515,6 +556,7 @@ class H3cJoinTakes:
 MEGAPIXELS = ["0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0"]
 ASPECTS = {"9:16 portrait": 9 / 16, "16:9 landscape": 16 / 9, "1:1 square": 1.0}
 MAX_PIXELS = 768 * 1344  # the largest canvas the released weights take
+LANES = ["Quality", "Speed (Turbo)"]
 
 
 def size_for(megapixels: str, aspect: str) -> tuple[int, int]:
@@ -545,7 +587,11 @@ class H3cSettings:
         spec = {"megapixels": (MEGAPIXELS, {"default": "0.5", "tooltip":
                     "Video size in megapixels (1 MP = 1024 x 1024), on the engine's 32-pixel grid. "
                     "1.0 (768 x 1344 portrait) is the largest canvas the weights take."}),
-                "aspect": (list(ASPECTS), {"default": "9:16 portrait"})}
+                "aspect": (list(ASPECTS), {"default": "9:16 portrait"}),
+                "lane": (LANES, {"default": LANES[0], "tooltip":
+                    "Quality = the released weights (12-16 steps). Speed = the same weights with "
+                    "the Turbo LoRA applied while they load (5-6 steps; its first take builds an "
+                    "18 GiB cache once). Switching the lane sets the steps to match."})}
         for k in ("steps", "sampler", "scheduler", "shift", "speed", "save_context", "preview"):
             spec[k] = req[k]
         spec["reference_image_size"] = opt["reference_image_size"]
@@ -592,7 +638,28 @@ class H3cJoinAll:
         return (images, audio)
 
 
-_SHOT: dict = {}  # the shot being built: {"dir": ..., "takes": [(video, wav, frames)]}
+_SHOTS: dict = {}  # filename_prefix -> the shot being built: {"dir", "format", "takes"}
+
+
+def _load_shot(filename_prefix: str):
+    """The newest shot on disk for this prefix (after a restart)."""
+    base = os.path.join(folder_paths.get_output_directory(), filename_prefix)
+    for folder in sorted(glob.glob(base + "_[0-9][0-9][0-9][0-9][0-9]"), reverse=True):
+        try:
+            with open(os.path.join(folder, "shot.json")) as f:
+                shot = json.load(f)
+            shot["dir"] = folder
+            return shot
+        except (OSError, ValueError):
+            continue
+    return None
+
+
+def _shot_ui(shot: dict) -> dict:
+    rel = os.path.relpath(shot["dir"] + ".mp4", folder_paths.get_output_directory())
+    return {"ui": {"images": [{"filename": os.path.basename(rel),
+                               "subfolder": os.path.dirname(rel), "type": "output"}],
+                   "animated": (True,)}}
 
 
 class H3cAddToShot:
@@ -602,68 +669,118 @@ class H3cAddToShot:
                     "images": ("IMAGE",), "audio": ("AUDIO",),
                     "fps": ("FLOAT", {"default": 24.0, "forceInput": True}),
                     "context": (CONTEXT, {"tooltip":
-                        "From h3c Generate: tells whether the take continued the one before "
-                        "(then it is added to the shot) or started a new shot."}),
+                        "From h3c Generate: which take this is and which take it continues. "
+                        "A take that continues this shot's last take is added to the end; any "
+                        "other take starts a new shot."}),
                     "filename_prefix": ("STRING", {"default": "MacH3/shot"})}}
 
     RETURN_TYPES = ()
     OUTPUT_NODE = True
     FUNCTION = "add"
     CATEGORY = CATEGORY
-    DESCRIPTION = ("Builds the shot across runs: a take that continues the last one is added "
-                   "to the end, any other take starts a new shot. Plays the whole shot.")
+    DESCRIPTION = ("Builds the shot across runs: a take that continues the shot's last take is "
+                   "added to the end, any other take starts a new shot. Plays the whole shot.")
 
     def add(self, images, audio, fps, context, filename_prefix):
         ffmpeg = os.environ.get("H3_FFMPEG", "ffmpeg")
-        out_dir = folder_paths.get_output_directory()
-        if not (context.get("continues") and _SHOT.get("takes")):
-            base = os.path.join(out_dir, filename_prefix)
+        take_id, parent = context.get("take_id") or context.get("path"), context.get("parent")
+        shot = _SHOTS.get(filename_prefix) or _load_shot(filename_prefix)
+        if shot and any(t["id"] == take_id for t in shot["takes"]):
+            return _shot_ui(shot)  # this take is already in the shot (a cached rerun)
+        frames, h, w = images.shape[0], images.shape[1], images.shape[2]
+        fmt = {"width": int(w), "height": int(h), "fps": float(fps),
+               "rate": int(audio["sample_rate"]), "channels": int(audio["waveform"].shape[1])}
+        appending = bool(shot and shot["takes"] and context.get("continues")
+                         and parent == shot["takes"][-1]["id"])
+        if appending and shot["format"] != fmt:
+            raise ValueError(f"h3c: this take ({w}x{h}, {fps} fps) does not match the shot it "
+                             f"continues ({shot['format']['width']}x{shot['format']['height']}, "
+                             f"{shot['format']['fps']} fps)")
+        if not appending:
+            base = os.path.join(folder_paths.get_output_directory(), filename_prefix)
             os.makedirs(os.path.dirname(base), exist_ok=True)
             n = 1
             while os.path.exists(f"{base}_{n:05}"):
                 n += 1
-            _SHOT.clear()
-            _SHOT.update(dir=f"{base}_{n:05}", takes=[])
-            os.makedirs(_SHOT["dir"])
-        k = len(_SHOT["takes"]) + 1
-        frames, h, w = images.shape[0], images.shape[1], images.shape[2]
-        video = os.path.join(_SHOT["dir"], f"take{k:02d}.mp4")
+            shot = {"dir": f"{base}_{n:05}", "format": fmt, "takes": []}
+            os.makedirs(shot["dir"])
+        k = len(shot["takes"]) + 1
+        video = os.path.join(shot["dir"], f"take{k:02d}.mp4")
+        wav = os.path.join(shot["dir"], f"take{k:02d}.wav")
         pixels = (images.clamp(0, 1).cpu().numpy() * 255.0 + 0.5).astype(np.uint8)
         subprocess.run([ffmpeg, "-nostdin", "-v", "error", "-y", "-f", "rawvideo",
                         "-pix_fmt", "rgb24", "-s", f"{w}x{h}", "-r", str(fps), "-i", "-",
                         "-c:v", "libx264", "-crf", "14", "-pix_fmt", "yuv420p", video],
                        input=pixels.tobytes(), check=True, capture_output=True)
-        wav = _save_audio(audio, f"shot-take{k:02d}")
-        _SHOT["takes"].append((video, wav, frames))
-        # Video segments share one encoder setup, so they stream-copy; the sound is
-        # joined as PCM (each take's audio is already exactly its frames long), so
-        # no AAC priming gap ever lands at a join.
-        listing = os.path.join(_SHOT["dir"], "segments.txt")
+        _write_wav(audio, wav)
+        takes = shot["takes"] + [{"id": take_id, "video": os.path.basename(video),
+                                  "wav": os.path.basename(wav), "frames": int(frames)}]
+        # Video segments share one encoder setup and format, so they stream-copy; the
+        # sound is joined as PCM (each take's audio is exactly its frames long), so no
+        # AAC priming gap lands at a join. The shot is written aside and swapped in.
+        listing = os.path.join(shot["dir"], "segments.txt")
         with open(listing, "w") as f:
-            f.writelines(f"file '{os.path.basename(v)}'\n" for v, _, _ in _SHOT["takes"])
-        pcm = []
-        for _, wav_path, _ in _SHOT["takes"]:
-            with wave.open(wav_path) as src:
-                rate, channels = src.getframerate(), src.getnchannels()
-                pcm.append(src.readframes(src.getnframes()))
-        joined_wav = os.path.join(_SHOT["dir"], "shot.wav")
+            f.writelines(f"file '{t['video']}'\n" for t in takes)
+        joined_wav = os.path.join(shot["dir"], "shot.wav")
         with wave.open(joined_wav, "wb") as dst:
-            dst.setnchannels(channels)
+            dst.setnchannels(fmt["channels"])
             dst.setsampwidth(2)
-            dst.setframerate(rate)
-            dst.writeframes(b"".join(pcm))
-        shot = _SHOT["dir"] + ".mp4"
+            dst.setframerate(fmt["rate"])
+            for t in takes:
+                with wave.open(os.path.join(shot["dir"], t["wav"])) as src:
+                    dst.writeframes(src.readframes(src.getnframes()))
+        final = shot["dir"] + ".mp4"
+        partial = shot["dir"] + ".partial.mp4"
         subprocess.run([ffmpeg, "-nostdin", "-v", "error", "-y", "-f", "concat", "-safe", "0",
                         "-i", listing, "-i", joined_wav, "-map", "0:v", "-map", "1:a",
-                        "-c:v", "copy", "-c:a", "aac", "-b:a", "256k", "-shortest", shot],
+                        "-c:v", "copy", "-c:a", "aac", "-b:a", "256k", partial],
                        check=True, capture_output=True)
-        total = sum(f for _, _, f in _SHOT["takes"])
-        print(f"h3c: shot {os.path.basename(shot)}: {len(_SHOT['takes'])} takes, "
+        os.replace(partial, final)
+        shot = dict(shot, takes=takes)
+        manifest = os.path.join(shot["dir"], "shot.json")
+        with open(manifest + ".tmp", "w") as f:
+            json.dump({"format": shot["format"], "takes": takes}, f, indent=1)
+        os.replace(manifest + ".tmp", manifest)
+        _SHOTS[filename_prefix] = shot
+        total = sum(t["frames"] for t in takes)
+        print(f"h3c: shot {os.path.basename(final)}: {len(takes)} takes, "
               f"{total} frames ({total / fps:.1f} s)")
-        rel = os.path.relpath(shot, out_dir)
-        return {"ui": {"images": [{"filename": os.path.basename(rel),
-                                   "subfolder": os.path.dirname(rel), "type": "output"}],
-                       "animated": (True,)}}
+        return _shot_ui(shot)
+
+
+class H3cPicture:
+    """A reference picture in one node: pick or upload the image, chain the next one."""
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        files = sorted(f for f in os.listdir(folder_paths.get_input_directory())
+                       if os.path.isfile(os.path.join(folder_paths.get_input_directory(), f)))
+        return {"required": {"image": (files, {"image_upload": True})},
+                "optional": {"references": (REFS, {"tooltip":
+                    "The pictures before this one. Chain order sets the numbering: the first "
+                    "picture is <Picture 1> in the prompt."})}}
+
+    RETURN_TYPES = (REFS,)
+    RETURN_NAMES = ("references",)
+    FUNCTION = "add"
+    CATEGORY = CATEGORY
+    DESCRIPTION = ("A reference picture (a person, a place, a look). Bypass it (Ctrl+B) to "
+                   "leave it out; the pictures after it keep their place in the chain.")
+
+    @classmethod
+    def IS_CHANGED(cls, image, **_):
+        path = folder_paths.get_annotated_filepath(image)
+        return os.path.getmtime(path) if os.path.exists(path) else ""
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, image):
+        if not folder_paths.exists_annotated_filepath(image):
+            return f"h3c: picture not found: {image}"
+        return True
+
+    def add(self, image, references=None):
+        path = folder_paths.get_annotated_filepath(image)
+        return _append(references, h3c.Reference(h3c.REFERENCE_IMAGE, path))
 
 
 NODE_CLASS_MAPPINGS = {
@@ -678,6 +795,7 @@ NODE_CLASS_MAPPINGS = {
     "H3cSettings": H3cSettings,
     "H3cJoinAll": H3cJoinAll,
     "H3cAddToShot": H3cAddToShot,
+    "H3cPicture": H3cPicture,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "H3cLoader": "h3c Load Engine",
@@ -691,4 +809,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "H3cSettings": "h3c Settings",
     "H3cJoinAll": "h3c Join All Takes",
     "H3cAddToShot": "h3c Add to Shot",
+    "H3cPicture": "h3c Picture",
 }

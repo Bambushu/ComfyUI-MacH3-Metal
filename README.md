@@ -22,8 +22,9 @@ Apple silicon only. Measured on an M5 Pro with 48 GB.
 | h3c Reference Image / Video / Audio | Build the ordered reference list. The first image is `<Picture 1>` in the prompt, the first video `<Video 1>`, and so on. |
 | h3c Load Motion Context | A `.h3ctx` from an earlier take (bit-exact) or any finished `.mp4` (45 s max). |
 | h3c Motion Context From Video | Continue a clip that is already in the graph as a VIDEO. |
-| h3c Settings | Size as **megapixels** (0.2 to 1.0) and **aspect** (portrait, landscape, square), plus steps, sampler, scheduler, shift and speed. A Generate it is wired to hides the fields it sets. |
-| h3c Add to Shot | Builds a shot across runs: a take that continues the last one is added to the end, any other take starts a new shot. Plays the whole shot. |
+| h3c Settings | Size as **megapixels** (0.2 to 1.0) and **aspect** (portrait, landscape, square), the **lane** (Quality, or Speed with the Turbo LoRA; switching sets the steps), plus steps, sampler, scheduler, shift and speed. A Generate it is wired to hides the fields it sets. |
+| h3c Add to Shot | Builds a shot across runs: a take that continues the shot's last take is added to the end, any other take starts a new shot. Keeps a manifest in the shot folder, so it carries on after a ComfyUI restart; a rerun never adds the same take twice. Plays the whole shot. |
+| h3c Picture | A reference picture in one node (pick or upload, chain the next). Bypass it with Ctrl+B to leave it out. |
 | h3c Join Takes / Join All Takes | Takes in order as one IMAGE batch and one AUDIO track, for chains wired inside one graph. Join All Takes renders only the first N takes. |
 
 The **mode** on h3c Generate is one of four: T2V (text to video), I2V (first

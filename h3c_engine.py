@@ -186,6 +186,7 @@ class Request:
     references: list[Reference] = field(default_factory=list)
     reference_image_size: str = "match"
     preview: bool = False
+    turbo: bool = False          # the Speed lane: the Turbo LoRA for this generation
 
 
 @dataclass
@@ -278,9 +279,12 @@ class Engine:
             for name in ("output_path", "first_frame", "last_frame",
                          "motion_context", "save_context"):
                 lib.h3_flat_params_set_string(p, name.encode(), self._abs(getattr(request, name)))
-            if self.lora:
-                if not (lib.h3_flat_params_set_string(p, b"lora_path", self.lora.encode())
-                        and lib.h3_flat_params_set_double(p, b"lora_scale", self.lora_scale)):
+            lora, lora_scale = self.lora, self.lora_scale
+            if request.turbo:
+                lora, lora_scale = find_turbo_lora(self.engine_dir, self.model_dir), 1.0
+            if lora:
+                if not (lib.h3_flat_params_set_string(p, b"lora_path", lora.encode())
+                        and lib.h3_flat_params_set_double(p, b"lora_scale", lora_scale)):
                     raise H3cError("this libh3.dylib has no LoRA support; rebuild it "
                                    f"from an h3.c with --lora: make -C {self.engine_dir} libh3.dylib")
             for ref in request.references:

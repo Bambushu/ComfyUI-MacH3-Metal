@@ -3,7 +3,8 @@
 //   does not read are muted (greyed, never run) and their group goes grey; switching
 //   back restores each node to the state it had, so a picture you bypassed stays so.
 // - while h3c Settings is wired into a Take, the Take hides the fields Settings sets.
-// - h3c Settings shows the size its megapixels and aspect give.
+// - h3c Settings shows the size its megapixels and aspect give, and its lane switch
+//   sets the steps to match.
 import { app } from "../../scripts/app.js";
 
 // Mirrors MAIN_MODES / GENERATE_MODES in nodes.py.
@@ -69,26 +70,24 @@ function apply(take) {
     for (const id of ids) (wanted.has(name) ? on : off).add(id);
   }
   for (const id of on) off.delete(id);  // a loader shared with a used input stays on
+  // The Take records what it muted and the mode each node had, so everything comes
+  // back on the next pass, even a node that was disconnected in between.
+  take.properties ??= {};
+  const before = take.properties.h3c_muted ?? {};
+  for (const [id, mode] of Object.entries(before)) {
+    const n = graph.getNodeById(Number(id)) ?? graph.getNodeById(id);
+    if (n && n.mode === MUTED) n.mode = mode;
+  }
+  const muted = {};
   for (const id of off) {
     const n = graph.getNodeById(id);
     if (!n) continue;
-    n.properties ??= {};
-    if (!n.properties.h3c_off) {
-      n.properties.h3c_user_mode = n.mode;
-      n.properties.h3c_off = true;
-    }
+    muted[id] = n.mode;
     n.mode = MUTED;
   }
-  for (const id of on) {
-    const n = graph.getNodeById(id);
-    if (!n?.properties?.h3c_off) continue;
-    n.mode = n.properties.h3c_user_mode ?? 0;
-    delete n.properties.h3c_off;
-    delete n.properties.h3c_user_mode;
-  }
+  take.properties.h3c_muted = muted;
   // Groups: grey when nothing in them is in use. The text-to-video group holds
   // only a note, so it lights up when the take reads no pictures at all.
-  take.properties ??= {};
   const colors = (take.properties.h3c_group_colors ??= {});
   for (const group of graph._groups ?? []) {
     const nodes = graph._nodes.filter((n) => inside(group, n));
@@ -97,8 +96,9 @@ function apply(take) {
     else if (nodes.some((n) => off.has(n.id))) active = false;
     else if (/^T2V\b/.test(group.title)) active = wanted.size === 0;
     else continue;
-    if (!(group.title in colors)) colors[group.title] = group.color;
-    group.color = active ? colors[group.title] : GREY;
+    const key = String(group.id ?? group.title);
+    if (!(key in colors) && group.color !== GREY) colors[key] = group.color;
+    group.color = active ? (colors[key] ?? group.color) : GREY;
   }
   graph.setDirtyCanvas?.(true, true);
 }
@@ -107,6 +107,8 @@ function apply(take) {
 const OVERRIDES = ["width", "height", "steps", "sampler", "scheduler", "shift", "speed",
   "save_context", "preview", "reference_image_size"];
 const ASPECTS = { "9:16 portrait": 9 / 16, "16:9 landscape": 16 / 9, "1:1 square": 1 };
+// Steps a lane switch sets (as in the MacH3 Metal app): Turbo is tuned for 5-6.
+const LANE_STEPS = { quality: 12, speed: 6 };
 
 function sizeFor(megapixels, aspect) {
   const px = Number(megapixels) * 1024 * 1024, a = ASPECTS[aspect] ?? 9 / 16;
@@ -144,6 +146,17 @@ app.registerExtension({
   name: "MacH3Metal.ModeGroups",
   nodeCreated(node) {
     if (node.comfyClass === "H3cSettings") {
+      const lane = node.widgets?.find((w) => w.name === "lane");
+      const steps = node.widgets?.find((w) => w.name === "steps");
+      if (lane && steps) {
+        const original = lane.callback;
+        lane.callback = function (...args) {
+          const result = original?.apply(this, args);
+          steps.value = String(lane.value).startsWith("Speed") ? LANE_STEPS.speed : LANE_STEPS.quality;
+          node.setDirtyCanvas?.(true, true);
+          return result;
+        };
+      }
       for (const name of ["megapixels", "aspect"]) {
         const widget = node.widgets?.find((w) => w.name === name);
         if (!widget) continue;
@@ -160,7 +173,10 @@ app.registerExtension({
     const onConnectionsChange = node.onConnectionsChange;
     node.onConnectionsChange = function (...args) {
       const result = onConnectionsChange?.apply(this, args);
-      hideOverridden(node);
+      setTimeout(() => {
+        hideOverridden(node);
+        apply(node);
+      }, 0);
       return result;
     };
     for (const name of ["mode", "continue_from"]) {

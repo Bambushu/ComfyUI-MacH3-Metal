@@ -1,15 +1,15 @@
 {
   "id": "ecb4bd7d-f158-44f1-acee-3b65ea71770f",
   "revision": 0,
-  "last_node_id": 23,
-  "last_link_id": 36,
+  "last_node_id": 26,
+  "last_link_id": 39,
   "nodes": [
     {
       "id": 1,
       "type": "H3cLoader",
       "pos": [
         0,
-        716
+        836
       ],
       "size": [
         300,
@@ -52,11 +52,11 @@
       "type": "H3cSettings",
       "pos": [
         380,
-        716
+        836
       ],
       "size": [
         300,
-        290
+        298
       ],
       "flags": {},
       "order": 1,
@@ -97,6 +97,7 @@
       "widgets_values": [
         "0.5",
         "9:16 portrait",
+        "Quality",
         12,
         "euler",
         "linear",
@@ -109,6 +110,7 @@
       "widgets_values_named": {
         "megapixels": "0.5",
         "aspect": "9:16 portrait",
+        "lane": "Quality",
         "steps": 12,
         "sampler": "euler",
         "scheduler": "linear",
@@ -160,9 +162,7 @@
       ],
       "title": "First frame",
       "properties": {
-        "Node name for S&R": "LoadImage",
-        "h3c_user_mode": 0,
-        "h3c_off": true
+        "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
         "h3c_sample_first_frame.png",
@@ -214,9 +214,7 @@
       ],
       "title": "Last frame",
       "properties": {
-        "Node name for S&R": "LoadImage",
-        "h3c_user_mode": 0,
-        "h3c_off": true
+        "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
         "h3c_sample_last_frame.png",
@@ -225,99 +223,6 @@
       "widgets_values_named": {
         "image": "h3c_sample_last_frame.png",
         "upload": "image"
-      }
-    },
-    {
-      "id": 5,
-      "type": "LoadImage",
-      "pos": [
-        1228,
-        40
-      ],
-      "size": [
-        304.091796875,
-        380
-      ],
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "inputs": [
-        {
-          "label": "Picture 1 (R2V)",
-          "name": "image",
-          "type": "COMBO",
-          "widget": {
-            "name": "image"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            1
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Picture 1",
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "h3c_sample_identity.jpg",
-        "image"
-      ],
-      "widgets_values_named": {
-        "image": "h3c_sample_identity.jpg",
-        "upload": "image"
-      }
-    },
-    {
-      "id": 6,
-      "type": "H3cReferenceImage",
-      "pos": [
-        1228,
-        440
-      ],
-      "size": [
-        300,
-        70
-      ],
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 1
-        },
-        {
-          "name": "references",
-          "shape": 7,
-          "type": "H3C_REFS",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "references",
-          "type": "H3C_REFS",
-          "links": [
-            29
-          ]
-        }
-      ],
-      "title": "Reference 1",
-      "properties": {
-        "Node name for S&R": "H3cReferenceImage"
       }
     },
     {
@@ -332,7 +237,7 @@
         699.2883731617648
       ],
       "flags": {},
-      "order": 5,
+      "order": 4,
       "mode": 2,
       "inputs": [
         {
@@ -356,9 +261,7 @@
       ],
       "title": "Clip to continue",
       "properties": {
-        "Node name for S&R": "LoadVideo",
-        "h3c_user_mode": 0,
-        "h3c_off": true
+        "Node name for S&R": "LoadVideo"
       },
       "widgets_values": [
         "h3c_sample_clip.mp4",
@@ -381,7 +284,7 @@
         80
       ],
       "flags": {},
-      "order": 11,
+      "order": 8,
       "mode": 2,
       "inputs": [
         {
@@ -401,9 +304,7 @@
       ],
       "title": "Clip context",
       "properties": {
-        "Node name for S&R": "H3cContextFromVideo",
-        "h3c_user_mode": 0,
-        "h3c_off": true
+        "Node name for S&R": "H3cContextFromVideo"
       }
     },
     {
@@ -415,10 +316,10 @@
       ],
       "size": [
         420,
-        500
+        620
       ],
       "flags": {},
-      "order": 14,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -442,7 +343,7 @@
           "name": "references",
           "shape": 7,
           "type": "H3C_REFS",
-          "link": 32
+          "link": 39
         },
         {
           "name": "motion_context",
@@ -498,6 +399,15 @@
           "type": "FLOAT",
           "widget": {
             "name": "seconds"
+          },
+          "link": null
+        },
+        {
+          "label": "frames (0 = use length)",
+          "name": "frames",
+          "type": "INT",
+          "widget": {
+            "name": "frames"
           },
           "link": null
         },
@@ -627,22 +537,31 @@
       "title": "Take",
       "properties": {
         "Node name for S&R": "H3cGenerate",
+        "h3c_muted": {
+          "3": 0,
+          "4": 0,
+          "7": 0,
+          "8": 0,
+          "24": 0,
+          "25": 4,
+          "26": 4
+        },
         "h3c_group_colors": {
-          "T2V · text to video": "#88A",
-          "I2V / FL2V · first frame, first + last frame": "#5b8a5b",
-          "R2V · references: up to 3 people or places (Pictures 2-3: Ctrl+B to use)": "#a1309b",
-          "Continue a clip (Continue = clip input)": "#b06634"
+          "10": "#88A",
+          "11": "#5b8a5b",
+          "12": "#a1309b",
+          "13": "#b06634"
         }
       },
       "widgets_values": [
-        "R2V · references",
-        "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie, facing the camera, pine trees and the mountain peaks behind her. <Subject 1> catches her breath, looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] So this whole clip came out of Comfy U I, running on my Mac.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, opening and closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
+        "T2V · text to video",
+        "A woman in her late twenties stands in a bright home kitchen and talks straight to her phone camera, casual and warm, soft window light from the left. She says: \"This whole clip came out of a laptop. Picture and sound, one pass, no studio.\"",
         544,
         960,
         5,
         0,
         12,
-        7311,
+        77001,
         "fixed",
         "euler",
         "linear",
@@ -655,14 +574,14 @@
         "off"
       ],
       "widgets_values_named": {
-        "mode": "R2V · references",
-        "prompt": "subject_definitions:\n<Subject 1> is HOST in <Picture 1>, the person shown in the reference picture, same face, hair and clothing.\n<Subject 2> is the PINE TRAIL, described as a dusty dirt hiking trail through tall pine trees with rocky mountain peaks behind, bright clear midday sun and blue sky continuing unchanged.\n\nsummary:\n[reference generation] The target video contains one shot set in <Subject 2>. [Shot 1] shows <Subject 1> speaking.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - HOST's complete defined identity and body proportions are preserved.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the environment’s defined architecture, layout, and spatial continuity are retained.\n\ndetailed_description:\nThe target video is in a live-action style, with photoreal and vertical smartphone video.\n[Shot 1] The shot takes place in <Subject 2>. At first appearance, <Subject 2> matches the complete defined environment identity, architecture, layout, and reference lighting. At first appearance, <Subject 1> (HOST) matches the complete defined identity and physical appearance: The person shown in the reference picture, same face, hair and clothing. At the start of the shot, <Subject 1> stands on the trail holding the phone at arm's length for a selfie, facing the camera, pine trees and the mountain peaks behind her. <Subject 1> catches her breath, looks into the lens and speaks the line, then holds a relaxed smile for the rest of the video. Camera: a handheld vertical arm's-length selfie at face height with gentle natural sway. <Subject 1> (S1) says in a warm, relaxed tone: <d>[English] So this whole clip came out of Comfy U I, running on my Mac.</d>\n\noverall_soundscape:\nWind moving through the pines and a few distant birds, opening and closing on a brief quiet pause.\n\nnon_diegetic_music:\nN/A",
+        "mode": "T2V · text to video",
+        "prompt": "A woman in her late twenties stands in a bright home kitchen and talks straight to her phone camera, casual and warm, soft window light from the left. She says: \"This whole clip came out of a laptop. Picture and sound, one pass, no studio.\"",
         "width": 544,
         "height": 960,
         "seconds": 5,
         "frames": 0,
         "steps": 12,
-        "seed": 7311,
+        "seed": 77001,
         "control_after_generate": "fixed",
         "sampler": "euler",
         "scheduler": "linear",
@@ -684,209 +603,23 @@
       ],
       "size": [
         320,
-        430
+        620
       ],
       "flags": {},
-      "order": 6,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [],
       "title": "MacH3 Metal",
       "properties": {},
       "widgets_values": [
-        "## MacH3 Metal\nMiniMax H3 with sound, native on a Mac (h3.c Metal engine).\n\n**1.** On **Take**, pick a **Mode**: T2V, I2V, FL2V or R2V. That mode's group lights up; the others grey out and never load.\n\n**2.** Write the **prompt**, press **Run**. **Shot** plays it.\n\n**3.** To keep going: set **Continue** to *last take*, write what happens next, Run again. Shot adds it to the end. Continue works in every mode.\n\nSize, steps and the Speed or Quality lane are in **Settings and lane** below."
+        "## MacH3 Metal\nMiniMax H3 with sound, native on a Mac (h3.c Metal engine).\n\n**1.** On **Take**, pick a **Mode**: T2V, I2V, FL2V or R2V. That mode's group lights up; the others grey out and never load.\n\n**2.** Write the **prompt**, press **Run**. **Shot** plays it.\n\n**3.** To keep going: set **Continue** to *last take*, write what happens next, Run again. Shot adds it to the end.\n\n**Lane** (in Settings): *Quality* or *Speed (Turbo)*. Switching it sets the steps."
       ],
       "widgets_values_named": {
-        "text": "## MacH3 Metal\nMiniMax H3 with sound, native on a Mac (h3.c Metal engine).\n\n**1.** On **Take**, pick a **Mode**: T2V, I2V, FL2V or R2V. That mode's group lights up; the others grey out and never load.\n\n**2.** Write the **prompt**, press **Run**. **Shot** plays it.\n\n**3.** To keep going: set **Continue** to *last take*, write what happens next, Run again. Shot adds it to the end. Continue works in every mode.\n\nSize, steps and the Speed or Quality lane are in **Settings and lane** below."
+        "text": "## MacH3 Metal\nMiniMax H3 with sound, native on a Mac (h3.c Metal engine).\n\n**1.** On **Take**, pick a **Mode**: T2V, I2V, FL2V or R2V. That mode's group lights up; the others grey out and never load.\n\n**2.** Write the **prompt**, press **Run**. **Shot** plays it.\n\n**3.** To keep going: set **Continue** to *last take*, write what happens next, Run again. Shot adds it to the end.\n\n**Lane** (in Settings): *Quality* or *Speed (Turbo)*. Switching it sets the steps."
       },
       "color": "#432",
       "bgcolor": "#653"
-    },
-    {
-      "id": 18,
-      "type": "LoadImage",
-      "pos": [
-        1568,
-        40
-      ],
-      "size": [
-        282.798828125,
-        314
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 4,
-      "inputs": [
-        {
-          "label": "Picture 2 (R2V, optional)",
-          "name": "image",
-          "type": "COMBO",
-          "widget": {
-            "name": "image"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            28
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Picture 2 (optional)",
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "h3c_sample_identity.jpg",
-        "image"
-      ],
-      "widgets_values_named": {
-        "image": "h3c_sample_identity.jpg",
-        "upload": "image"
-      }
-    },
-    {
-      "id": 19,
-      "type": "H3cReferenceImage",
-      "pos": [
-        1568,
-        440
-      ],
-      "size": [
-        300,
-        70
-      ],
-      "flags": {},
-      "order": 12,
-      "mode": 4,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 28
-        },
-        {
-          "name": "references",
-          "shape": 7,
-          "type": "H3C_REFS",
-          "link": 29
-        }
-      ],
-      "outputs": [
-        {
-          "name": "references",
-          "type": "H3C_REFS",
-          "links": [
-            31
-          ]
-        }
-      ],
-      "title": "Reference 2",
-      "properties": {
-        "Node name for S&R": "H3cReferenceImage"
-      }
-    },
-    {
-      "id": 20,
-      "type": "LoadImage",
-      "pos": [
-        1908,
-        40
-      ],
-      "size": [
-        282.798828125,
-        314
-      ],
-      "flags": {},
-      "order": 8,
-      "mode": 4,
-      "inputs": [
-        {
-          "label": "Picture 3 (R2V, optional)",
-          "name": "image",
-          "type": "COMBO",
-          "widget": {
-            "name": "image"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            30
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Picture 3 (optional)",
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "h3c_sample_identity.jpg",
-        "image"
-      ],
-      "widgets_values_named": {
-        "image": "h3c_sample_identity.jpg",
-        "upload": "image"
-      }
-    },
-    {
-      "id": 21,
-      "type": "H3cReferenceImage",
-      "pos": [
-        1908,
-        440
-      ],
-      "size": [
-        300,
-        70
-      ],
-      "flags": {},
-      "order": 13,
-      "mode": 4,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 30
-        },
-        {
-          "name": "references",
-          "shape": 7,
-          "type": "H3C_REFS",
-          "link": 31
-        }
-      ],
-      "outputs": [
-        {
-          "name": "references",
-          "type": "H3C_REFS",
-          "links": [
-            32
-          ]
-        }
-      ],
-      "title": "Reference 3",
-      "properties": {
-        "Node name for S&R": "H3cReferenceImage"
-      }
     },
     {
       "id": 22,
@@ -900,7 +633,7 @@
         760
       ],
       "flags": {},
-      "order": 15,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -948,7 +681,7 @@
         170
       ],
       "flags": {},
-      "order": 9,
+      "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -962,17 +695,141 @@
       },
       "color": "#432",
       "bgcolor": "#653"
+    },
+    {
+      "id": 24,
+      "type": "H3cPicture",
+      "pos": [
+        1228,
+        40
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "references",
+          "shape": 7,
+          "type": "H3C_REFS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "references",
+          "type": "H3C_REFS",
+          "links": [
+            37
+          ]
+        }
+      ],
+      "title": "Picture 1",
+      "properties": {
+        "Node name for S&R": "H3cPicture"
+      },
+      "widgets_values": [
+        "h3c_sample_identity.jpg",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "h3c_sample_identity.jpg",
+        "upload": "image"
+      }
+    },
+    {
+      "id": 25,
+      "type": "H3cPicture",
+      "pos": [
+        1568,
+        40
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "references",
+          "shape": 7,
+          "type": "H3C_REFS",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "references",
+          "type": "H3C_REFS",
+          "links": [
+            38
+          ]
+        }
+      ],
+      "title": "Picture 2 (optional)",
+      "properties": {
+        "Node name for S&R": "H3cPicture"
+      },
+      "widgets_values": [
+        "h3c_sample_identity.jpg",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "h3c_sample_identity.jpg",
+        "upload": "image"
+      }
+    },
+    {
+      "id": 26,
+      "type": "H3cPicture",
+      "pos": [
+        1908,
+        40
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "references",
+          "shape": 7,
+          "type": "H3C_REFS",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "references",
+          "type": "H3C_REFS",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "title": "Picture 3 (optional)",
+      "properties": {
+        "Node name for S&R": "H3cPicture"
+      },
+      "widgets_values": [
+        "h3c_sample_identity.jpg",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "h3c_sample_identity.jpg",
+        "upload": "image"
+      }
     }
   ],
   "links": [
-    [
-      1,
-      5,
-      0,
-      6,
-      0,
-      "IMAGE"
-    ],
     [
       2,
       7,
@@ -1022,46 +879,6 @@
       "H3C_CONTEXT"
     ],
     [
-      28,
-      18,
-      0,
-      19,
-      0,
-      "IMAGE"
-    ],
-    [
-      29,
-      6,
-      0,
-      19,
-      1,
-      "H3C_REFS"
-    ],
-    [
-      30,
-      20,
-      0,
-      21,
-      0,
-      "IMAGE"
-    ],
-    [
-      31,
-      19,
-      0,
-      21,
-      1,
-      "H3C_REFS"
-    ],
-    [
-      32,
-      21,
-      0,
-      9,
-      3,
-      "H3C_REFS"
-    ],
-    [
       33,
       9,
       0,
@@ -1092,6 +909,30 @@
       22,
       3,
       "H3C_CONTEXT"
+    ],
+    [
+      37,
+      24,
+      0,
+      25,
+      0,
+      "H3C_REFS"
+    ],
+    [
+      38,
+      25,
+      0,
+      26,
+      0,
+      "H3C_REFS"
+    ],
+    [
+      39,
+      26,
+      0,
+      9,
+      3,
+      "H3C_REFS"
     ]
   ],
   "groups": [
@@ -1102,7 +943,7 @@
         -28,
         -66,
         836,
-        636
+        756
       ],
       "color": "#3f789e",
       "flags": {}
@@ -1116,7 +957,7 @@
         356,
         300
       ],
-      "color": "#444444",
+      "color": "#88A",
       "flags": {}
     },
     {
@@ -1140,7 +981,7 @@
         1048,
         590
       ],
-      "color": "#a1309b",
+      "color": "#444444",
       "flags": {}
     },
     {
@@ -1169,10 +1010,10 @@
     },
     {
       "id": 15,
-      "title": "Settings and lane (Speed: Engine lora = turbo, 6 steps)",
+      "title": "Settings and lane",
       "bounding": [
         -28,
-        610,
+        730,
         836,
         424
       ],
@@ -1206,7 +1047,15 @@
           "continue_from"
         ],
         [
-          "5",
+          "24",
+          "image"
+        ],
+        [
+          "25",
+          "image"
+        ],
+        [
+          "26",
           "image"
         ],
         [
@@ -1246,11 +1095,11 @@
         ],
         [
           "2",
-          "steps"
+          "lane"
         ],
         [
-          "1",
-          "lora"
+          "2",
+          "steps"
         ]
       ],
       "outputs": [

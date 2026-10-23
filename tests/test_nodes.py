@@ -70,7 +70,7 @@ class NodeLogicTest(unittest.TestCase):
         self.assertEqual(sorted(g.check_lazy_status("references", "clip input", **pending)),
                          ["motion_context", "references"])
 
-    def test_add_to_shot_appends_continuations_and_restarts_otherwise(self):
+    def test_add_to_shot_follows_lineage_survives_restart_and_is_idempotent(self):
         import tempfile, subprocess
         import folder_paths
         out = tempfile.mkdtemp()
@@ -79,18 +79,41 @@ class NodeLogicTest(unittest.TestCase):
         add = self.n.H3cAddToShot().add
         a, aa = self.clip(24, 0.2, 32000)
         b, ba = self.clip(48, 0.8, 64000)
-        r1 = add(a, aa, 24.0, {"continues": False}, "t/shot")
-        r2 = add(b, ba, 24.0, {"continues": True}, "t/shot")
-        shot = os.path.join(out, r2["ui"]["images"][0]["subfolder"], r2["ui"]["images"][0]["filename"])
-        self.assertEqual(r1["ui"]["images"][0]["filename"], r2["ui"]["images"][0]["filename"])
-        probe = lambda kind: subprocess.run(
-            ["ffprobe", "-v", "error", "-select_streams", kind, "-count_frames", "-show_entries",
-             "stream=nb_read_frames,duration", "-of", "csv=p=0", shot],
+        name = lambda r: r["ui"]["images"][0]["filename"]
+        frames = lambda r: subprocess.run(
+            ["ffprobe", "-v", "error", "-select_streams", "v", "-count_frames", "-show_entries",
+             "stream=nb_read_frames", "-of", "csv=p=0",
+             os.path.join(out, r["ui"]["images"][0]["subfolder"], name(r))],
             capture_output=True, text=True).stdout.strip()
-        self.assertEqual(probe("v").split(",")[-1], "72")          # 24 + 48 frames
-        self.assertAlmostEqual(float(probe("a").split(",")[0]), 3.0, delta=0.03)
-        r3 = add(a, aa, 24.0, {"continues": False}, "t/shot")       # a new shot
-        self.assertNotEqual(r3["ui"]["images"][0]["filename"], r2["ui"]["images"][0]["filename"])
+        r1 = add(a, aa, 24.0, {"take_id": "t1", "continues": False}, "t/shot")
+        r2 = add(b, ba, 24.0, {"take_id": "t2", "continues": True, "parent": "t1"}, "t/shot")
+        self.assertEqual(name(r1), name(r2))
+        self.assertEqual(frames(r2), "72")                       # 24 + 48
+        r2b = add(b, ba, 24.0, {"take_id": "t2", "continues": True, "parent": "t1"}, "t/shot")
+        self.assertEqual(frames(r2b), "72")                      # a rerun adds nothing
+        # continues, but not this shot's last take: a new shot
+        r3 = add(a, aa, 24.0, {"take_id": "t3", "continues": True, "parent": "elsewhere"}, "t/shot")
+        self.assertNotEqual(name(r3), name(r2))
+        # after a restart the shot on disk is picked up again
+        self.n._SHOTS.clear()
+        r4 = add(b, ba, 24.0, {"take_id": "t4", "continues": True, "parent": "t3"}, "t/shot")
+        self.assertEqual((name(r4), frames(r4)), (name(r3), "72"))
+        # a continuation in another size is refused
+        c = self.torch.full((24, 16, 8, 3), 0.5)
+        with self.assertRaises(ValueError):
+            add(c, aa, 24.0, {"take_id": "t5", "continues": True, "parent": "t4"}, "t/shot")
+
+    def test_last_take_keys_the_cache_and_missing_pictures_fail_early(self):
+        g = self.n.H3cGenerate
+        self.n._LAST_TAKES["p/take"] = {"path": "/x/one.h3ctx", "kind": "h3ctx"}
+        self.assertEqual(g.IS_CHANGED(continue_from="last take", filename_prefix="p/take"), "/x/one.h3ctx")
+        self.assertEqual(g.IS_CHANGED(continue_from="off", filename_prefix="p/take"), "")
+        args = dict(engine=None, prompt="x", width=544, height=960, seconds=5.0, frames=0, steps=6,
+                    seed=1, sampler="euler", scheduler="linear", shift=0.0, speed="exact",
+                    save_context=False, preview=False, filename_prefix="p/take")
+        for mode in ("I2V · first frame", "R2V · references"):
+            with self.assertRaisesRegex(ValueError, "needs"):
+                g().generate(mode=mode, **args)
 
     def test_dropdown_shows_four_modes_and_old_names_still_validate(self):
         g = self.n.H3cGenerate
@@ -105,13 +128,15 @@ class NodeLogicTest(unittest.TestCase):
         self.assertEqual(size("1.0", "9:16 portrait"), (768, 1344))   # capped
         self.assertEqual(size("1.0", "16:9 landscape"), (1344, 768))
         self.assertEqual(size("1.0", "1:1 square"), (992, 992))
-        settings = self.n.H3cSettings().make(megapixels="0.8", aspect="9:16 portrait", steps=6,
+        settings = self.n.H3cSettings().make(megapixels="0.8", aspect="9:16 portrait",
+                                             lane="Speed (Turbo)", steps=6,
                                              sampler="euler", scheduler="linear", shift=0.0,
                                              speed="exact", save_context=True, preview=False,
                                              reference_image_size="max")[0]
         self.assertEqual((settings["width"], settings["height"]), (672, 1216))
         for key in self.n.H3cSettings.OVERRIDES:
             self.assertIn(key, settings)
+        self.assertEqual(settings["lane"], "Speed (Turbo)")
 
 if __name__ == "__main__":
     unittest.main()
