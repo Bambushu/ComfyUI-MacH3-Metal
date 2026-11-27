@@ -114,6 +114,10 @@ class NodeLogicTest(unittest.TestCase):
         for mode in ("I2V · first frame", "R2V · references"):
             with self.assertRaisesRegex(ValueError, "needs"):
                 g().generate(mode=mode, **args)
+        # a connected picture is a tensor: the check must name what is missing, not crash
+        with self.assertRaisesRegex(ValueError, "needs a last frame"):
+            g().generate(mode="FL2V · first + last frame",
+                         first_frame=self.torch.zeros((1, 8, 8, 3)), **args)
 
     def test_dropdown_shows_four_modes_and_old_names_still_validate(self):
         g = self.n.H3cGenerate

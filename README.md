@@ -95,8 +95,12 @@ make -C ~/h3c libh3.dylib
 ```
 
 ```bash
-huggingface-cli download MiniMaxAI/MiniMax-H3 --local-dir ~/h3c/MiniMax-H3
+hf download MiniMaxAI/MiniMax-H3 --include "FL2VA/*" --local-dir ~/h3c/MiniMax-H3
+ln -s FL2VA ~/h3c/MiniMax-H3/Ref2VA
 ```
+
+That is 144 GB, not the whole 500 GB repo: every mode, references included, runs
+on the FL2VA weights.
 
 ```bash
 git clone https://github.com/Bambushu/ComfyUI-MacH3-Metal ~/ComfyUI/custom_nodes/ComfyUI-MacH3-Metal

@@ -439,7 +439,7 @@ class H3cGenerate:
                 ("last_frame", "a last frame", last_frame),
                 ("references", "a reference picture", references),
                 ("motion_context", "a clip to continue (motion_context)", motion_context))
-                if name in wanted and not value]
+                if name in wanted and value is None]
             if missing:
                 raise ValueError(f"h3c: {mode} needs {' and '.join(missing)}; connect it or "
                                  f"switch the mode")
